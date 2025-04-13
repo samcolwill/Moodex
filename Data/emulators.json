@@ -1,0 +1,26 @@
+[
+    {
+        "Id": "pcsx2",
+        "Name": "PCSX2",
+        "ExecutablePath": "C:\\Users\\samco\\Documents\\Emulators\\PCSX2\\pcsx2-qt.exe",
+        "DefaultArguments": ""
+    },
+    {
+        "Id": "duckstation",
+        "Name": "DuckStation",
+        "ExecutablePath": "C:\\Users\\samco\\Documents\\Emulators\\DuckStation\\duckstation-qt-x64-ReleaseLTCG.exe",
+        "DefaultArguments": ""
+    },
+    {
+        "Id": "mgba",
+        "Name": "mGBA",
+        "ExecutablePath": "C:\\Users\\samco\\Documents\\Emulators\\mGBA\\mGBA.exe",
+        "DefaultArguments": ""
+    },
+    {
+        "Id": "rpcs3",
+        "Name": "RPCS3",
+        "ExecutablePath": "C:\\Users\\samco\\Documents\\Emulators\\RPCS3\\rpcs3.exe",
+        "DefaultArguments": ""
+    }
+]
