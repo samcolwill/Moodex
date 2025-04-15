@@ -53,30 +53,18 @@
         </Style>
 
         <Style x:Key="DarkContextMenuStyle" TargetType="{x:Type ContextMenu}">
-            <!-- Overrides the entire default WPF look -->
             <Setter Property="OverridesDefaultStyle" Value="True"/>
-
-            <!-- Match your Menu background/borders -->
             <Setter Property="Background" Value="#FF2A2A2A"/>
             <Setter Property="BorderBrush" Value="#FF444444"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="HasDropShadow" Value="True"/>
-
-            <!-- If you do not want any border at all, set these instead:
-             <Setter Property="BorderBrush" Value="Transparent"/>
-             <Setter Property="BorderThickness" Value="0"/>
-        -->
-
-            <!-- ControlTemplate that draws the ContextMenu background & items -->
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ContextMenu}">
-                        <Border 
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}">
-                            <StackPanel IsItemsHost="True" 
-                                    KeyboardNavigation.DirectionalNavigation="Cycle"/>
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
@@ -121,6 +109,7 @@
 
         <!-- Main Content: Grouped Game List -->
         <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <!-- Notice that we now bind to the new base type (GameBase) -->
             <ItemsControl x:Name="GameItemsControl" ItemsSource="{Binding Source={StaticResource GroupedGames}}">
                 <!-- Group style -->
                 <ItemsControl.GroupStyle>
@@ -147,11 +136,12 @@
                 </ItemsControl.ItemsPanel>
 
                 <!-- DataTemplate for each game tile -->
+                <!-- Updated DataType to models:GameBase and binding to GameCoverUri instead of ImageUri -->
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type models:Game}">
+                    <DataTemplate DataType="{x:Type models:GameBase}">
                         <StackPanel Margin="10" Width="150" MouseLeftButtonUp="GameCard_Click" Cursor="Hand">
                             <Border x:Name="ImageBorder" Width="150" Height="200" Background="Black">
-                                <Image x:Name="GameImage" Source="{Binding ImageUri}" Stretch="UniformToFill"/>
+                                <Image x:Name="GameImage" Source="{Binding GameCoverUri}" Stretch="UniformToFill"/>
                             </Border>
                             <TextBlock Text="{Binding Name}" Foreground="White" FontSize="12" Margin="5,5,5,0"
                                        HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"/>
@@ -165,7 +155,6 @@
                             </StackPanel.ContextMenu>
                         </StackPanel>
                         <DataTemplate.Triggers>
-                            <!-- DataTriggers for console-specific image adjustments -->
                             <DataTrigger Binding="{Binding Console}" Value="PlayStation 1">
                                 <Setter TargetName="ImageBorder" Property="Width" Value="150"/>
                                 <Setter TargetName="ImageBorder" Property="Height" Value="150"/>
@@ -180,7 +169,7 @@
                             </DataTrigger>
                             <DataTrigger Binding="{Binding Console}" Value="PlayStation 3">
                                 <Setter TargetName="ImageBorder" Property="Width" Value="150"/>
-                                <Setter TargetName="ImageBorder" Property="Height" Value="200"/>
+                                <Setter TargetName="ImageBorder" Property="Height" Value="180"/>
                                 <Setter TargetName="GameImage" Property="Stretch" Value="Fill"/>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding Console}" Value="Game Boy Advance">

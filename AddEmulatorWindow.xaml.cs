@@ -16,7 +16,7 @@ namespace SamsGameLauncher
 
         private void BrowseExecutable_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog dlg = new OpenFileDialog
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog
             {
                 Filter = "Executable Files (*.exe)|*.exe|All Files (*.*)|*.*"
             };
@@ -33,7 +33,7 @@ namespace SamsGameLauncher
                 string.IsNullOrWhiteSpace(NameTextBox.Text) ||
                 string.IsNullOrWhiteSpace(ExecutablePathTextBox.Text))
             {
-                MessageBox.Show("Please fill in the ID, Name, and Executable Path.", "Missing Information",
+                System.Windows.MessageBox.Show("Please fill in the ID, Name, and Executable Path.", "Missing Information",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }

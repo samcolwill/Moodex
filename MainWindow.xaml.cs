@@ -37,48 +37,82 @@ namespace SamsGameLauncher
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to load game library: {ex.Message}", "Error",
+                System.Windows.MessageBox.Show($"Failed to load game library: {ex.Message}", "Error",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         // Helper method that encapsulates the game launching logic.
-        private void RunGame(Game game)
+        private void RunGame(GameBase game)
         {
             try
             {
-                if (game.Emulator == null)
+                switch (game)
                 {
-                    MessageBox.Show("No emulator is associated with this game.", "Launch Error",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
+                    case EmulatedGame emGame:
+                        if (emGame.Emulator == null)
+                        {
+                            System.Windows.MessageBox.Show("No emulator is associated with this game.", "Launch Error",
+                                MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+
+                        string emGameEmulatorPath = emGame.Emulator.ExecutablePath;
+                        string emGameGamePath = emGame.GamePath;
+
+                        string emGameArguments = string.IsNullOrWhiteSpace(emGame.Emulator.DefaultArguments)
+                            ? $"\"{emGameGamePath}\""
+                            : emGame.Emulator.DefaultArguments.Replace("{RomPath}", emGameGamePath);
+
+                        Process.Start(new ProcessStartInfo
+                        {
+                            FileName = emGameEmulatorPath,
+                            Arguments = emGameArguments,
+                            UseShellExecute = true
+                        });
+                        break;
+
+                    case NativeGame nativeGame:
+                        // Simply launch the executable.
+                        Process.Start(new ProcessStartInfo
+                        {
+                            FileName = nativeGame.ExePath,
+                            UseShellExecute = true
+                        });
+                        break;
+
+                    case FolderBasedGame folderGame:
+                        if (folderGame.Emulator == null)
+                        {
+                            System.Windows.MessageBox.Show("No emulator is associated with this game.", "Launch Error",
+                                MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+
+                        string folderGameEmulatorPath = folderGame.Emulator.ExecutablePath;
+                        string folderGameFolderPath = folderGame.FolderPath;
+
+                        string folderGameArguments = string.IsNullOrWhiteSpace(folderGame.Emulator.DefaultArguments)
+                            ? $"\"{folderGameFolderPath}\""
+                            : folderGame.Emulator.DefaultArguments.Replace("{FolderPath}", folderGameFolderPath);
+
+                        Process.Start(new ProcessStartInfo
+                        {
+                            FileName = folderGameEmulatorPath,
+                            Arguments = folderGameArguments,
+                            UseShellExecute = true
+                        });
+                        break;
+
+                    default:
+                        System.Windows.MessageBox.Show("Unsupported game type.", "Launch Error",
+                            MessageBoxButton.OK, MessageBoxImage.Warning);
+                        break;
                 }
-
-                string emulatorPath = game.Emulator.ExecutablePath;
-                string gamePath = game.GamePath;
-
-                // For RPCS3: if a file called PARAM.SFO is selected, launch using its parent folder.
-                if (game.Emulator.Id.Equals("rpcs3", StringComparison.OrdinalIgnoreCase)
-                    && Path.GetFileName(game.GamePath).Equals("PARAM.SFO", StringComparison.OrdinalIgnoreCase))
-                {
-                    gamePath = Path.GetDirectoryName(game.GamePath);
-                }
-
-                // Determine arguments: if there are no default arguments, wrap the gamePath in quotes.
-                string arguments = string.IsNullOrWhiteSpace(game.Emulator.DefaultArguments)
-                    ? $"\"{gamePath}\""
-                    : game.Emulator.DefaultArguments.Replace("{RomPath}", gamePath);
-
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = emulatorPath,
-                    Arguments = arguments,
-                    UseShellExecute = true
-                });
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to launch game:\n{ex.Message}", "Error",
+                System.Windows.MessageBox.Show($"Failed to launch game:\n{ex.Message}", "Error",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -86,7 +120,7 @@ namespace SamsGameLauncher
         // Click handler for game tiles (left-click).
         private void GameCard_Click(object sender, MouseButtonEventArgs e)
         {
-            if (sender is FrameworkElement element && element.DataContext is Game game)
+            if (sender is FrameworkElement element && element.DataContext is GameBase game)
             {
                 RunGame(game);
             }
@@ -95,7 +129,7 @@ namespace SamsGameLauncher
         // "Run" from the context menu.
         private void RunMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is MenuItem menuItem && menuItem.DataContext is Game game)
+            if (sender is MenuItem menuItem && menuItem.DataContext is GameBase game)
             {
                 RunGame(game);
             }
@@ -104,7 +138,7 @@ namespace SamsGameLauncher
         // "Edit" context menu click.
         private void EditMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is MenuItem menuItem && menuItem.DataContext is Game game)
+            if (sender is MenuItem menuItem && menuItem.DataContext is GameBase game)
             {
                 // Open the edit window (EditGameWindow) and pass the game to edit along with available emulators.
                 EditGameWindow editWindow = new EditGameWindow(game, _gameLibrary.Emulators);
@@ -120,9 +154,9 @@ namespace SamsGameLauncher
         // "Delete" context menu click.
         private void DeleteMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is MenuItem menuItem && menuItem.DataContext is Game game)
+            if (sender is MenuItem menuItem && menuItem.DataContext is GameBase game)
             {
-                if (MessageBox.Show($"Delete {game.Name}?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Question)
+                if (System.Windows.MessageBox.Show($"Delete {game.Name}?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Question)
                     == MessageBoxResult.Yes)
                 {
                     _gameLibrary.Games.Remove(game);
@@ -138,12 +172,19 @@ namespace SamsGameLauncher
             AddGameWindow addGameWindow = new AddGameWindow(_gameLibrary.Emulators);
             if (addGameWindow.ShowDialog() == true)
             {
-                Game newGame = addGameWindow.NewGame;
+                GameBase newGame = addGameWindow.NewGame;
                 if (newGame != null)
                 {
-                    // Associate the appropriate emulator.
-                    newGame.Emulator = _gameLibrary.Emulators.FirstOrDefault(em => em.Id == newGame.EmulatorId);
-                    // Add the new game (since Games is an ObservableCollection, UI updates automatically).
+                    // Only associate an emulator if it's actually an EmulatedGame.
+                    if (newGame is EmulatedGame emGame)
+                    {
+                        emGame.Emulator = _gameLibrary.Emulators.FirstOrDefault(em => em.Id == emGame.EmulatorId);
+                    }
+                    else if (newGame is FolderBasedGame folderGame)
+                    {
+                        folderGame.Emulator = _gameLibrary.Emulators.FirstOrDefault(em => em.Id == folderGame.EmulatorId);
+                    }
+
                     _gameLibrary.Games.Add(newGame);
                     SaveGames();
                 }
@@ -201,7 +242,7 @@ namespace SamsGameLauncher
             if (string.IsNullOrWhiteSpace(SearchTextBox.Text))
             {
                 SearchTextBox.Text = "Search...";
-                SearchTextBox.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#b2b2b2"));
+                SearchTextBox.Foreground = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#b2b2b2"));
             }
         }
 
@@ -215,7 +256,7 @@ namespace SamsGameLauncher
             string searchText = SearchTextBox.Text;
             cvs.View.Filter = o =>
             {
-                if (o is Game game)
+                if (o is GameBase game)
                 {
                     if (string.IsNullOrWhiteSpace(searchText) || searchText.Equals("Search...", StringComparison.OrdinalIgnoreCase))
                         return true;

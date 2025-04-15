@@ -1,20 +1,30 @@
 ﻿<Window x:Class="SamsGameLauncher.AddGameWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Add New Game" Height="300" Width="400">
+        Title="Add New Game" Height="350" Width="400"
+        Icon="Assets/launcher.ico">
     <Grid Margin="5">
         <Grid.RowDefinitions>
+            <!-- Each row is allocated for a field -->
             <RowDefinition Height="30"/>
+            <!-- Name -->
+            <RowDefinition Height="30"/>
+            <!-- Game Type -->
+            <RowDefinition Height="30"/>
+            <!-- Emulator -->
+            <RowDefinition Height="30"/>
+            <!-- Game File -->
+            <RowDefinition Height="30"/>
+            <!-- Console -->
+            <RowDefinition Height="30"/>
+            <!-- Genre -->
+            <RowDefinition Height="30"/>
+            <!-- Release Date -->
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <!-- Button -->
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="90"/>
+            <ColumnDefinition Width="105"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="70"/>
         </Grid.ColumnDefinitions>
@@ -23,20 +33,20 @@
         <Label Grid.Row="0" Grid.Column="0" Content="Name:" VerticalAlignment="Center"/>
         <TextBox x:Name="NameTextBox" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="5" />
 
+        <!-- Game Type -->
+        <Label Grid.Row="1" Grid.Column="0" Content="Game Type:" VerticalAlignment="Center"/>
+        <ComboBox x:Name="GameTypeComboBox" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="5"
+                  ItemsSource="{Binding GameTypes}" SelectionChanged="GameTypeComboBox_SelectionChanged" />
+
         <!-- Emulator (Dropdown) -->
-        <Label Grid.Row="1" Grid.Column="0" Content="Emulator:" VerticalAlignment="Center"/>
-        <ComboBox x:Name="EmulatorComboBox" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="5"
-          ItemsSource="{Binding Emulators}" DisplayMemberPath="Name"/>
+        <Label x:Name="EmulatorLabel" Grid.Row="2" Grid.Column="0" Content="Emulator:" VerticalAlignment="Center"/>
+        <ComboBox x:Name="EmulatorComboBox" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="5"
+                  ItemsSource="{Binding Emulators}" DisplayMemberPath="Name"/>
 
-        <!-- Game File Path -->
-        <Label Grid.Row="2" Grid.Column="0" Content="Game File:" VerticalAlignment="Center"/>
-        <TextBox x:Name="GamePathTextBox" Grid.Row="2" Grid.Column="1" Margin="5" />
-        <Button Content="Browse..." Grid.Row="2" Grid.Column="2" Margin="5" Click="BrowseGameFile_Click"/>
-
-        <!-- Game Image Path -->
-        <Label Grid.Row="3" Grid.Column="0" Content="Cover Image:" VerticalAlignment="Center"/>
-        <TextBox x:Name="GameCoverPathTextBox" Grid.Row="3" Grid.Column="1" Margin="5"/>
-        <Button Content="Browse..." Grid.Row="3" Grid.Column="2" Margin="5" Click="BrowseGameImage_Click"/>
+        <!-- File/Folder Path -->
+        <Label x:Name="GameFileFolderLabel" Grid.Row="3" Grid.Column="0" Content="Game File:" VerticalAlignment="Center"/>
+        <TextBox x:Name="GamePathTextBox" Grid.Row="3" Grid.Column="1" Margin="5" />
+        <Button x:Name="BrowseGameFileFolderButton" Content="Browse..." Grid.Row="3" Grid.Column="2" Margin="5" Click="BrowseGameFileFolder_Click"/>
 
         <!-- Console (Dropdown) -->
         <Label Grid.Row="4" Grid.Column="0" Content="Console:" VerticalAlignment="Center"/>
@@ -50,8 +60,8 @@
 
         <!-- Release Date (DatePicker) -->
         <Label Grid.Row="6" Grid.Column="0" Content="Release Date:" VerticalAlignment="Center"/>
-        <DatePicker x:Name="ReleaseDatePicker" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Margin="5" SelectedDate="2004-01-01"
-                    xmlns:sys="clr-namespace:System;assembly=mscorlib" />
+        <DatePicker x:Name="ReleaseDatePicker" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Margin="5"
+                    SelectedDate="2004-01-01"/>
 
         <!-- Save Button -->
         <Button Content="Add Game" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Margin="5"
