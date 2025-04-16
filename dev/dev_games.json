@@ -1,7 +1,7 @@
 [
     {
         "EmulatorId": "pcsx2",
-        "GamePath": "C:\\Users\\samco\\Documents\\Game Library\\Playstation 2\\Need for Speed - Underground 2\\Need for Speed - Underground 2.iso",
+        "GamePath": "C:\\Game Library\\Playstation 2\\Need for Speed - Underground 2\\Need for Speed - Underground 2.iso",
         "GameType": "Emulated",
         "Name": "Need for Speed - Underground 2",
         "Console": "PlayStation 2",
@@ -10,7 +10,7 @@
     },
     {
         "EmulatorId": "pcsx2",
-        "GamePath": "C:\\Users\\samco\\Documents\\Game Library\\Playstation 2\\Ratchet \u0026 Clank\\Ratchet \u0026 Clank.iso",
+        "GamePath": "C:\\Game Library\\Playstation 2\\Ratchet \u0026 Clank\\Ratchet \u0026 Clank.iso",
         "GameType": "Emulated",
         "Name": "Ratchet \u0026 Clank",
         "Console": "PlayStation 2",
@@ -19,7 +19,7 @@
     },
     {
         "EmulatorId": "pcsx2",
-        "GamePath": "C:\\Users\\samco\\Documents\\Game Library\\Playstation 2\\Harry Potter and the Chamber of Secrets\\Harry Potter and the Chamber of Secrets.bin",
+        "GamePath": "C:\\Game Library\\Playstation 2\\Harry Potter and the Chamber of Secrets\\Harry Potter and the Chamber of Secrets.bin",
         "GameType": "Emulated",
         "Name": "Harry Potter and the Chamber of Secrets",
         "Console": "PlayStation 2",
@@ -28,7 +28,7 @@
     },
     {
         "EmulatorId": "duckstation",
-        "GamePath": "C:\\Users\\samco\\Documents\\Game Library\\Playstation 1\\Metal Gear Solid\\Metal Gear Solid.bin",
+        "GamePath": "C:\\Game Library\\Playstation 1\\Metal Gear Solid\\Metal Gear Solid.bin",
         "GameType": "Emulated",
         "Name": "Metal Gear Solid",
         "Console": "PlayStation 1",
@@ -37,7 +37,7 @@
     },
     {
         "EmulatorId": "mgba",
-        "GamePath": "C:\\Users\\samco\\Documents\\Game Library\\Game Boy Advance\\Pokemon - Leaf Green\\Pokemon - Leaf Green.gba",
+        "GamePath": "C:\\Game Library\\Game Boy Advance\\Pokemon - Leaf Green\\Pokemon - Leaf Green.gba",
         "GameType": "Emulated",
         "Name": "Pokemon - Leaf Green",
         "Console": "Game Boy Advance",
@@ -46,7 +46,7 @@
     },
     {
         "EmulatorId": "pcsx2",
-        "GamePath": "C:\\Users\\samco\\Documents\\Game Library\\Playstation 2\\Ratchet \u0026 Clank - Going Commando\\Ratchet \u0026 Clank - Going Commando.iso",
+        "GamePath": "C:\\Game Library\\Playstation 2\\Ratchet \u0026 Clank - Going Commando\\Ratchet \u0026 Clank - Going Commando.iso",
         "GameType": "Emulated",
         "Name": "Ratchet \u0026 Clank - Going Commando",
         "Console": "PlayStation 2",
@@ -55,7 +55,7 @@
     },
     {
         "EmulatorId": "rpcs3",
-        "FolderPath": "C:\\Users\\samco\\Documents\\Game Library\\Playstation 3\\Killzone",
+        "FolderPath": "C:\\Game Library\\Playstation 3\\Killzone",
         "GameType": "FolderBased",
         "Name": "Killzone",
         "Console": "PlayStation 3",
@@ -64,7 +64,7 @@
     },
     {
         "EmulatorId": "rpcs3",
-        "FolderPath": "C:\\Users\\samco\\Documents\\Game Library\\Playstation 3\\Killzone 2",
+        "FolderPath": "C:\\Game Library\\Playstation 3\\Killzone 2",
         "GameType": "FolderBased",
         "Name": "Killzone 2",
         "Console": "PlayStation 3",
@@ -73,7 +73,7 @@
     },
     {
         "EmulatorId": "rpcs3",
-        "FolderPath": "C:\\Users\\samco\\Documents\\Game Library\\Playstation 3\\Killzone 3",
+        "FolderPath": "C:\\Game Library\\Playstation 3\\Killzone 3",
         "GameType": "FolderBased",
         "Name": "Killzone 3",
         "Console": "PlayStation 3",
@@ -82,7 +82,7 @@
     },
     {
         "EmulatorId": "pcsx2",
-        "GamePath": "C:\\Users\\samco\\Documents\\Game Library\\Playstation 2\\Disney\u0027s Extreme Skate Adventure\\Disney\u0027s Extreme Skate Adventure.iso",
+        "GamePath": "C:\\Game Library\\Playstation 2\\Disney\u0027s Extreme Skate Adventure\\Disney\u0027s Extreme Skate Adventure.iso",
         "GameType": "Emulated",
         "Name": "Disney\u0027s Extreme Skate Adventure",
         "Console": "PlayStation 2",
@@ -91,7 +91,7 @@
     },
     {
         "EmulatorId": "pcsx2",
-        "GamePath": "C:\\Users\\samco\\Documents\\Game Library\\Playstation 2\\Need for Speed - Most Wanted (Black Edition)\\Need for Speed - Most Wanted (Black Edition).iso",
+        "GamePath": "C:\\Game Library\\Playstation 2\\Need for Speed - Most Wanted (Black Edition)\\Need for Speed - Most Wanted (Black Edition).iso",
         "GameType": "Emulated",
         "Name": "Need for Speed - Most Wanted (Black Edition)",
         "Console": "PlayStation 2",
@@ -100,7 +100,7 @@
     },
     {
         "EmulatorId": "pcsx2",
-        "GamePath": "C:\\Users\\samco\\Documents\\Game Library\\Playstation 2\\Crash Bandicoot - The Wrath of Cortex\\Crash Bandicoot - The Wrath of Cortex.bin",
+        "GamePath": "C:\\Game Library\\Playstation 2\\Crash Bandicoot - The Wrath of Cortex\\Crash Bandicoot - The Wrath of Cortex.bin",
         "GameType": "Emulated",
         "Name": "Crash Bandicoot - The Wrath of Cortex",
         "Console": "PlayStation 2",
@@ -109,7 +109,7 @@
     },
     {
         "EmulatorId": "duckstation",
-        "GamePath": "C:\\Users\\samco\\Documents\\Game Library\\Playstation 1\\Tony Hawk\u0027s Pro Skater 2\\Tony Hawk\u0027s Pro Skater 2.bin",
+        "GamePath": "C:\\Game Library\\Playstation 1\\Tony Hawk\u0027s Pro Skater 2\\Tony Hawk\u0027s Pro Skater 2.bin",
         "GameType": "Emulated",
         "Name": "Tony Hawk\u0027s Pro Skater 2",
         "Console": "PlayStation 1",
@@ -118,7 +118,7 @@
     },
     {
         "EmulatorId": "duckstation",
-        "GamePath": "C:\\Users\\samco\\Documents\\Game Library\\Playstation 1\\Crash Bandicoot\\Crash Bandicoot.bin",
+        "GamePath": "C:\\Game Library\\Playstation 1\\Crash Bandicoot\\Crash Bandicoot.bin",
         "GameType": "Emulated",
         "Name": "Crash Bandicoot",
         "Console": "PlayStation 1",
@@ -127,7 +127,7 @@
     },
     {
         "EmulatorId": "duckstation",
-        "GamePath": "C:\\Users\\samco\\Documents\\Game Library\\Playstation 1\\Crash Bandicoot 2 - Cortex Strikes Back\\Crash Bandicoot 2 - Cortex Strikes Back.bin",
+        "GamePath": "C:\\Game Library\\Playstation 1\\Crash Bandicoot 2 - Cortex Strikes Back\\Crash Bandicoot 2 - Cortex Strikes Back.bin",
         "GameType": "Emulated",
         "Name": "Crash Bandicoot 2 - Cortex Strikes Back",
         "Console": "PlayStation 1",
@@ -136,7 +136,7 @@
     },
     {
         "EmulatorId": "duckstation",
-        "GamePath": "C:\\Users\\samco\\Documents\\Game Library\\Playstation 1\\MediEval\\MediEvil.cue",
+        "GamePath": "C:\\Game Library\\Playstation 1\\MediEval\\MediEvil.cue",
         "GameType": "Emulated",
         "Name": "MediEvil",
         "Console": "PlayStation 1",
@@ -145,7 +145,7 @@
     },
     {
         "EmulatorId": "duckstation",
-        "GamePath": "C:\\Users\\samco\\Documents\\Game Library\\Playstation 1\\Grand Theft Auto\\Grand Theft Auto.bin",
+        "GamePath": "C:\\Game Library\\Playstation 1\\Grand Theft Auto\\Grand Theft Auto.bin",
         "GameType": "Emulated",
         "Name": "Grand Theft Auto",
         "Console": "PlayStation 1",
@@ -154,7 +154,7 @@
     },
     {
         "EmulatorId": "duckstation",
-        "GamePath": "C:\\Users\\samco\\Documents\\Game Library\\Playstation 1\\Grand Theft Auto 2\\Grand Theft Auto 2.bin",
+        "GamePath": "C:\\Game Library\\Playstation 1\\Grand Theft Auto 2\\Grand Theft Auto 2.bin",
         "GameType": "Emulated",
         "Name": "Grand Theft Auto 2",
         "Console": "PlayStation 1",
@@ -163,7 +163,7 @@
     },
     {
         "EmulatorId": "pcsx2",
-        "GamePath": "C:\\Users\\samco\\Documents\\Game Library\\Playstation 2\\Grand Theft Auto III\\Grand Theft Auto III.iso",
+        "GamePath": "C:\\Game Library\\Playstation 2\\Grand Theft Auto III\\Grand Theft Auto III.iso",
         "GameType": "Emulated",
         "Name": "Grand Theft Auto III",
         "Console": "PlayStation 2",
@@ -172,7 +172,7 @@
     },
     {
         "EmulatorId": "pcsx2",
-        "GamePath": "C:\\Users\\samco\\Documents\\Game Library\\Playstation 2\\Grand Theft Auto - Vice City\\Grand Theft Auto - Vice City.iso",
+        "GamePath": "C:\\Game Library\\Playstation 2\\Grand Theft Auto - Vice City\\Grand Theft Auto - Vice City.iso",
         "GameType": "Emulated",
         "Name": "Grand Theft Auto - Vice City",
         "Console": "PlayStation 2",
@@ -181,7 +181,7 @@
     },
     {
         "EmulatorId": "pcsx2",
-        "GamePath": "C:\\Users\\samco\\Documents\\Game Library\\Playstation 2\\Grand Theft Auto - San Andreas\\Grand Theft Auto - San Andreas.iso",
+        "GamePath": "C:\\Game Library\\Playstation 2\\Grand Theft Auto - San Andreas\\Grand Theft Auto - San Andreas.iso",
         "GameType": "Emulated",
         "Name": "Grand Theft Auto - San Andreas",
         "Console": "PlayStation 2",
@@ -190,7 +190,7 @@
     },
     {
         "EmulatorId": "rpcs3",
-        "FolderPath": "C:\\Users\\samco\\Documents\\Game Library\\Playstation 3\\Grand Theft Auto IV",
+        "FolderPath": "C:\\Game Library\\Playstation 3\\Grand Theft Auto IV",
         "GameType": "FolderBased",
         "Name": "Grand Theft Auto IV",
         "Console": "PlayStation 3",
@@ -199,7 +199,7 @@
     },
     {
         "EmulatorId": "rpcs3",
-        "FolderPath": "C:\\Users\\samco\\Documents\\Game Library\\Playstation 3\\Grand Theft Auto V",
+        "FolderPath": "C:\\Game Library\\Playstation 3\\Grand Theft Auto V",
         "GameType": "FolderBased",
         "Name": "Grand Theft Auto V",
         "Console": "PlayStation 3",

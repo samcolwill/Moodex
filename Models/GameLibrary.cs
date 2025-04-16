@@ -1,118 +1,80 @@
-using System.IO;
+﻿using System.IO;
 using System.Text.Json;
-using System.Linq;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 
 namespace SamsGameLauncher.Models
 {
     public class GameLibrary
     {
+        // Backing collections for emulators and games
         public List<Emulator> Emulators { get; set; } = new();
         public ObservableCollection<GameBase> Games { get; set; } = new();
 
+        // Load from JSON files and wire up emulator references
         public void LoadData(string emulatorPath, string gamePath)
         {
-            // Load emulators
+            // Read and deserialize emulators.json
             string emuJson = File.ReadAllText(emulatorPath);
-            Emulators = JsonSerializer.Deserialize<List<Emulator>>(emuJson) ?? new List<Emulator>();
+            Emulators = JsonSerializer.Deserialize<List<Emulator>>(emuJson)
+                        ?? new List<Emulator>();
 
-            // Load games
+            // Read and deserialize games.json using our custom converter
             string gameJson = File.ReadAllText(gamePath);
             var options = new JsonSerializerOptions();
             options.Converters.Add(new GameJsonConverter());
-            var loadedGames = JsonSerializer.Deserialize<List<GameBase>>(gameJson, options) ?? new List<GameBase>();
+            var loadedGames = JsonSerializer
+                .Deserialize<List<GameBase>>(gameJson, options)
+                ?? new List<GameBase>();
+
+            // Populate the ObservableCollection for binding
             Games = new ObservableCollection<GameBase>(loadedGames);
 
-            // Link emulators to emulated games
-            foreach (var game in Games.OfType<EmulatedGame>())
-            {
-                game.Emulator = Emulators.FirstOrDefault(e => e.Id == game.EmulatorId);
-            }
-            foreach (var game in Games.OfType<FolderBasedGame>())
-            {
-                game.Emulator = Emulators.FirstOrDefault(e => e.Id == game.EmulatorId);
-            }
+            // For each emulated game, find its Emulator by ID
+            foreach (var emGame in Games.OfType<EmulatedGame>())
+                emGame.Emulator = Emulators.FirstOrDefault(e => e.Id == emGame.EmulatorId);
+
+            // For each folder‑based game, do the same
+            foreach (var fbGame in Games.OfType<FolderBasedGame>())
+                fbGame.Emulator = Emulators.FirstOrDefault(e => e.Id == fbGame.EmulatorId);
         }
 
+        // Ensure JSON files exist (copy from /dev or create empty), then load
         public void InitializeAndLoadData(string dataFolder)
         {
-            // Ensure the data folder exists
             if (!Directory.Exists(dataFolder))
-            {
                 Directory.CreateDirectory(dataFolder);
-            }
 
-            // Define paths for the runtime JSON files
             string emulatorPath = Path.Combine(dataFolder, "emulators.json");
             string gamePath = Path.Combine(dataFolder, "games.json");
 
-            // Ensure emulators.json exists
-            if (!File.Exists(emulatorPath))
+            // Local helper to copy from a dev file or create an empty array
+            void EnsureFile(string targetPath, string devFileName)
             {
+                if (File.Exists(targetPath))
+                    return;
+
                 string basePath = AppDomain.CurrentDomain.BaseDirectory;
-                // dev_emulators.json is expected in bin\Debug\netXX-windows\dev\dev_emulators.json
-                string devEmulatorPath = Path.Combine(basePath, "dev", "dev_emulators.json");
-                Debug.WriteLine($"[InitializeAndLoadData] Looking for dev_emulators.json at: {devEmulatorPath}");
+                string devPath = Path.Combine(basePath, "dev", devFileName);
 
-                if (File.Exists(devEmulatorPath))
+                if (File.Exists(devPath) && new FileInfo(devPath).Length > 0)
                 {
-                    long fileLength = new FileInfo(devEmulatorPath).Length;
-                    Debug.WriteLine($"[InitializeAndLoadData] Found dev_emulators.json with length: {fileLength} bytes");
-
-                    if (fileLength > 0)
-                    {
-                        File.Copy(devEmulatorPath, emulatorPath);
-                        Debug.WriteLine($"[InitializeAndLoadData] Copied dev_emulators.json to {emulatorPath}");
-                    }
-                    else
-                    {
-                        Debug.WriteLine("[InitializeAndLoadData] dev_emulators.json is empty. Creating empty emulators.json.");
-                        File.WriteAllText(emulatorPath, "[]");
-                    }
+                    File.Copy(devPath, targetPath);
                 }
                 else
                 {
-                    Debug.WriteLine("[InitializeAndLoadData] dev_emulators.json not found. Creating empty emulators.json.");
-                    File.WriteAllText(emulatorPath, "[]");
+                    // Create an empty JSON array if dev file missing or empty
+                    File.WriteAllText(targetPath, "[]");
                 }
             }
 
-            // Ensure games.json exists
-            if (!File.Exists(gamePath))
-            {
-                string basePath = AppDomain.CurrentDomain.BaseDirectory;
-                // dev_games.json is expected in bin\Debug\netXX-windows\dev\dev_games.json
-                string devGamePath = Path.Combine(basePath, "dev", "dev_games.json");
-                Debug.WriteLine($"[InitializeAndLoadData] Looking for dev_games.json at: {devGamePath}");
+            EnsureFile(emulatorPath, "dev_emulators.json");
+            EnsureFile(gamePath, "dev_games.json");
 
-                if (File.Exists(devGamePath))
-                {
-                    long fileLength = new FileInfo(devGamePath).Length;
-                    Debug.WriteLine($"[InitializeAndLoadData] Found dev_games.json with length: {fileLength} bytes");
-
-                    if (fileLength > 0)
-                    {
-                        File.Copy(devGamePath, gamePath);
-                        Debug.WriteLine($"[InitializeAndLoadData] Copied dev_games.json to {gamePath}");
-                    }
-                    else
-                    {
-                        Debug.WriteLine("[InitializeAndLoadData] dev_games.json is empty. Creating empty games.json.");
-                        File.WriteAllText(gamePath, "[]");
-                    }
-                }
-                else
-                {
-                    Debug.WriteLine("[InitializeAndLoadData] dev_games.json not found. Creating empty games.json.");
-                    File.WriteAllText(gamePath, "[]");
-                }
-            }
-
-            // Finally, load the data
+            // Now load from disk
             LoadData(emulatorPath, gamePath);
         }
 
+        // Serialize and save the Games collection to disk
         public void SaveGames(string gamePath)
         {
             var options = new JsonSerializerOptions { WriteIndented = true };
@@ -121,9 +83,11 @@ namespace SamsGameLauncher.Models
             File.WriteAllText(gamePath, gameJson);
         }
 
+        // Serialize and save the Emulators list to disk
         public void SaveEmulators(string emulatorPath)
         {
-            string emuJson = JsonSerializer.Serialize(Emulators, new JsonSerializerOptions { WriteIndented = true });
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            string emuJson = JsonSerializer.Serialize(Emulators, options);
             File.WriteAllText(emulatorPath, emuJson);
         }
     }

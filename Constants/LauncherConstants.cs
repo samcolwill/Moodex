@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-
-namespace SamsGameLauncher.Constants
+﻿namespace SamsGameLauncher.Constants
 {
     public static class LauncherConstants
     {
-        public static List<string> Consoles { get; } = new List<string>
+        // Available console platforms
+        public static readonly IReadOnlyList<string> Consoles = new[]
         {
             "PC",
             "PlayStation 1",
@@ -15,7 +14,8 @@ namespace SamsGameLauncher.Constants
             "Game Boy Advance"
         };
 
-        public static List<string> Genres { get; } = new List<string>
+        // Supported game genres
+        public static readonly IReadOnlyList<string> Genres = new[]
         {
             "Action",
             "Adventure",

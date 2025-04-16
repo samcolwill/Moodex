@@ -1,0 +1,161 @@
+﻿<Window x:Class="SamsGameLauncher.Views.MainWindow"
+        x:Name="RootWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Sam's Game Launcher"
+        Height="600" Width="800"
+        WindowState="Maximized"
+        Icon="/SamsGameLauncher;component/Assets/launcher.ico"
+        Background="#1e1e1e">
+
+    <DockPanel>
+        <!-- ─── Toolbar / Menu ─────────────────────────────────────────── -->
+        <Menu DockPanel.Dock="Top" Background="#353535" Foreground="White">
+            <MenuItem Header="System">
+                <!-- Commands bound to your ViewModel -->
+                <MenuItem Header="Add Emulator…" Command="{Binding AddEmuCommand}" />
+                <MenuItem Header="Add Game…"     Command="{Binding AddGameCommand}" />
+            </MenuItem>
+            <MenuItem Header="Settings"/>
+            <MenuItem Header="Help"/>
+        </Menu>
+
+        <!-- ─── Search & 'Group By' ─────────────────────────────────────── -->
+        <Grid DockPanel.Dock="Top"
+              Background="#1e1e1e"
+              Margin="0,10,0,0"
+              HorizontalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="20"/>
+                <!-- spacer -->
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Search box updates ViewModel.SearchText -->
+            <TextBox Grid.Column="0"
+                     Width="200" Height="24"
+                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                     Foreground="White"
+                     Background="#2a2a2a"
+                     Margin="5"/>
+
+            <!-- 'Group By' selector -->
+            <StackPanel Grid.Column="2"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center"
+                        Margin="5">
+                <TextBlock Text="Group By:"
+                           Foreground="White"
+                           VerticalAlignment="Center"
+                           Margin="0,0,5,0"/>
+                <ComboBox Width="120" Height="24"
+                          SelectedValue="{Binding GroupBy, UpdateSourceTrigger=PropertyChanged}"
+                          SelectedValuePath="Content">
+                    <ComboBoxItem Content="Console"/>
+                    <ComboBoxItem Content="Genre"/>
+                    <ComboBoxItem Content="Year"/>
+                </ComboBox>
+            </StackPanel>
+        </Grid>
+
+        <!-- ─── Game List ───────────────────────────────────────────────── -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding GamesView}">
+                <!-- Group headers (Console/Genre/Year) -->
+                <ItemsControl.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"
+                                           FontSize="16" FontWeight="Bold"
+                                           Foreground="White"
+                                           Margin="10,20,10,10"/>
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </ItemsControl.GroupStyle>
+
+                <!-- Wrap items in rows -->
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <!-- Each game tile -->
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Width="150"
+                                    Margin="10"
+                                    Cursor="Hand">
+                            <!-- left-click runs the game -->
+                            <StackPanel.InputBindings>
+                                <MouseBinding Gesture="LeftClick"
+                                              Command="{Binding DataContext.RunCommand,
+                                                Source={x:Reference RootWindow}}"
+                                              CommandParameter="{Binding}"/>
+                            </StackPanel.InputBindings>
+
+                            <!-- cover art -->
+                            <Border x:Name="ImageBorder"
+                                    Width="150" Height="200"
+                                    Background="Black">
+                                <Image Source="{Binding GameCoverUri}"
+                                       Stretch="Fill"
+                                       HorizontalAlignment="Stretch"
+                                       VerticalAlignment="Stretch"/>
+                            </Border>
+
+                            <!-- game title -->
+                            <TextBlock Text="{Binding Name}"
+                                       Foreground="White"
+                                       FontSize="12"
+                                       Margin="5,5,5,0"
+                                       TextAlignment="Center"
+                                       TextWrapping="Wrap"/>
+
+                            <!-- right-click context menu -->
+                            <StackPanel.ContextMenu>
+                                <ContextMenu Background="#2a2a2a" Foreground="White">
+                                    <MenuItem Header="Run"
+                                              Command="{Binding DataContext.RunCommand,
+                                                Source={x:Reference RootWindow}}"
+                                              CommandParameter="{Binding PlacementTarget.DataContext,
+                                                RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                    <MenuItem Header="Edit"
+                                              Command="{Binding DataContext.EditGameCommand,
+                                                Source={x:Reference RootWindow}}"
+                                              CommandParameter="{Binding PlacementTarget.DataContext,
+                                                RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                    <MenuItem Header="Delete"
+                                              Command="{Binding DataContext.DeleteGameCommand,
+                                                Source={x:Reference RootWindow}}"
+                                              CommandParameter="{Binding PlacementTarget.DataContext,
+                                                RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                </ContextMenu>
+                            </StackPanel.ContextMenu>
+                        </StackPanel>
+
+                        <!-- adjust cover size based on Console -->
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding Console}" Value="PlayStation 1">
+                                <Setter TargetName="ImageBorder" Property="Width" Value="150"/>
+                                <Setter TargetName="ImageBorder" Property="Height" Value="150"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Console}" Value="PlayStation 3">
+                                <Setter TargetName="ImageBorder" Property="Width" Value="150"/>
+                                <Setter TargetName="ImageBorder" Property="Height" Value="180"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Console}" Value="Game Boy Advance">
+                                <Setter TargetName="ImageBorder" Property="Width" Value="150"/>
+                                <Setter TargetName="ImageBorder" Property="Height" Value="150"/>
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </DockPanel>
+</Window>
