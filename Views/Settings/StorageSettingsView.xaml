@@ -1,0 +1,32 @@
+﻿<UserControl
+  x:Class="SamsGameLauncher.Views.Settings.StorageSettingsView"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:vm="clr-namespace:SamsGameLauncher.ViewModels.Settings">
+
+    <StackPanel Margin="10" VerticalAlignment="Top">
+        <TextBlock Text="Storage" FontWeight="Bold" Margin="0,0,0,8"/>
+
+        <!-- Which library is primary -->
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+            <TextBlock Text="Primary Library:" Width="120" VerticalAlignment="Center"/>
+            <ComboBox Width="150"
+                      ItemsSource="{Binding Libraries}"
+                      SelectedItem="{Binding PrimaryLibrary}" />
+        </StackPanel>
+
+        <!-- Active (fast) library -->
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+            <TextBlock Text="Active Path:" Width="120" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding ActiveLibraryPath, UpdateSourceTrigger=PropertyChanged}"
+                     Width="300"/>
+        </StackPanel>
+
+        <!-- Archive (cold) library -->
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+            <TextBlock Text="Archive Path:" Width="120" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding ArchiveLibraryPath, UpdateSourceTrigger=PropertyChanged}"
+                     Width="300"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

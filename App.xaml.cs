@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SamsGameLauncher.Services;
 using SamsGameLauncher.ViewModels;
+using SamsGameLauncher.ViewModels.Settings;
 using SamsGameLauncher.Views;
-using System;
 using System.Windows;
 
 namespace SamsGameLauncher
@@ -16,16 +16,24 @@ namespace SamsGameLauncher
             base.OnStartup(e);
 
             var services = new ServiceCollection();
+
             // register the dialog service
             services.AddSingleton<IDialogService, WpfDialogService>();
+            services.AddSingleton<ISettingsService, JsonSettingsService>();
+            services.AddSingleton<IWindowPlacementService, WindowPlacementService>();
+            services.AddSingleton<IFileMoveService, FileMoveService>();
+
             // register your VM
             services.AddTransient<MainWindowViewModel>();
-            // (and any other VMs you resolve manually…)
+            services.AddTransient<MainWindow>();
+            services.AddTransient<SettingsWindowViewModel>();
+            services.AddTransient<SettingsWindow>();
 
+            // (and any other VMs you resolve manually…)
             _provider = services.BuildServiceProvider();
 
             // set up the main window
-            var mainWin = new MainWindow();
+            var mainWin = _provider.GetRequiredService<MainWindow>();
             mainWin.DataContext = _provider.GetRequiredService<MainWindowViewModel>();
             mainWin.Show();
         }

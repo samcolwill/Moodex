@@ -1,0 +1,48 @@
+﻿<Window x:Class="SamsGameLauncher.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:SamsGameLauncher.ViewModels"
+        xmlns:vmSettings="clr-namespace:SamsGameLauncher.ViewModels.Settings"
+        xmlns:views="clr-namespace:SamsGameLauncher.Views.Settings"
+        Title="Settings"
+        Height="600" Width="800">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <!-- 20% / 80% split -->
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="8*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- LEFT: menu of sections -->
+        <ListBox Grid.Column="0"
+                 ItemsSource="{Binding Sections}"
+                 SelectedItem="{Binding SelectedSection}"
+                 DisplayMemberPath="Name"
+                 Margin="5"/>
+
+        <!-- RIGHT: hosts the selected section’s UserControl -->
+        <ContentControl Grid.Column="1"
+                        Content="{Binding SelectedSection.ViewModel}"
+                        Margin="10">
+            <ContentControl.Resources>
+                <!-- whenever the VM is InterfaceSettingsViewModel, load this view -->
+                <DataTemplate DataType="{x:Type vmSettings:GeneralSettingsViewModel}">
+                    <views:GeneralSettingsView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vmSettings:InterfaceSettingsViewModel}">
+                    <views:InterfaceSettingsView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vmSettings:LibrarySettingsViewModel}">
+                    <views:LibrarySettingsView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vmSettings:StorageSettingsViewModel}">
+                    <views:StorageSettingsView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vmSettings:ControlsSettingsViewModel}">
+                    <views:ControlsSettingsView/>
+                </DataTemplate>
+            </ContentControl.Resources>
+        </ContentControl>
+    </Grid>
+</Window>

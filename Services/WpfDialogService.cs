@@ -1,10 +1,22 @@
-﻿using SamsGameLauncher.Models;
+﻿using System.Runtime.Versioning;
+using Microsoft.Extensions.DependencyInjection;
+using SamsGameLauncher.Models;
+using SamsGameLauncher.ViewModels;
+using SamsGameLauncher.ViewModels.Settings;
 using SamsGameLauncher.Views;
 
 namespace SamsGameLauncher.Services
 {
     public class WpfDialogService : IDialogService
     {
+        private readonly IServiceProvider _provider;
+
+        // inject the container
+        public WpfDialogService(IServiceProvider provider)
+        {
+            _provider = provider;
+        }
+
         public GameBase? ShowAddGame(IEnumerable<Emulator> emulators)
         {
             // Show AddGameWindow and pass in available emulators
@@ -15,6 +27,7 @@ namespace SamsGameLauncher.Services
                 : null;
         }
 
+        [SupportedOSPlatform("windows")]
         public GameBase? ShowEditGame(GameBase game, IEnumerable<Emulator> emulators)
         {
             // Show EditGameWindow for the selected game
@@ -33,6 +46,22 @@ namespace SamsGameLauncher.Services
             return win.ShowDialog() == true
                 ? win.NewEmulator
                 : null;
+        }
+
+        public void ShowSettings(string sectionName)
+        {
+            // 1) resolve the VM & Window
+            var vm = _provider.GetRequiredService<SettingsWindowViewModel>();
+            var win = _provider.GetRequiredService<SettingsWindow>();
+
+            // 2) pick the right section
+            var found = vm.Sections.FirstOrDefault(s => s.Name == sectionName);
+            if (found != null) vm.SelectedSection = found;
+
+            // 3) show
+            win.DataContext = vm;
+            win.Owner = System.Windows.Application.Current.MainWindow;
+            win.ShowDialog();
         }
     }
 }

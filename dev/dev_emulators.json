@@ -22,5 +22,11 @@
         "Name": "RPCS3",
         "ExecutablePath": "C:\\Users\\samco\\Documents\\Emulators\\RPCS3\\rpcs3.exe",
         "DefaultArguments": ""
+    },
+    {
+        "Id": "sudachi",
+        "Name": "sudachi",
+        "ExecutablePath": "C:\\Users\\samco\\Documents\\Emulators\\Sudachi\\sudachi.exe",
+        "DefaultArguments": "-f -g \"{RomPath}\""
     }
 ]

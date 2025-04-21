@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using SamsGameLauncher.Models;
 using SamsGameLauncher.Commands;
 using SamsGameLauncher.Constants;
+using System.Runtime.Versioning;
 
 namespace SamsGameLauncher.ViewModels
 {
@@ -90,6 +91,7 @@ namespace SamsGameLauncher.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
 
+        [SupportedOSPlatform("windows")]
         public EditGameWindowViewModel(GameBase gameToEdit, IEnumerable<Emulator> availableEmulators)
         {
             _originalGame = gameToEdit;
@@ -131,6 +133,7 @@ namespace SamsGameLauncher.ViewModels
             }
         }
 
+        [SupportedOSPlatform("windows")]
         private void ExecuteBrowse(Window? owner)
         {
             if (_originalGame is FolderBasedGame)

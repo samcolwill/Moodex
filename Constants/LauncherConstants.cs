@@ -11,7 +11,8 @@
             "PlayStation 3",
             "Game Boy",
             "Game Boy Color",
-            "Game Boy Advance"
+            "Game Boy Advance",
+            "Nintendo Switch"
         };
 
         // Supported game genres

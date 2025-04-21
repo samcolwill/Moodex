@@ -28,7 +28,7 @@
     },
     {
         "EmulatorId": "duckstation",
-        "GamePath": "C:\\Game Library\\Playstation 1\\Metal Gear Solid\\Metal Gear Solid.bin",
+        "GamePath": "M:\\Game Library\\PlayStation 1\\Metal Gear Solid\\Metal Gear Solid.bin",
         "GameType": "Emulated",
         "Name": "Metal Gear Solid",
         "Console": "PlayStation 1",
@@ -46,7 +46,7 @@
     },
     {
         "EmulatorId": "pcsx2",
-        "GamePath": "C:\\Game Library\\Playstation 2\\Ratchet \u0026 Clank - Going Commando\\Ratchet \u0026 Clank - Going Commando.iso",
+        "GamePath": "M:\\Game Library\\PlayStation 2\\Ratchet \u0026 Clank - Going Commando\\Ratchet \u0026 Clank - Going Commando.iso",
         "GameType": "Emulated",
         "Name": "Ratchet \u0026 Clank - Going Commando",
         "Console": "PlayStation 2",
@@ -55,7 +55,7 @@
     },
     {
         "EmulatorId": "rpcs3",
-        "FolderPath": "C:\\Game Library\\Playstation 3\\Killzone",
+        "FolderPath": "M:\\Game Library\\PlayStation 3\\Killzone",
         "GameType": "FolderBased",
         "Name": "Killzone",
         "Console": "PlayStation 3",
@@ -64,7 +64,7 @@
     },
     {
         "EmulatorId": "rpcs3",
-        "FolderPath": "C:\\Game Library\\Playstation 3\\Killzone 2",
+        "FolderPath": "M:\\Game Library\\PlayStation 3\\Killzone 2",
         "GameType": "FolderBased",
         "Name": "Killzone 2",
         "Console": "PlayStation 3",
@@ -73,7 +73,7 @@
     },
     {
         "EmulatorId": "rpcs3",
-        "FolderPath": "C:\\Game Library\\Playstation 3\\Killzone 3",
+        "FolderPath": "M:\\Game Library\\Playstation 3\\Killzone 3",
         "GameType": "FolderBased",
         "Name": "Killzone 3",
         "Console": "PlayStation 3",
@@ -82,7 +82,7 @@
     },
     {
         "EmulatorId": "pcsx2",
-        "GamePath": "C:\\Game Library\\Playstation 2\\Disney\u0027s Extreme Skate Adventure\\Disney\u0027s Extreme Skate Adventure.iso",
+        "GamePath": "C:\\Game Library\\PlayStation 2\\Disney\u0027s Extreme Skate Adventure\\Disney\u0027s Extreme Skate Adventure.iso",
         "GameType": "Emulated",
         "Name": "Disney\u0027s Extreme Skate Adventure",
         "Console": "PlayStation 2",
@@ -100,7 +100,7 @@
     },
     {
         "EmulatorId": "pcsx2",
-        "GamePath": "C:\\Game Library\\Playstation 2\\Crash Bandicoot - The Wrath of Cortex\\Crash Bandicoot - The Wrath of Cortex.bin",
+        "GamePath": "M:\\Game Library\\PlayStation 2\\Crash Bandicoot - The Wrath of Cortex\\Crash Bandicoot - The Wrath of Cortex.bin",
         "GameType": "Emulated",
         "Name": "Crash Bandicoot - The Wrath of Cortex",
         "Console": "PlayStation 2",
@@ -109,7 +109,7 @@
     },
     {
         "EmulatorId": "duckstation",
-        "GamePath": "C:\\Game Library\\Playstation 1\\Tony Hawk\u0027s Pro Skater 2\\Tony Hawk\u0027s Pro Skater 2.bin",
+        "GamePath": "M:\\Game Library\\PlayStation 1\\Tony Hawk\u0027s Pro Skater 2\\Tony Hawk\u0027s Pro Skater 2.bin",
         "GameType": "Emulated",
         "Name": "Tony Hawk\u0027s Pro Skater 2",
         "Console": "PlayStation 1",
@@ -118,7 +118,7 @@
     },
     {
         "EmulatorId": "duckstation",
-        "GamePath": "C:\\Game Library\\Playstation 1\\Crash Bandicoot\\Crash Bandicoot.bin",
+        "GamePath": "M:\\Game Library\\PlayStation 1\\Crash Bandicoot\\Crash Bandicoot.bin",
         "GameType": "Emulated",
         "Name": "Crash Bandicoot",
         "Console": "PlayStation 1",
@@ -127,7 +127,7 @@
     },
     {
         "EmulatorId": "duckstation",
-        "GamePath": "C:\\Game Library\\Playstation 1\\Crash Bandicoot 2 - Cortex Strikes Back\\Crash Bandicoot 2 - Cortex Strikes Back.bin",
+        "GamePath": "M:\\Game Library\\PlayStation 1\\Crash Bandicoot 2 - Cortex Strikes Back\\Crash Bandicoot 2 - Cortex Strikes Back.bin",
         "GameType": "Emulated",
         "Name": "Crash Bandicoot 2 - Cortex Strikes Back",
         "Console": "PlayStation 1",
@@ -136,7 +136,7 @@
     },
     {
         "EmulatorId": "duckstation",
-        "GamePath": "C:\\Game Library\\Playstation 1\\MediEval\\MediEvil.cue",
+        "GamePath": "M:\\Game Library\\PlayStation 1\\MediEvil\\MediEvil.cue",
         "GameType": "Emulated",
         "Name": "MediEvil",
         "Console": "PlayStation 1",
@@ -145,7 +145,7 @@
     },
     {
         "EmulatorId": "duckstation",
-        "GamePath": "C:\\Game Library\\Playstation 1\\Grand Theft Auto\\Grand Theft Auto.bin",
+        "GamePath": "M:\\Game Library\\PlayStation 1\\Grand Theft Auto\\Grand Theft Auto.bin",
         "GameType": "Emulated",
         "Name": "Grand Theft Auto",
         "Console": "PlayStation 1",
@@ -154,7 +154,7 @@
     },
     {
         "EmulatorId": "duckstation",
-        "GamePath": "C:\\Game Library\\Playstation 1\\Grand Theft Auto 2\\Grand Theft Auto 2.bin",
+        "GamePath": "M:\\Game Library\\PlayStation 1\\Grand Theft Auto 2\\Grand Theft Auto 2.bin",
         "GameType": "Emulated",
         "Name": "Grand Theft Auto 2",
         "Console": "PlayStation 1",
@@ -163,7 +163,7 @@
     },
     {
         "EmulatorId": "pcsx2",
-        "GamePath": "C:\\Game Library\\Playstation 2\\Grand Theft Auto III\\Grand Theft Auto III.iso",
+        "GamePath": "C:\\Game Library\\PlayStation 2\\Grand Theft Auto III\\Grand Theft Auto III.iso",
         "GameType": "Emulated",
         "Name": "Grand Theft Auto III",
         "Console": "PlayStation 2",
@@ -172,7 +172,7 @@
     },
     {
         "EmulatorId": "pcsx2",
-        "GamePath": "C:\\Game Library\\Playstation 2\\Grand Theft Auto - Vice City\\Grand Theft Auto - Vice City.iso",
+        "GamePath": "M:\\Game Library\\PlayStation 2\\Grand Theft Auto - Vice City\\Grand Theft Auto - Vice City.iso",
         "GameType": "Emulated",
         "Name": "Grand Theft Auto - Vice City",
         "Console": "PlayStation 2",
@@ -181,7 +181,7 @@
     },
     {
         "EmulatorId": "pcsx2",
-        "GamePath": "C:\\Game Library\\Playstation 2\\Grand Theft Auto - San Andreas\\Grand Theft Auto - San Andreas.iso",
+        "GamePath": "M:\\Game Library\\PlayStation 2\\Grand Theft Auto - San Andreas\\Grand Theft Auto - San Andreas.iso",
         "GameType": "Emulated",
         "Name": "Grand Theft Auto - San Andreas",
         "Console": "PlayStation 2",
@@ -190,7 +190,7 @@
     },
     {
         "EmulatorId": "rpcs3",
-        "FolderPath": "C:\\Game Library\\Playstation 3\\Grand Theft Auto IV",
+        "FolderPath": "M:\\Game Library\\PlayStation 3\\Grand Theft Auto IV",
         "GameType": "FolderBased",
         "Name": "Grand Theft Auto IV",
         "Console": "PlayStation 3",
@@ -199,11 +199,45 @@
     },
     {
         "EmulatorId": "rpcs3",
-        "FolderPath": "C:\\Game Library\\Playstation 3\\Grand Theft Auto V",
+        "FolderPath": "M:\\Game Library\\PlayStation 3\\Grand Theft Auto V",
         "GameType": "FolderBased",
         "Name": "Grand Theft Auto V",
         "Console": "PlayStation 3",
         "Genre": "Adventure",
         "ReleaseDate": "2013-09-17T00:00:00"
+    },
+    {
+        "ExePath": "C:\\Game Library\\PC\\Baldur\u0027s Gate 3\\bin\\bg3_dx11.exe",
+        "GameType": "Native",
+        "Name": "Baldur\u0027s Gate 3",
+        "Console": "PC",
+        "Genre": "Role-playing",
+        "ReleaseDate": "2023-08-03T00:00:00"
+    },
+    {
+        "EmulatorId": "sudachi",
+        "GamePath": "C:\\Game Library\\Nintendo Switch\\Mario Kart 8 Deluxe\\Mario Kart 8 Deluxe.nca",
+        "GameType": "Emulated",
+        "Name": "Mario Kart 8 Deluxe",
+        "Console": "Nintendo Switch",
+        "Genre": "Racing",
+        "ReleaseDate": "2019-04-27T00:00:00"
+    },
+    {
+        "ExePath": "C:\\Game Library\\PC\\Overcooked! 2\\Overcooked! 2.exe",
+        "GameType": "Native",
+        "Name": "Overcooked! 2",
+        "Console": "PC",
+        "Genre": "Simulation",
+        "ReleaseDate": "2018-08-07T00:00:00"
+    },
+    {
+        "EmulatorId": "duckstation",
+        "GamePath": "M:\\Game Library\\PlayStation 1\\Driver\\Driver.bin.ecm",
+        "GameType": "Emulated",
+        "Name": "Driver",
+        "Console": "PlayStation 1",
+        "Genre": "Racing",
+        "ReleaseDate": "1999-07-25T00:00:00"
     }
 ]

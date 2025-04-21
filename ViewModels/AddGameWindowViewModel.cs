@@ -92,12 +92,42 @@ namespace SamsGameLauncher.ViewModels
         }
 
         // UI state: whether each control is enabled
-        public bool IsGamePathEnabled { get; private set; }
-        public bool IsEmulatorEnabled { get; private set; }
-        public bool IsConsoleEnabled { get; private set; }
-        public bool IsGenreEnabled { get; private set; }
-        public bool IsReleaseDateEnabled { get; private set; }
-        public bool IsBrowseEnabled { get; private set; }
+        private bool _isGamePathEnabled;
+        public bool IsGamePathEnabled
+        {
+            get => _isGamePathEnabled;
+            private set { _isGamePathEnabled = value; RaisePropertyChanged(); }
+        }
+        private bool _isEmulatorEnabled;
+        public bool IsEmulatorEnabled
+        {
+            get => _isEmulatorEnabled;
+            private set { _isEmulatorEnabled = value; RaisePropertyChanged(); }
+        }
+        private bool _isConsoleEnabled;
+        public bool IsConsoleEnabled
+        {
+            get => _isConsoleEnabled;
+            private set { _isConsoleEnabled = value; RaisePropertyChanged(); }
+        }
+        private bool _isGenreEnabled;
+        public bool IsGenreEnabled
+        {
+            get => _isGenreEnabled;
+            private set { _isGenreEnabled = value; RaisePropertyChanged(); }
+        }
+        private bool _isReleaseDateEnabled;
+        public bool IsReleaseDateEnabled
+        {
+            get => _isReleaseDateEnabled;
+            private set { _isReleaseDateEnabled = value; RaisePropertyChanged(); }
+        }
+        private bool _isBrowseEnabled;
+        public bool IsBrowseEnabled
+        {
+            get => _isBrowseEnabled;
+            private set { _isBrowseEnabled = value; RaisePropertyChanged(); }
+        }
 
         // show/hide emulator controls for Native type
         private bool _showEmulator;
