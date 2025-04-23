@@ -6,11 +6,7 @@ using System.Diagnostics;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using SamsGameLauncher.Models;
-using SamsGameLauncher.Commands;
 using SamsGameLauncher.Services;
-using System.Numerics;
-using System.Windows.Forms;
-using SamsGameLauncher.Configuration;
 using MessageBox = System.Windows.MessageBox;
 using CommunityToolkit.Mvvm.Input;
 using SamsGameLauncher.Views;
@@ -50,9 +46,9 @@ namespace SamsGameLauncher.ViewModels
                 RaisePropertyChanged();
 
                 // Enable/disable commands based on whether a game is selected
-                ((SamsGameLauncher.Commands.RelayCommand)RunCommand).RaiseCanExecuteChanged();
-                ((SamsGameLauncher.Commands.RelayCommand)EditGameCommand).RaiseCanExecuteChanged();
-                ((SamsGameLauncher.Commands.RelayCommand)DeleteGameCommand).RaiseCanExecuteChanged();
+                RunCommand.NotifyCanExecuteChanged();
+                EditGameCommand.NotifyCanExecuteChanged();
+                DeleteGameCommand.NotifyCanExecuteChanged();
             }
         }
 
@@ -84,12 +80,12 @@ namespace SamsGameLauncher.ViewModels
         }
 
         // ──── Commands ─────────────────────────────────────────────────────
-        public ICommand RunCommand { get; }
-        public ICommand AddGameCommand { get; }
-        public ICommand EditGameCommand { get; }
-        public ICommand DeleteGameCommand { get; }
-        public ICommand AddEmulatorCommand { get; }
-        public ICommand ShowSettingsCommand { get; }
+        public IRelayCommand RunCommand { get; }
+        public IRelayCommand AddGameCommand { get; }
+        public IRelayCommand EditGameCommand { get; }
+        public IRelayCommand DeleteGameCommand { get; }
+        public IRelayCommand AddEmulatorCommand { get; }
+        public IRelayCommand ShowSettingsCommand { get; }
         public IAsyncRelayCommand ArchiveGameCommand { get; }
         public IAsyncRelayCommand ActivateGameCommand { get; }
 
@@ -137,40 +133,21 @@ namespace SamsGameLauncher.ViewModels
             ApplyFilter();
 
             // wire up commands
-            RunCommand = new SamsGameLauncher.Commands.RelayCommand(
-                o =>
-                {
-                    if (o is GameBase game) RunGame(game);
-                },
-                o => o is GameBase
-            );
-            AddGameCommand = new SamsGameLauncher.Commands.RelayCommand(_ => ExecuteAddGame());
-            EditGameCommand = new SamsGameLauncher.Commands.RelayCommand(
-                o =>
-                {
-                    if (o is GameBase game) ExecuteEditGame(game);
-                },
-                o => o is GameBase
-            );
-            DeleteGameCommand = new SamsGameLauncher.Commands.RelayCommand(
-                o =>
-                {
-                    if (o is GameBase game) ExecuteDeleteGame(game);
-                },
-                o => o is GameBase
-            );
-            AddEmulatorCommand = new SamsGameLauncher.Commands.RelayCommand(_ => ExecuteAddEmulator());
-            ShowSettingsCommand = new SamsGameLauncher.Commands.RelayCommand(p =>
+            RunCommand = new RelayCommand<GameBase>(RunGame, game => game is not null);
+            AddGameCommand = new RelayCommand(ExecuteAddGame);
+            EditGameCommand = new RelayCommand<GameBase>(ExecuteEditGame, game => game is not null);
+            DeleteGameCommand = new RelayCommand<GameBase>(ExecuteDeleteGame, game => game is not null);
+            AddEmulatorCommand = new RelayCommand(ExecuteAddEmulator);
+            ShowSettingsCommand = new RelayCommand<string?>(section =>
             {
-                if (p is string section)
-                    dialogs.ShowSettings(section);
+                if (!string.IsNullOrWhiteSpace(section))
+                {
+                    _dialogs.ShowSettings(section);
+                }
             });
-            ArchiveGameCommand = new AsyncRelayCommand<GameBase>(
-                async g => await MoveGameAsync(g, toArchive: true),
-                g => g != null);
-            ActivateGameCommand = new AsyncRelayCommand<GameBase>(
-                async g => await MoveGameAsync(g, toArchive: false),
-                g => g != null);
+            ArchiveGameCommand = new AsyncRelayCommand<GameBase>(g => MoveGameAsync(g, toArchive: true), g => g is not null);
+            ActivateGameCommand = new AsyncRelayCommand<GameBase>(g => MoveGameAsync(g, toArchive: false), g => g is not null);
+
             _fileMover = fileMover;
         }
 

@@ -8,7 +8,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using SamsGameLauncher.Configuration;
-using SamsGameLauncher.Commands;
 using SamsGameLauncher.Models;
 using SamsGameLauncher.Services;
 

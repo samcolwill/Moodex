@@ -37,7 +37,7 @@
     },
     {
         "EmulatorId": "mgba",
-        "GamePath": "C:\\Game Library\\Game Boy Advance\\Pokemon - Leaf Green\\Pokemon - Leaf Green.gba",
+        "GamePath": "M:\\Game Library\\Game Boy Advance\\Pokemon - Leaf Green\\Pokemon - Leaf Green.gba",
         "GameType": "Emulated",
         "Name": "Pokemon - Leaf Green",
         "Console": "Game Boy Advance",
@@ -163,7 +163,7 @@
     },
     {
         "EmulatorId": "pcsx2",
-        "GamePath": "C:\\Game Library\\PlayStation 2\\Grand Theft Auto III\\Grand Theft Auto III.iso",
+        "GamePath": "M:\\Game Library\\PlayStation 2\\Grand Theft Auto III\\Grand Theft Auto III.iso",
         "GameType": "Emulated",
         "Name": "Grand Theft Auto III",
         "Console": "PlayStation 2",
@@ -239,5 +239,22 @@
         "Console": "PlayStation 1",
         "Genre": "Racing",
         "ReleaseDate": "1999-07-25T00:00:00"
+    },
+    {
+        "EmulatorId": "rpcs3",
+        "FolderPath": "M:\\Game Library\\PlayStation 3\\Midnight Club - Los Angeles",
+        "GameType": "FolderBased",
+        "Name": "Midnight Club - Los Angeles",
+        "Console": "PlayStation 3",
+        "Genre": "Racing",
+        "ReleaseDate": "2008-10-08T00:00:00"
+    },
+    {
+        "ExePath": "M:\\Game Library\\PC\\Mass Effect 1 - Legendary Edition\\ME1.bat",
+        "GameType": "Native",
+        "Name": "Mass Effect 1 - Legendary Edition",
+        "Console": "PC",
+        "Genre": "Adventure",
+        "ReleaseDate": "2021-05-14T00:00:00"
     }
 ]

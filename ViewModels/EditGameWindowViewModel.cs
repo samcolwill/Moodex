@@ -1,65 +1,52 @@
-﻿using System.Windows;
-using System.Windows.Input;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using SamsGameLauncher.Models;
-using SamsGameLauncher.Commands;
-using SamsGameLauncher.Constants;
+using System.Linq;
 using System.Runtime.Versioning;
+using System.Windows;
+using CommunityToolkit.Mvvm.Input;                 // ✅ Toolkit commands
+using SamsGameLauncher.Constants;
+using SamsGameLauncher.Models;
 
 namespace SamsGameLauncher.ViewModels
 {
     public class EditGameWindowViewModel : BaseViewModel
     {
-        private readonly GameBase _originalGame;       // reference to update on save
+        private readonly GameBase _originalGame;
 
-        // backing fields
-        private string _name = string.Empty;
-        private string _gameFilePath = string.Empty;
+        // ───────────── backing fields ─────────────
+        private string _name = "";
+        private string _gameFilePath = "";
         private Emulator? _selectedEmulator;
-        private string _selectedConsole = string.Empty;
-        private string _selectedGenre = string.Empty;
+        private string _selectedConsole = "";
+        private string _selectedGenre = "";
         private DateTime _releaseDate;
         private bool _showEmulator;
 
-        // dropdown sources
+        // ───────────── dropdown sources ─────────────
         public ObservableCollection<Emulator> Emulators { get; }
         public IReadOnlyList<string> Consoles { get; }
         public IReadOnlyList<string> Genres { get; }
 
-        public string GameTypeName { get; }      // display only, e.g. "Emulated"
+        public string GameTypeName { get; }   // display-only
 
-        // bindable props
+        // ───────────── bindable props ─────────────
         public string Name
         {
             get => _name;
-            set
-            {
-                _name = value;
-                RaisePropertyChanged();
-                ((RelayCommand)SaveCommand).RaiseCanExecuteChanged();
-            }
+            set { _name = value; RaisePropertyChanged(); SaveCommand.NotifyCanExecuteChanged(); }
         }
 
         public string GameFilePath
         {
             get => _gameFilePath;
-            set
-            {
-                _gameFilePath = value;
-                RaisePropertyChanged();
-                ((RelayCommand)SaveCommand).RaiseCanExecuteChanged();
-            }
+            set { _gameFilePath = value; RaisePropertyChanged(); SaveCommand.NotifyCanExecuteChanged(); }
         }
 
         public Emulator? SelectedEmulator
         {
             get => _selectedEmulator;
-            set
-            {
-                _selectedEmulator = value;
-                RaisePropertyChanged();
-                ((RelayCommand)SaveCommand).RaiseCanExecuteChanged();
-            }
+            set { _selectedEmulator = value; RaisePropertyChanged(); SaveCommand.NotifyCanExecuteChanged(); }
         }
 
         public string SelectedConsole
@@ -86,13 +73,16 @@ namespace SamsGameLauncher.ViewModels
             private set { _showEmulator = value; RaisePropertyChanged(); }
         }
 
-        // UI commands
-        public ICommand BrowseCommand { get; }
-        public ICommand SaveCommand { get; }
-        public ICommand CancelCommand { get; }
+        // ───────────── commands (Toolkit) ─────────────
+        public IRelayCommand BrowseCommand { get; }
+        public IRelayCommand SaveCommand { get; }
+        public IRelayCommand CancelCommand { get; }
 
+        // ───────────── ctor ─────────────
         [SupportedOSPlatform("windows")]
-        public EditGameWindowViewModel(GameBase gameToEdit, IEnumerable<Emulator> availableEmulators)
+        public EditGameWindowViewModel(
+            GameBase gameToEdit,
+            IEnumerable<Emulator> availableEmulators)
         {
             _originalGame = gameToEdit;
 
@@ -100,19 +90,18 @@ namespace SamsGameLauncher.ViewModels
             Consoles = LauncherConstants.Consoles;
             Genres = LauncherConstants.Genres;
 
-            // initialize commands before setting properties
-            BrowseCommand = new RelayCommand(p => ExecuteBrowse(p as Window));
-            SaveCommand = new RelayCommand(p => ExecuteSave(p as Window), p => CanSave());
-            CancelCommand = new RelayCommand(p => (p as Window)?.Close());
+            // Toolkit commands
+            BrowseCommand = new RelayCommand<Window?>(ExecuteBrowse);
+            SaveCommand = new RelayCommand<Window?>(ExecuteSave, _ => CanSave());
+            CancelCommand = new RelayCommand<Window?>(w => w?.Close());
 
-            // populate common fields
+            // populate fields
             Name = gameToEdit.Name;
             SelectedConsole = gameToEdit.Console;
             SelectedGenre = gameToEdit.Genre;
             ReleaseDate = gameToEdit.ReleaseDate;
             GameTypeName = gameToEdit.GameType.ToString();
 
-            // subtype‐specific setup
             switch (gameToEdit)
             {
                 case EmulatedGame em:
@@ -133,39 +122,37 @@ namespace SamsGameLauncher.ViewModels
             }
         }
 
+        // ───────────── command bodies ─────────────
         [SupportedOSPlatform("windows")]
         private void ExecuteBrowse(Window? owner)
         {
             if (_originalGame is FolderBasedGame)
             {
-                var dlg = new System.Windows.Forms.FolderBrowserDialog();
-                if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                    GameFilePath = dlg.SelectedPath;
+                var fb = new System.Windows.Forms.FolderBrowserDialog();
+                if (fb.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    GameFilePath = fb.SelectedPath;
             }
             else
             {
-                var dlg = new Microsoft.Win32.OpenFileDialog { Filter = "All Files (*.*)|*.*" };
-                if (dlg.ShowDialog(owner) == true)
-                    GameFilePath = dlg.FileName;
+                var ofd = new Microsoft.Win32.OpenFileDialog { Filter = "All Files (*.*)|*.*" };
+                if (ofd.ShowDialog(owner) == true)
+                    GameFilePath = ofd.FileName;
             }
         }
 
         private bool CanSave()
         {
-            bool basic =
-                !string.IsNullOrWhiteSpace(Name) &&
-                !string.IsNullOrWhiteSpace(GameFilePath);
+            var basic = !string.IsNullOrWhiteSpace(Name) &&
+                        !string.IsNullOrWhiteSpace(GameFilePath);
 
-            // require emulator for Emulated type
-            if (GameTypeName.Equals("Emulated", StringComparison.OrdinalIgnoreCase))
-                return basic && SelectedEmulator != null;
-
-            return basic;
+            return GameTypeName.Equals("Emulated", StringComparison.OrdinalIgnoreCase)
+                   ? basic && SelectedEmulator != null
+                   : basic;
         }
 
         private void ExecuteSave(Window? owner)
         {
-            // update the original model instance
+            // update shared fields
             _originalGame.Name = Name;
             _originalGame.Console = SelectedConsole;
             _originalGame.Genre = SelectedGenre;
@@ -188,8 +175,7 @@ namespace SamsGameLauncher.ViewModels
                     break;
             }
 
-            // close dialog with success result
-            if (owner != null)
+            if (owner is not null)
             {
                 owner.DialogResult = true;
                 owner.Close();

@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using SamsGameLauncher.Models;
-using SamsGameLauncher.Commands;
+using CommunityToolkit.Mvvm.Input;
 
 namespace SamsGameLauncher.ViewModels
 {
@@ -23,7 +23,7 @@ namespace SamsGameLauncher.ViewModels
                 _id = value;
                 RaisePropertyChanged();
                 // update CanExecute for Save button
-                ((RelayCommand)SaveCommand).RaiseCanExecuteChanged();
+                SaveCommand.NotifyCanExecuteChanged();
             }
         }
 
@@ -35,7 +35,7 @@ namespace SamsGameLauncher.ViewModels
             {
                 _name = value;
                 RaisePropertyChanged();
-                ((RelayCommand)SaveCommand).RaiseCanExecuteChanged();
+                SaveCommand.NotifyCanExecuteChanged();
             }
         }
 
@@ -47,7 +47,7 @@ namespace SamsGameLauncher.ViewModels
             {
                 _executablePath = value;
                 RaisePropertyChanged();
-                ((RelayCommand)SaveCommand).RaiseCanExecuteChanged();
+                SaveCommand.NotifyCanExecuteChanged();
             }
         }
 
@@ -66,18 +66,18 @@ namespace SamsGameLauncher.ViewModels
         public Emulator? NewEmulator { get; private set; }
 
         // commands bound to buttons in the view
-        public ICommand BrowseCommand { get; }
-        public ICommand SaveCommand { get; }
-        public ICommand CancelCommand { get; }
+        public IRelayCommand BrowseCommand { get; }
+        public IRelayCommand SaveCommand { get; }
+        public IRelayCommand CancelCommand { get; }
 
         public AddEmulatorWindowViewModel()
         {
             // wire up Browse -> open file dialog
-            BrowseCommand = new RelayCommand(p => ExecuteBrowse(p as Window));
+            BrowseCommand = new RelayCommand<Window?>(ExecuteBrowse);
             // Save only enabled when required fields are non-empty
-            SaveCommand = new RelayCommand(p => ExecuteSave(p as Window), p => CanSave());
+            SaveCommand = new RelayCommand<Window?>(ExecuteSave, _ => CanSave());
             // Cancel simply closes the window
-            CancelCommand = new RelayCommand(p => (p as Window)?.Close());
+            CancelCommand = new RelayCommand<Window?>(w => w?.Close());
         }
 
         // opens OpenFileDialog for selecting the EXE
