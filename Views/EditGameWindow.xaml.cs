@@ -2,6 +2,7 @@
 using System.Runtime.Versioning;
 using System.Windows;
 using SamsGameLauncher.Models;
+using SamsGameLauncher.Services;
 using SamsGameLauncher.ViewModels;
 
 namespace SamsGameLauncher.Views
@@ -12,7 +13,10 @@ namespace SamsGameLauncher.Views
         public EditGameWindow(GameBase gameToEdit, List<Emulator> availableEmulators)
         {
             InitializeComponent();
-            DataContext = new EditGameWindowViewModel(gameToEdit, availableEmulators);
+
+            var settingsService = new JsonSettingsService();
+
+            DataContext = new EditGameWindowViewModel(gameToEdit, availableEmulators, settingsService);
         }
     }
 }

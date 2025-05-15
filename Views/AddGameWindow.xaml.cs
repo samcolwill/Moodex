@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using SamsGameLauncher.Models;
+using SamsGameLauncher.Services;
 using SamsGameLauncher.ViewModels;
 
 namespace SamsGameLauncher.Views
@@ -9,7 +10,10 @@ namespace SamsGameLauncher.Views
         public AddGameWindow(List<Emulator> availableEmulators)
         {
             InitializeComponent();
-            DataContext = new AddGameWindowViewModel(availableEmulators);
+
+            var settingsService = new JsonSettingsService();
+
+            DataContext = new AddGameWindowViewModel(availableEmulators, settingsService);
         }
         public GameBase? NewGame => (DataContext as AddGameWindowViewModel)?.NewGame;
     }

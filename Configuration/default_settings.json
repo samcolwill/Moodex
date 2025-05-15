@@ -5,5 +5,15 @@
     "ResolutionHeight": 1080,
     "SsdLibraryPath": "C:\\Game Library",
     "HddLibraryPath": "M:\\Game Library",
-    "DefaultStorage": 0
+    "DefaultStorage": 0,
+    "Consoles": [
+        "PC",
+        "PlayStation 1",
+        "PlayStation 2",
+        "PlayStation 3",
+        "Game Boy",
+        "Game Boy Color",
+        "Game Boy Advance",
+        "Nintendo Switch"
+    ]
 }

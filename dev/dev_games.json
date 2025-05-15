@@ -1,260 +1,573 @@
 [
-    {
-        "EmulatorId": "pcsx2",
-        "GamePath": "C:\\Game Library\\Playstation 2\\Need for Speed - Underground 2\\Need for Speed - Underground 2.iso",
-        "GameType": "Emulated",
-        "Name": "Need for Speed - Underground 2",
-        "Console": "PlayStation 2",
-        "Genre": "Racing",
-        "ReleaseDate": "2004-11-15T00:00:00"
-    },
-    {
-        "EmulatorId": "pcsx2",
-        "GamePath": "C:\\Game Library\\Playstation 2\\Ratchet \u0026 Clank\\Ratchet \u0026 Clank.iso",
-        "GameType": "Emulated",
-        "Name": "Ratchet \u0026 Clank",
-        "Console": "PlayStation 2",
-        "Genre": "Adventure",
-        "ReleaseDate": "2002-11-04T00:00:00"
-    },
-    {
-        "EmulatorId": "pcsx2",
-        "GamePath": "C:\\Game Library\\Playstation 2\\Harry Potter and the Chamber of Secrets\\Harry Potter and the Chamber of Secrets.bin",
-        "GameType": "Emulated",
-        "Name": "Harry Potter and the Chamber of Secrets",
-        "Console": "PlayStation 2",
-        "Genre": "Adventure",
-        "ReleaseDate": "2002-11-05T00:00:00"
-    },
-    {
-        "EmulatorId": "duckstation",
-        "GamePath": "M:\\Game Library\\PlayStation 1\\Metal Gear Solid\\Metal Gear Solid.bin",
-        "GameType": "Emulated",
-        "Name": "Metal Gear Solid",
-        "Console": "PlayStation 1",
-        "Genre": "Action",
-        "ReleaseDate": "1998-09-03T00:00:00"
-    },
-    {
-        "EmulatorId": "mgba",
-        "GamePath": "M:\\Game Library\\Game Boy Advance\\Pokemon - Leaf Green\\Pokemon - Leaf Green.gba",
-        "GameType": "Emulated",
-        "Name": "Pokemon - Leaf Green",
-        "Console": "Game Boy Advance",
-        "Genre": "Role-playing",
-        "ReleaseDate": "2004-01-29T00:00:00"
-    },
-    {
-        "EmulatorId": "pcsx2",
-        "GamePath": "M:\\Game Library\\PlayStation 2\\Ratchet \u0026 Clank - Going Commando\\Ratchet \u0026 Clank - Going Commando.iso",
-        "GameType": "Emulated",
-        "Name": "Ratchet \u0026 Clank - Going Commando",
-        "Console": "PlayStation 2",
-        "Genre": "Adventure",
-        "ReleaseDate": "2003-11-11T00:00:00"
-    },
-    {
-        "EmulatorId": "rpcs3",
-        "FolderPath": "M:\\Game Library\\PlayStation 3\\Killzone",
-        "GameType": "FolderBased",
-        "Name": "Killzone",
-        "Console": "PlayStation 3",
-        "Genre": "Shooter",
-        "ReleaseDate": "2012-10-24T00:00:00"
-    },
-    {
-        "EmulatorId": "rpcs3",
-        "FolderPath": "M:\\Game Library\\PlayStation 3\\Killzone 2",
-        "GameType": "FolderBased",
-        "Name": "Killzone 2",
-        "Console": "PlayStation 3",
-        "Genre": "Shooter",
-        "ReleaseDate": "2009-02-26T00:00:00"
-    },
-    {
-        "EmulatorId": "rpcs3",
-        "FolderPath": "M:\\Game Library\\Playstation 3\\Killzone 3",
-        "GameType": "FolderBased",
-        "Name": "Killzone 3",
-        "Console": "PlayStation 3",
-        "Genre": "Shooter",
-        "ReleaseDate": "2011-01-22T00:00:00"
-    },
-    {
-        "EmulatorId": "pcsx2",
-        "GamePath": "C:\\Game Library\\PlayStation 2\\Disney\u0027s Extreme Skate Adventure\\Disney\u0027s Extreme Skate Adventure.iso",
-        "GameType": "Emulated",
-        "Name": "Disney\u0027s Extreme Skate Adventure",
-        "Console": "PlayStation 2",
-        "Genre": "Sports",
-        "ReleaseDate": "2003-09-02T00:00:00"
-    },
-    {
-        "EmulatorId": "pcsx2",
-        "GamePath": "C:\\Game Library\\Playstation 2\\Need for Speed - Most Wanted (Black Edition)\\Need for Speed - Most Wanted (Black Edition).iso",
-        "GameType": "Emulated",
-        "Name": "Need for Speed - Most Wanted (Black Edition)",
-        "Console": "PlayStation 2",
-        "Genre": "Racing",
-        "ReleaseDate": "2005-09-24T00:00:00"
-    },
-    {
-        "EmulatorId": "pcsx2",
-        "GamePath": "M:\\Game Library\\PlayStation 2\\Crash Bandicoot - The Wrath of Cortex\\Crash Bandicoot - The Wrath of Cortex.bin",
-        "GameType": "Emulated",
-        "Name": "Crash Bandicoot - The Wrath of Cortex",
-        "Console": "PlayStation 2",
-        "Genre": "Platform",
-        "ReleaseDate": "2001-10-30T00:00:00"
-    },
-    {
-        "EmulatorId": "duckstation",
-        "GamePath": "M:\\Game Library\\PlayStation 1\\Tony Hawk\u0027s Pro Skater 2\\Tony Hawk\u0027s Pro Skater 2.bin",
-        "GameType": "Emulated",
-        "Name": "Tony Hawk\u0027s Pro Skater 2",
-        "Console": "PlayStation 1",
-        "Genre": "Sports",
-        "ReleaseDate": "1999-09-29T00:00:00"
-    },
-    {
-        "EmulatorId": "duckstation",
-        "GamePath": "M:\\Game Library\\PlayStation 1\\Crash Bandicoot\\Crash Bandicoot.bin",
-        "GameType": "Emulated",
-        "Name": "Crash Bandicoot",
-        "Console": "PlayStation 1",
-        "Genre": "Platform",
-        "ReleaseDate": "1996-09-09T00:00:00"
-    },
-    {
-        "EmulatorId": "duckstation",
-        "GamePath": "M:\\Game Library\\PlayStation 1\\Crash Bandicoot 2 - Cortex Strikes Back\\Crash Bandicoot 2 - Cortex Strikes Back.bin",
-        "GameType": "Emulated",
-        "Name": "Crash Bandicoot 2 - Cortex Strikes Back",
-        "Console": "PlayStation 1",
-        "Genre": "Platform",
-        "ReleaseDate": "1997-08-06T00:00:00"
-    },
-    {
-        "EmulatorId": "duckstation",
-        "GamePath": "M:\\Game Library\\PlayStation 1\\MediEvil\\MediEvil.cue",
-        "GameType": "Emulated",
-        "Name": "MediEvil",
-        "Console": "PlayStation 1",
-        "Genre": "Adventure",
-        "ReleaseDate": "1998-08-09T00:00:00"
-    },
-    {
-        "EmulatorId": "duckstation",
-        "GamePath": "M:\\Game Library\\PlayStation 1\\Grand Theft Auto\\Grand Theft Auto.bin",
-        "GameType": "Emulated",
-        "Name": "Grand Theft Auto",
-        "Console": "PlayStation 1",
-        "Genre": "Adventure",
-        "ReleaseDate": "1997-11-28T00:00:00"
-    },
-    {
-        "EmulatorId": "duckstation",
-        "GamePath": "M:\\Game Library\\PlayStation 1\\Grand Theft Auto 2\\Grand Theft Auto 2.bin",
-        "GameType": "Emulated",
-        "Name": "Grand Theft Auto 2",
-        "Console": "PlayStation 1",
-        "Genre": "Adventure",
-        "ReleaseDate": "1999-10-22T00:00:00"
-    },
-    {
-        "EmulatorId": "pcsx2",
-        "GamePath": "M:\\Game Library\\PlayStation 2\\Grand Theft Auto III\\Grand Theft Auto III.iso",
-        "GameType": "Emulated",
-        "Name": "Grand Theft Auto III",
-        "Console": "PlayStation 2",
-        "Genre": "Adventure",
-        "ReleaseDate": "2001-10-22T00:00:00"
-    },
-    {
-        "EmulatorId": "pcsx2",
-        "GamePath": "M:\\Game Library\\PlayStation 2\\Grand Theft Auto - Vice City\\Grand Theft Auto - Vice City.iso",
-        "GameType": "Emulated",
-        "Name": "Grand Theft Auto - Vice City",
-        "Console": "PlayStation 2",
-        "Genre": "Adventure",
-        "ReleaseDate": "2002-10-29T00:00:00"
-    },
-    {
-        "EmulatorId": "pcsx2",
-        "GamePath": "M:\\Game Library\\PlayStation 2\\Grand Theft Auto - San Andreas\\Grand Theft Auto - San Andreas.iso",
-        "GameType": "Emulated",
-        "Name": "Grand Theft Auto - San Andreas",
-        "Console": "PlayStation 2",
-        "Genre": "Adventure",
-        "ReleaseDate": "2004-10-26T00:00:00"
-    },
-    {
-        "EmulatorId": "rpcs3",
-        "FolderPath": "M:\\Game Library\\PlayStation 3\\Grand Theft Auto IV",
-        "GameType": "FolderBased",
-        "Name": "Grand Theft Auto IV",
-        "Console": "PlayStation 3",
-        "Genre": "Adventure",
-        "ReleaseDate": "2008-04-29T00:00:00"
-    },
-    {
-        "EmulatorId": "rpcs3",
-        "FolderPath": "M:\\Game Library\\PlayStation 3\\Grand Theft Auto V",
-        "GameType": "FolderBased",
-        "Name": "Grand Theft Auto V",
-        "Console": "PlayStation 3",
-        "Genre": "Adventure",
-        "ReleaseDate": "2013-09-17T00:00:00"
-    },
-    {
-        "ExePath": "C:\\Game Library\\PC\\Baldur\u0027s Gate 3\\bin\\bg3_dx11.exe",
-        "GameType": "Native",
-        "Name": "Baldur\u0027s Gate 3",
-        "Console": "PC",
-        "Genre": "Role-playing",
-        "ReleaseDate": "2023-08-03T00:00:00"
-    },
-    {
-        "EmulatorId": "sudachi",
-        "GamePath": "C:\\Game Library\\Nintendo Switch\\Mario Kart 8 Deluxe\\Mario Kart 8 Deluxe.nca",
-        "GameType": "Emulated",
-        "Name": "Mario Kart 8 Deluxe",
-        "Console": "Nintendo Switch",
-        "Genre": "Racing",
-        "ReleaseDate": "2019-04-27T00:00:00"
-    },
-    {
-        "ExePath": "C:\\Game Library\\PC\\Overcooked! 2\\Overcooked! 2.exe",
-        "GameType": "Native",
-        "Name": "Overcooked! 2",
-        "Console": "PC",
-        "Genre": "Simulation",
-        "ReleaseDate": "2018-08-07T00:00:00"
-    },
-    {
-        "EmulatorId": "duckstation",
-        "GamePath": "M:\\Game Library\\PlayStation 1\\Driver\\Driver.bin.ecm",
-        "GameType": "Emulated",
-        "Name": "Driver",
-        "Console": "PlayStation 1",
-        "Genre": "Racing",
-        "ReleaseDate": "1999-07-25T00:00:00"
-    },
-    {
-        "EmulatorId": "rpcs3",
-        "FolderPath": "M:\\Game Library\\PlayStation 3\\Midnight Club - Los Angeles",
-        "GameType": "FolderBased",
-        "Name": "Midnight Club - Los Angeles",
-        "Console": "PlayStation 3",
-        "Genre": "Racing",
-        "ReleaseDate": "2008-10-08T00:00:00"
-    },
-    {
-        "ExePath": "M:\\Game Library\\PC\\Mass Effect 1 - Legendary Edition\\ME1.bat",
-        "GameType": "Native",
-        "Name": "Mass Effect 1 - Legendary Edition",
-        "Console": "PC",
-        "Genre": "Adventure",
-        "ReleaseDate": "2021-05-14T00:00:00"
-    }
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "M:\\Game Library\\PlayStation 2\\Need for Speed - Underground 2\\Need for Speed - Underground 2.iso",
+    "GameType": "Emulated",
+    "Name": "Need for Speed - Underground 2",
+    "Console": "PlayStation 2",
+    "Genre": "Racing",
+    "ReleaseDate": "2004-11-15T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "C:\\Game Library\\Playstation 2\\Ratchet \u0026 Clank\\Ratchet \u0026 Clank.iso",
+    "GameType": "Emulated",
+    "Name": "Ratchet \u0026 Clank",
+    "Console": "PlayStation 2",
+    "Genre": "Adventure",
+    "ReleaseDate": "2002-11-04T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "M:\\Game Library\\PlayStation 2\\Harry Potter and the Chamber of Secrets\\Harry Potter and the Chamber of Secrets.bin",
+    "GameType": "Emulated",
+    "Name": "Harry Potter and the Chamber of Secrets",
+    "Console": "PlayStation 2",
+    "Genre": "Adventure",
+    "ReleaseDate": "2002-11-05T00:00:00"
+  },
+  {
+    "EmulatorId": "duckstation",
+    "GamePath": "M:\\Game Library\\PlayStation 1\\Metal Gear Solid\\Metal Gear Solid.bin",
+    "GameType": "Emulated",
+    "Name": "Metal Gear Solid",
+    "Console": "PlayStation 1",
+    "Genre": "Action",
+    "ReleaseDate": "1998-09-03T00:00:00"
+  },
+  {
+    "EmulatorId": "rpcs3",
+    "FolderPath": "M:\\Game Library\\PlayStation 3\\Killzone",
+    "GameType": "FolderBased",
+    "Name": "Killzone",
+    "Console": "PlayStation 3",
+    "Genre": "Shooter",
+    "ReleaseDate": "2004-11-02T00:00:00"
+  },
+  {
+    "EmulatorId": "rpcs3",
+    "FolderPath": "M:\\Game Library\\PlayStation 3\\Killzone 2",
+    "GameType": "FolderBased",
+    "Name": "Killzone 2",
+    "Console": "PlayStation 3",
+    "Genre": "Shooter",
+    "ReleaseDate": "2009-02-26T00:00:00"
+  },
+  {
+    "EmulatorId": "rpcs3",
+    "FolderPath": "M:\\Game Library\\Playstation 3\\Killzone 3",
+    "GameType": "FolderBased",
+    "Name": "Killzone 3",
+    "Console": "PlayStation 3",
+    "Genre": "Shooter",
+    "ReleaseDate": "2011-01-22T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "M:\\Game Library\\PlayStation 2\\Disney\u0027s Extreme Skate Adventure\\Disney\u0027s Extreme Skate Adventure.iso",
+    "GameType": "Emulated",
+    "Name": "Disney\u0027s Extreme Skate Adventure",
+    "Console": "PlayStation 2",
+    "Genre": "Sports",
+    "ReleaseDate": "2003-09-02T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "C:\\Game Library\\Playstation 2\\Need for Speed - Most Wanted (Black Edition)\\Need for Speed - Most Wanted (Black Edition).iso",
+    "GameType": "Emulated",
+    "Name": "Need for Speed - Most Wanted (Black Edition)",
+    "Console": "PlayStation 2",
+    "Genre": "Racing",
+    "ReleaseDate": "2005-09-24T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "M:\\Game Library\\PlayStation 2\\Crash Bandicoot - The Wrath of Cortex\\Crash Bandicoot - The Wrath of Cortex.bin",
+    "GameType": "Emulated",
+    "Name": "Crash Bandicoot - The Wrath of Cortex",
+    "Console": "PlayStation 2",
+    "Genre": "Platform",
+    "ReleaseDate": "2001-10-30T00:00:00"
+  },
+  {
+    "EmulatorId": "duckstation",
+    "GamePath": "M:\\Game Library\\PlayStation 1\\Tony Hawk\u0027s Pro Skater 2\\Tony Hawk\u0027s Pro Skater 2.bin",
+    "GameType": "Emulated",
+    "Name": "Tony Hawk\u0027s Pro Skater 2",
+    "Console": "PlayStation 1",
+    "Genre": "Sports",
+    "ReleaseDate": "1999-09-29T00:00:00"
+  },
+  {
+    "EmulatorId": "duckstation",
+    "GamePath": "C:\\Game Library\\PlayStation 1\\Crash Bandicoot\\Crash Bandicoot.bin",
+    "GameType": "Emulated",
+    "Name": "Crash Bandicoot",
+    "Console": "PlayStation 1",
+    "Genre": "Platform",
+    "ReleaseDate": "1996-09-09T00:00:00"
+  },
+  {
+    "EmulatorId": "duckstation",
+    "GamePath": "M:\\Game Library\\PlayStation 1\\Crash Bandicoot 2 - Cortex Strikes Back\\Crash Bandicoot 2 - Cortex Strikes Back.bin",
+    "GameType": "Emulated",
+    "Name": "Crash Bandicoot 2 - Cortex Strikes Back",
+    "Console": "PlayStation 1",
+    "Genre": "Platform",
+    "ReleaseDate": "1997-08-06T00:00:00"
+  },
+  {
+    "EmulatorId": "duckstation",
+    "GamePath": "M:\\Game Library\\PlayStation 1\\MediEvil\\MediEvil.cue",
+    "GameType": "Emulated",
+    "Name": "MediEvil",
+    "Console": "PlayStation 1",
+    "Genre": "Adventure",
+    "ReleaseDate": "1998-08-09T00:00:00"
+  },
+  {
+    "EmulatorId": "duckstation",
+    "GamePath": "M:\\Game Library\\PlayStation 1\\Grand Theft Auto\\Grand Theft Auto.bin",
+    "GameType": "Emulated",
+    "Name": "Grand Theft Auto",
+    "Console": "PlayStation 1",
+    "Genre": "Adventure",
+    "ReleaseDate": "1997-11-28T00:00:00"
+  },
+  {
+    "EmulatorId": "duckstation",
+    "GamePath": "M:\\Game Library\\PlayStation 1\\Grand Theft Auto 2\\Grand Theft Auto 2.bin",
+    "GameType": "Emulated",
+    "Name": "Grand Theft Auto 2",
+    "Console": "PlayStation 1",
+    "Genre": "Adventure",
+    "ReleaseDate": "1999-10-22T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "M:\\Game Library\\PlayStation 2\\Grand Theft Auto III\\Grand Theft Auto III.iso",
+    "GameType": "Emulated",
+    "Name": "Grand Theft Auto III",
+    "Console": "PlayStation 2",
+    "Genre": "Adventure",
+    "ReleaseDate": "2001-10-22T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "M:\\Game Library\\PlayStation 2\\Grand Theft Auto - Vice City\\Grand Theft Auto - Vice City.iso",
+    "GameType": "Emulated",
+    "Name": "Grand Theft Auto - Vice City",
+    "Console": "PlayStation 2",
+    "Genre": "Adventure",
+    "ReleaseDate": "2002-10-29T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "M:\\Game Library\\PlayStation 2\\Grand Theft Auto - San Andreas\\Grand Theft Auto - San Andreas.iso",
+    "GameType": "Emulated",
+    "Name": "Grand Theft Auto - San Andreas",
+    "Console": "PlayStation 2",
+    "Genre": "Adventure",
+    "ReleaseDate": "2004-10-26T00:00:00"
+  },
+  {
+    "EmulatorId": "rpcs3",
+    "FolderPath": "M:\\Game Library\\PlayStation 3\\Grand Theft Auto IV",
+    "GameType": "FolderBased",
+    "Name": "Grand Theft Auto IV",
+    "Console": "PlayStation 3",
+    "Genre": "Adventure",
+    "ReleaseDate": "2008-04-29T00:00:00"
+  },
+  {
+    "EmulatorId": "rpcs3",
+    "FolderPath": "M:\\Game Library\\PlayStation 3\\Grand Theft Auto V",
+    "GameType": "FolderBased",
+    "Name": "Grand Theft Auto V",
+    "Console": "PlayStation 3",
+    "Genre": "Adventure",
+    "ReleaseDate": "2013-09-17T00:00:00"
+  },
+  {
+    "ExePath": "C:\\Game Library\\PC\\Baldur\u0027s Gate 3\\bin\\bg3_dx11.exe",
+    "GameType": "Native",
+    "Name": "Baldur\u0027s Gate 3",
+    "Console": "PC",
+    "Genre": "Role-playing",
+    "ReleaseDate": "2023-08-03T00:00:00"
+  },
+  {
+    "EmulatorId": "sudachi",
+    "GamePath": "C:\\Game Library\\Nintendo Switch\\Mario Kart 8 Deluxe\\Mario Kart 8 Deluxe.nca",
+    "GameType": "Emulated",
+    "Name": "Mario Kart 8 Deluxe",
+    "Console": "Nintendo Switch",
+    "Genre": "Racing",
+    "ReleaseDate": "2019-04-27T00:00:00"
+  },
+  {
+    "ExePath": "M:\\Game Library\\PC\\Overcooked! 2\\Overcooked! 2.exe",
+    "GameType": "Native",
+    "Name": "Overcooked! 2",
+    "Console": "PC",
+    "Genre": "Simulation",
+    "ReleaseDate": "2018-08-07T00:00:00"
+  },
+  {
+    "EmulatorId": "duckstation",
+    "GamePath": "M:\\Game Library\\PlayStation 1\\Driver\\Driver.bin.ecm",
+    "GameType": "Emulated",
+    "Name": "Driver",
+    "Console": "PlayStation 1",
+    "Genre": "Racing",
+    "ReleaseDate": "1999-07-25T00:00:00"
+  },
+  {
+    "EmulatorId": "rpcs3",
+    "FolderPath": "M:\\Game Library\\PlayStation 3\\Midnight Club - Los Angeles",
+    "GameType": "FolderBased",
+    "Name": "Midnight Club - Los Angeles",
+    "Console": "PlayStation 3",
+    "Genre": "Racing",
+    "ReleaseDate": "2008-10-08T00:00:00"
+  },
+  {
+    "ExePath": "M:\\Game Library\\PC\\Mass Effect 1 - Legendary Edition\\ME1.bat",
+    "GameType": "Native",
+    "Name": "Mass Effect 1 - Legendary Edition",
+    "Console": "PC",
+    "Genre": "Adventure",
+    "ReleaseDate": "2007-11-20T00:00:00"
+  },
+  {
+    "EmulatorId": "duckstation",
+    "GamePath": "M:\\Game Library\\PlayStation 1\\Gran Turismo\\Gran Turismo.bin",
+    "GameType": "Emulated",
+    "Name": "Gran Turismo",
+    "Console": "PlayStation 1",
+    "Genre": "Racing",
+    "ReleaseDate": "1998-05-08T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "C:\\Game Library\\PlayStation 2\\Ratchet \u0026 Clank - Locked \u0026 Loaded\\Ratchet \u0026 Clank - Locked \u0026 Loaded.iso",
+    "GameType": "Emulated",
+    "Name": "Ratchet \u0026 Clank - Locked \u0026 Loaded",
+    "Console": "PlayStation 2",
+    "Genre": "Adventure",
+    "ReleaseDate": "2003-11-11T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "M:\\Game Library\\PlayStation 2\\SSX 3\\SSX 3.iso",
+    "GameType": "Emulated",
+    "Name": "SSX 3",
+    "Console": "PlayStation 2",
+    "Genre": "Sports",
+    "ReleaseDate": "2003-10-31T00:00:00"
+  },
+  {
+    "EmulatorId": "duckstation",
+    "GamePath": "M:\\Game Library\\PlayStation 1\\Gran Turismo 2 (Arcade)\\Gran Turismo 2 (Arcade).bin",
+    "GameType": "Emulated",
+    "Name": "Gran Turismo 2 (Arcade)",
+    "Console": "PlayStation 1",
+    "Genre": "Racing",
+    "ReleaseDate": "1998-05-08T00:00:00"
+  },
+  {
+    "EmulatorId": "duckstation",
+    "GamePath": "M:\\Game Library\\PlayStation 1\\Gran Turismo 2 (Simulation)\\Gran Turismo 2 (Simulation).bin",
+    "GameType": "Emulated",
+    "Name": "Gran Turismo 2 (Simulation)",
+    "Console": "PlayStation 1",
+    "Genre": "Racing",
+    "ReleaseDate": "1998-05-08T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "M:\\Game Library\\PlayStation 2\\Ratchet \u0026 Clank - Gladiator\\Ratchet \u0026 Clank - Gladiator.iso",
+    "GameType": "Emulated",
+    "Name": "Ratchet \u0026 Clank - Gladiator",
+    "Console": "PlayStation 2",
+    "Genre": "Adventure",
+    "ReleaseDate": "2005-11-18T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "M:\\Game Library\\PlayStation 2\\Ratchet \u0026 Clank 3 (Up Your Arsenal)\\Ratchet \u0026 Clank 3 (Up Your Arsenal).iso",
+    "GameType": "Emulated",
+    "Name": "Ratchet \u0026 Clank 3 (Up Your Arsenal)",
+    "Console": "PlayStation 2",
+    "Genre": "Adventure",
+    "ReleaseDate": "2004-11-12T00:00:00"
+  },
+  {
+    "EmulatorId": "duckstation",
+    "GamePath": "C:\\Game Library\\Playstation 1\\Championship Motocross 2001 featuring Ricky Carmichael\\Championship Motocross 2001 featuring Ricky Carmichael.chd",
+    "GameType": "Emulated",
+    "Name": "Championship Motocross 2001 featuring Ricky Carmichael",
+    "Console": "PlayStation 1",
+    "Genre": "Racing",
+    "ReleaseDate": "2001-04-06T00:00:00"
+  },
+  {
+    "EmulatorId": "duckstation",
+    "GamePath": "M:\\Game Library\\PlayStation 1\\Tekken 3\\Tekken 3.cue",
+    "GameType": "Emulated",
+    "Name": "Tekken 3",
+    "Console": "PlayStation 1",
+    "Genre": "Fighting",
+    "ReleaseDate": "1998-09-01T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "M:\\Game Library\\PlayStation 2\\Gran Turismo 3 - A-Spec\\Gran Turismo 3 - A-Spec.iso",
+    "GameType": "Emulated",
+    "Name": "Gran Turismo 3 - A-Spec",
+    "Console": "PlayStation 2",
+    "Genre": "Racing",
+    "ReleaseDate": "2001-07-07T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "M:\\Game Library\\PlayStation 2\\Gran Turismo 4\\Gran Turismo 4.iso",
+    "GameType": "Emulated",
+    "Name": "Gran Turismo 4",
+    "Console": "PlayStation 2",
+    "Genre": "Racing",
+    "ReleaseDate": "2005-03-09T00:00:00"
+  },
+  {
+    "EmulatorId": "duckstation",
+    "GamePath": "M:\\Game Library\\PlayStation 1\\Crash Bandicoot 3 - Warped\\Crash Bandicoot 3 - Warped.bin",
+    "GameType": "Emulated",
+    "Name": "Crash Bandicoot 3 - Warped",
+    "Console": "PlayStation 1",
+    "Genre": "Platform",
+    "ReleaseDate": "1998-12-01T00:00:00"
+  },
+  {
+    "EmulatorId": "duckstation",
+    "GamePath": "M:\\Game Library\\PlayStation 1\\Crash Team Racing\\Crash Team Racing.bin",
+    "GameType": "Emulated",
+    "Name": "Crash Team Racing",
+    "Console": "PlayStation 1",
+    "Genre": "Racing",
+    "ReleaseDate": "1999-10-20T00:00:00"
+  },
+  {
+    "EmulatorId": "duckstation",
+    "GamePath": "M:\\Game Library\\PlayStation 1\\Crash Bash\\Crash Bash.bin",
+    "GameType": "Emulated",
+    "Name": "Crash Bash",
+    "Console": "PlayStation 1",
+    "Genre": "Fighting",
+    "ReleaseDate": "2000-12-01T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "M:\\Game Library\\PlayStation 2\\Crash Nitro Kart\\Crash Nitro Kart.iso",
+    "GameType": "Emulated",
+    "Name": "Crash Nitro Kart",
+    "Console": "PlayStation 2",
+    "Genre": "Racing",
+    "ReleaseDate": "2003-11-08T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "M:\\Game Library\\PlayStation 2\\Crash Twinsanity\\Crash Twinsanity.iso",
+    "GameType": "Emulated",
+    "Name": "Crash Twinsanity",
+    "Console": "PlayStation 2",
+    "Genre": "Platform",
+    "ReleaseDate": "2004-10-08T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "M:\\Game Library\\PlayStation 2\\Crash Tag Team Racing\\Crash Tag Team Racing.iso",
+    "GameType": "Emulated",
+    "Name": "Crash Tag Team Racing",
+    "Console": "PlayStation 2",
+    "Genre": "Racing",
+    "ReleaseDate": "2005-11-04T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "M:\\Game Library\\PlayStation 2\\Crash of the Titans\\Crash of the Titans.iso",
+    "GameType": "Emulated",
+    "Name": "Crash of the Titans",
+    "Console": "PlayStation 2",
+    "Genre": "Platform",
+    "ReleaseDate": "2007-10-12T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "M:\\Game Library\\PlayStation 2\\Crash - Mind Over Mutant\\Crash - Mind Over Mutant.iso",
+    "GameType": "Emulated",
+    "Name": "Crash - Mind Over Mutant",
+    "Console": "PlayStation 2",
+    "Genre": "Platform",
+    "ReleaseDate": "2008-10-31T00:00:00"
+  },
+  {
+    "ExePath": "M:\\Game Library\\PC\\Mass Effect 2 - Legendary Edition\\ME2.bat",
+    "GameType": "Native",
+    "Name": "Mass Effect 2 - Legendary Edition",
+    "Console": "PC",
+    "Genre": "Adventure",
+    "ReleaseDate": "2010-01-26T00:00:00"
+  },
+  {
+    "EmulatorId": "sudachi",
+    "GamePath": "C:\\Game Library\\Nintendo Switch\\The Legend of Zelda - Breath of the Wild\\The Legend of Zelda - Breath of the Wild.nsp",
+    "GameType": "Emulated",
+    "Name": "The Legend of Zelda - Breath of the Wild",
+    "Console": "Nintendo Switch",
+    "Genre": "Adventure",
+    "ReleaseDate": "2017-03-03T00:00:00"
+  },
+  {
+    "ExePath": "M:\\Game Library\\PC\\Mass Effect 3 - Legendary Edition\\ME3.bat",
+    "GameType": "Native",
+    "Name": "Mass Effect 3 - Legendary Edition",
+    "Console": "PC",
+    "Genre": "Adventure",
+    "ReleaseDate": "2012-03-06T00:00:00"
+  },
+  {
+    "EmulatorId": "sudachi",
+    "GamePath": "C:\\Game Library\\Nintendo Switch\\The Legend of Zelda - Tears of the Kingdom\\The Legend of Zelda - Tears of the Kingdom.xci",
+    "GameType": "Emulated",
+    "Name": "The Legend of Zelda - Tears of the Kingdom",
+    "Console": "Nintendo Switch",
+    "Genre": "Adventure",
+    "ReleaseDate": "2023-05-12T00:00:00"
+  },
+  {
+    "EmulatorId": "sudachi",
+    "GamePath": "C:\\Game Library\\Nintendo Switch\\Super Mario Odyssey\\Super Mario Odyssey.nsp",
+    "GameType": "Emulated",
+    "Name": "Super Mario Odyssey",
+    "Console": "Nintendo Switch",
+    "Genre": "Platform",
+    "ReleaseDate": "2017-10-27T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "M:\\Game Library\\PlayStation 2\\Metal Gear Solid 2 - Sons of Liberty\\Metal Gear Solid 2 - Sons of Liberty.iso",
+    "GameType": "Emulated",
+    "Name": "Metal Gear Solid 2 - Sons of Liberty",
+    "Console": "PlayStation 2",
+    "Genre": "Action",
+    "ReleaseDate": "2002-03-08T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "M:\\Game Library\\PlayStation 2\\Metal Gear Solid 3 - Snake Eater\\Metal Gear Solid 3 - Snake Eater.iso",
+    "GameType": "Emulated",
+    "Name": "Metal Gear Solid 3 - Snake Eater",
+    "Console": "PlayStation 2",
+    "Genre": "Action",
+    "ReleaseDate": "2005-03-04T00:00:00"
+  },
+  {
+    "EmulatorId": "duckstation",
+    "GamePath": "C:\\Game Library\\Playstation 1\\Colin McRae Rally\\Colin McRae Rally.cue",
+    "GameType": "Emulated",
+    "Name": "Colin McRae Rally",
+    "Console": "PlayStation 1",
+    "Genre": "Racing",
+    "ReleaseDate": "1998-07-15T00:00:00"
+  },
+  {
+    "EmulatorId": "duckstation",
+    "GamePath": "C:\\Game Library\\Playstation 1\\Colin McRae Rally 2.0\\Colin McRae Rally 2.0.cue",
+    "GameType": "Emulated",
+    "Name": "Colin McRae Rally 2.0",
+    "Console": "PlayStation 1",
+    "Genre": "Racing",
+    "ReleaseDate": "2000-07-07T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "M:\\Game Library\\PlayStation 2\\Resident Evil 4\\Resident Evil 4.iso",
+    "GameType": "Emulated",
+    "Name": "Resident Evil 4",
+    "Console": "PlayStation 2",
+    "Genre": "Shooter",
+    "ReleaseDate": "2005-11-05T00:00:00"
+  },
+  {
+    "EmulatorId": "duckstation",
+    "GamePath": "M:\\Game Library\\PlayStation 1\\Spyro the Dragon\\Spyro the Dragon.bin",
+    "GameType": "Emulated",
+    "Name": "Spyro the Dragon",
+    "Console": "PlayStation 1",
+    "Genre": "Platform",
+    "ReleaseDate": "1998-10-01T00:00:00"
+  },
+  {
+    "EmulatorId": "duckstation",
+    "GamePath": "M:\\Game Library\\PlayStation 1\\Spyro 2 - Gateway to Glimmer\\Spyro 2 - Gateway to Glimmer.bin",
+    "GameType": "Emulated",
+    "Name": "Spyro 2 - Gateway to Glimmer",
+    "Console": "PlayStation 1",
+    "Genre": "Platform",
+    "ReleaseDate": "1999-11-05T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "M:\\Game Library\\PlayStation 2\\Spyro - Enter the Dragonfly\\Spyro - Enter the Dragonfly.iso",
+    "GameType": "Emulated",
+    "Name": "Spyro - Enter the Dragonfly",
+    "Console": "PlayStation 2",
+    "Genre": "Platform",
+    "ReleaseDate": "2002-11-29T00:00:00"
+  },
+  {
+    "EmulatorId": "duckstation",
+    "GamePath": "M:\\Game Library\\PlayStation 1\\Spyro - Year of the Dragon\\Spyro - Year of the Dragon.bin",
+    "GameType": "Emulated",
+    "Name": "Spyro - Year of the Dragon",
+    "Console": "PlayStation 1",
+    "Genre": "Platform",
+    "ReleaseDate": "2000-11-10T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "M:\\Game Library\\PlayStation 2\\Spyro - A Hero\u0027s Tail\\Spyro - A Hero\u0027s Tail.iso",
+    "GameType": "Emulated",
+    "Name": "Spyro - A Hero\u0027s Tail",
+    "Console": "PlayStation 2",
+    "Genre": "Platform",
+    "ReleaseDate": "2004-11-12T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "M:\\Game Library\\PlayStation 2\\The Legend of Spyro - A New Beginning\\The Legend of Spyro - A New Beginning.iso",
+    "GameType": "Emulated",
+    "Name": "The Legend of Spyro - A New Beginning",
+    "Console": "PlayStation 2",
+    "Genre": "Platform",
+    "ReleaseDate": "2006-10-27T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "M:\\Game Library\\PlayStation 2\\The Legend of Spyro - The Eternal Night\\The Legend of Spyro - The Eternal Night.iso",
+    "GameType": "Emulated",
+    "Name": "The Legend of Spyro - The Eternal Night",
+    "Console": "PlayStation 2",
+    "Genre": "Platform",
+    "ReleaseDate": "2007-11-02T00:00:00"
+  },
+  {
+    "EmulatorId": "pcsx2",
+    "GamePath": "M:\\Game Library\\PlayStation 2\\The Legend of Spyro - Dawn of the Dragon\\The Legend of Spyro - Dawn of the Dragon.iso",
+    "GameType": "Emulated",
+    "Name": "The Legend of Spyro - Dawn of the Dragon",
+    "Console": "PlayStation 2",
+    "Genre": "Platform",
+    "ReleaseDate": "2008-11-21T00:00:00"
+  }
 ]

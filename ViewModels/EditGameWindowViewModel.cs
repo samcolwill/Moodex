@@ -7,12 +7,14 @@ using System.Windows;
 using CommunityToolkit.Mvvm.Input;                 // ✅ Toolkit commands
 using SamsGameLauncher.Constants;
 using SamsGameLauncher.Models;
+using SamsGameLauncher.Services;
 
 namespace SamsGameLauncher.ViewModels
 {
     public class EditGameWindowViewModel : BaseViewModel
     {
         private readonly GameBase _originalGame;
+        private readonly ISettingsService _settingsService;
 
         // ───────────── backing fields ─────────────
         private string _name = "";
@@ -82,12 +84,15 @@ namespace SamsGameLauncher.ViewModels
         [SupportedOSPlatform("windows")]
         public EditGameWindowViewModel(
             GameBase gameToEdit,
-            IEnumerable<Emulator> availableEmulators)
+            IEnumerable<Emulator> availableEmulators,
+            ISettingsService settingsService)
         {
             _originalGame = gameToEdit;
+            _settingsService = settingsService;
 
             Emulators = new ObservableCollection<Emulator>(availableEmulators);
-            Consoles = LauncherConstants.Consoles;
+            var settings = _settingsService.Load();
+            Consoles = settings.Consoles;
             Genres = LauncherConstants.Genres;
 
             // Toolkit commands

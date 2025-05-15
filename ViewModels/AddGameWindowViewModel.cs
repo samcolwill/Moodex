@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using Microsoft.Win32;
 using SamsGameLauncher.Constants;
+using SamsGameLauncher.Services;
 using SamsGameLauncher.Models;
 using CommunityToolkit.Mvvm.Input;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
@@ -141,11 +142,14 @@ namespace SamsGameLauncher.ViewModels
         public GameBase? NewGame { get; private set; }
 
         // ───────────── ctor ─────────────
-        public AddGameWindowViewModel(IEnumerable<Emulator> availableEmulators)
+        public AddGameWindowViewModel(
+            IEnumerable<Emulator> availableEmulators,
+            ISettingsService settingsService)
         {
             GameTypes = Enum.GetNames(typeof(GameType)).ToList();
             Emulators = new ObservableCollection<Emulator>(availableEmulators);
-            Consoles = LauncherConstants.Consoles;
+            var settings = settingsService.Load();
+            Consoles = settings.Consoles;
             Genres = LauncherConstants.Genres;
 
             GameFileLabelText = "Game File:";
