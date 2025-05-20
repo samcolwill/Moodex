@@ -28,7 +28,9 @@
                 <MenuItem Header="Storage" Command="{Binding ShowSettingsCommand}" CommandParameter="Storage"/>
                 <MenuItem Header="Controls" Command="{Binding ShowSettingsCommand}" CommandParameter="Controls"/>
             </MenuItem>
-            <MenuItem Header="Help"/>
+            <MenuItem Header="Help">
+                <MenuItem Header="About…" Command="{Binding ShowAboutCommand}"/>
+            </MenuItem>
         </Menu>
 
         <!-- ─── Search & 'Group By' ─────────────────────────────────────── -->

@@ -28,5 +28,11 @@
         "Name": "sudachi",
         "ExecutablePath": "C:\\Users\\samco\\Documents\\Emulators\\Sudachi\\sudachi.exe",
         "DefaultArguments": "-f -g \"{RomPath}\""
+    },
+    {
+        "Id": "xemu",
+        "Name": "xemu",
+        "ExecutablePath": "C:\\Users\\samco\\Documents\\Emulators\\xemu\\xemu.exe",
+        "DefaultArguments": "-dvd_path \u0022{RomPath}\u0022"
     }
 ]

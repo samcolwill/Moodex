@@ -2,8 +2,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using SamsGameLauncher.Models;
 using SamsGameLauncher.ViewModels;
+using SamsGameLauncher.ViewModels.Help;
 using SamsGameLauncher.ViewModels.Settings;
 using SamsGameLauncher.Views;
+using SamsGameLauncher.Views.Help;
 
 namespace SamsGameLauncher.Services
 {
@@ -61,6 +63,17 @@ namespace SamsGameLauncher.Services
             // 3) show
             win.DataContext = vm;
             win.Owner = System.Windows.Application.Current.MainWindow;
+            win.ShowDialog();
+        }
+
+        public void ShowAbout()
+        {
+            var vm = new AboutViewModel();
+            var win = new AboutWindow
+            {
+                DataContext = vm,
+                Owner = System.Windows.Application.Current.MainWindow
+            };
             win.ShowDialog();
         }
     }

@@ -11,6 +11,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Assets\raw_icon.png" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Content Include="Configuration\default_settings.json">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
@@ -30,6 +34,9 @@
 
 	<ItemGroup>
 	  <Resource Include="Assets\launcher.ico" />
+	  <Resource Include="Assets\raw_icon.png">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Resource>
 	</ItemGroup>
 
 </Project>

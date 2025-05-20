@@ -16,5 +16,7 @@ namespace SamsGameLauncher.Services
 
         // Shows the Settings Menu.
         void ShowSettings(string sectionName);
+        // Shows the About Menu.
+        void ShowAbout();
     }
 }

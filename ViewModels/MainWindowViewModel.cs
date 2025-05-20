@@ -86,6 +86,7 @@ namespace SamsGameLauncher.ViewModels
         public IRelayCommand DeleteGameCommand { get; }
         public IRelayCommand AddEmulatorCommand { get; }
         public IRelayCommand ShowSettingsCommand { get; }
+        public IRelayCommand ShowAboutCommand { get; }
         public IAsyncRelayCommand ArchiveGameCommand { get; }
         public IAsyncRelayCommand ActivateGameCommand { get; }
 
@@ -145,6 +146,7 @@ namespace SamsGameLauncher.ViewModels
                     _dialogs.ShowSettings(section);
                 }
             });
+            ShowAboutCommand = new RelayCommand(ExecuteShowAbout);
             ArchiveGameCommand = new AsyncRelayCommand<GameBase>(g => MoveGameAsync(g, toArchive: true), g => g is not null);
             ActivateGameCommand = new AsyncRelayCommand<GameBase>(g => MoveGameAsync(g, toArchive: false), g => g is not null);
 
@@ -291,6 +293,12 @@ namespace SamsGameLauncher.ViewModels
 
             Emulators.Add(newEmu);
             SaveEmulators();
+        }
+
+        private void ExecuteShowAbout()
+        {
+            // Delegate to your dialog service
+            _dialogs.ShowAbout();
         }
 
         // ──── Persistence ───────────────────────────────────────────────────
