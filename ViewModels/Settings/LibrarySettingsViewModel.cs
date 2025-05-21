@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using CommunityToolkit.Mvvm.Input;
 using SamsGameLauncher.Services;
-using SamsGameLauncher.Views;
+using SamsGameLauncher.Views.Utilities;
 
 namespace SamsGameLauncher.ViewModels.Settings
 {

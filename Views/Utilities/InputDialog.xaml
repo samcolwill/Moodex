@@ -1,4 +1,4 @@
-﻿<Window x:Class="SamsGameLauncher.Views.InputDialog"
+﻿<Window x:Class="SamsGameLauncher.Views.Utilities.InputDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="{Binding DialogTitle}"

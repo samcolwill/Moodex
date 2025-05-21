@@ -9,7 +9,7 @@ using SamsGameLauncher.Models;
 using SamsGameLauncher.Services;
 using MessageBox = System.Windows.MessageBox;
 using CommunityToolkit.Mvvm.Input;
-using SamsGameLauncher.Views;
+using SamsGameLauncher.Views.Utilities;
 using Application = System.Windows.Application;
 
 namespace SamsGameLauncher.ViewModels

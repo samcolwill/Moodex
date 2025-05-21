@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Windows;
 
-namespace SamsGameLauncher.Views
+namespace SamsGameLauncher.Views.Utilities
 {
     public partial class InputDialog : Window, INotifyPropertyChanged
     {
