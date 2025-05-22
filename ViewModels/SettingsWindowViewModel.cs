@@ -32,7 +32,7 @@ namespace SamsGameLauncher.ViewModels.Settings
               new SettingsSection("Interface", new InterfaceSettingsViewModel(settingsService)),
               new SettingsSection("Library",   new LibrarySettingsViewModel(settingsService)),
               new SettingsSection("Storage",   new StorageSettingsViewModel(settingsService)),
-              new SettingsSection("Controls",  new ControlsSettingsViewModel(settingsService))
+              new SettingsSection("Controller",  new ControllerSettingsViewModel(settingsService))
             };
 
             _selectedSection = Sections.First();

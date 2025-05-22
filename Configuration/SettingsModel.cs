@@ -20,6 +20,8 @@
             "Game Boy Advance",
             "Nintendo Switch"
         };
+        public bool IsDs4Installed { get; set; } = false;
+        public bool LaunchDs4WindowsOnStartup { get; set; } = false;
     }
 
 

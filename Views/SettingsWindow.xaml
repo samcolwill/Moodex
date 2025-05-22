@@ -40,8 +40,8 @@
                 <DataTemplate DataType="{x:Type vmSettings:StorageSettingsViewModel}">
                     <views:StorageSettingsView/>
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vmSettings:ControlsSettingsViewModel}">
-                    <views:ControlsSettingsView/>
+                <DataTemplate DataType="{x:Type vmSettings:ControllerSettingsViewModel}">
+                    <views:ControllerSettingsView/>
                 </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>

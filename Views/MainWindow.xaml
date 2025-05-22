@@ -26,7 +26,7 @@
                 <MenuItem Header="Interface" Command="{Binding ShowSettingsCommand}" CommandParameter="Interface"/>
                 <MenuItem Header="Library" Command="{Binding ShowSettingsCommand}" CommandParameter="Library"/>
                 <MenuItem Header="Storage" Command="{Binding ShowSettingsCommand}" CommandParameter="Storage"/>
-                <MenuItem Header="Controls" Command="{Binding ShowSettingsCommand}" CommandParameter="Controls"/>
+                <MenuItem Header="Controller" Command="{Binding ShowSettingsCommand}" CommandParameter="Controller"/>
             </MenuItem>
             <MenuItem Header="Help">
                 <MenuItem Header="About…" Command="{Binding ShowAboutCommand}"/>

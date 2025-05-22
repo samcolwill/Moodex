@@ -1,0 +1,38 @@
+﻿<UserControl x:Class="SamsGameLauncher.Views.Settings.ControllerSettingsView"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            mc:Ignorable="d">
+   <StackPanel Margin="10" DataContext="{Binding}">
+        <TextBlock Text="DS4Windows" FontWeight="Bold" Margin="0,0,0,5"/>
+        <!-- DS4Windows integration row -->
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <!-- Links for Download, Open, Uninstall -->
+           <TextBlock VerticalAlignment="Center" Margin="0,0,0,8">
+               <Hyperlink Command="{Binding DownloadInstallDs4Command}"
+                          IsEnabled="{Binding CanInstallDs4}">
+                   Download &amp; Install
+               </Hyperlink>
+               <Run Text=" | " />
+               <Hyperlink Command="{Binding LaunchDs4WindowsCommand}"
+                          IsEnabled="{Binding IsDs4Installed}">
+                   Launch
+               </Hyperlink>
+               <Run Text=" | " />
+               <Hyperlink Command="{Binding UninstallDs4WindowsCommand}"
+                          IsEnabled="{Binding IsDs4Installed}">
+                   Uninstall
+               </Hyperlink>
+           </TextBlock>
+       </StackPanel>
+        <!-- Enable/launch at startup checkbox -->
+        <CheckBox Content="Launch on SGL Startup"
+          IsChecked="{Binding LaunchDs4WindowsOnStartup}"
+          IsEnabled="{Binding IsDs4Installed}" />
+        <TextBlock Text="Preconfigured for DualSense (PS5) controller; manual configuration required for other controllers."
+            FontStyle="Italic"
+            FontSize="10"
+            Margin="0,5,0,5"/>
+    </StackPanel>
+</UserControl>

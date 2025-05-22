@@ -2,9 +2,9 @@
 
 namespace SamsGameLauncher.Views.Settings
 {
-    public partial class ControlsSettingsView : System.Windows.Controls.UserControl
+    public partial class ControllerSettingsView : System.Windows.Controls.UserControl
     {
-        public ControlsSettingsView()
+        public ControllerSettingsView()
         {
             InitializeComponent();
         }

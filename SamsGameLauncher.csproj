@@ -15,9 +15,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="Configuration\default_settings.json">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
 	  <Content Include="dev\dev_emulators.json">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
