@@ -47,31 +47,32 @@ namespace SamsGameLauncher.Models
             string emulatorPath = Path.Combine(dataFolder, "emulators.json");
             string gamePath = Path.Combine(dataFolder, "games.json");
 
-            // Local helper to copy from a dev file or create an empty array
-            void EnsureFile(string targetPath, string devFileName)
-            {
-                if (File.Exists(targetPath))
-                    return;
+            // ensure each target file exists, seeding from your dev samples if present
+            SeedDataFileFromDev(emulatorPath, "dev_emulators.json");
+            SeedDataFileFromDev(gamePath, "dev_games.json");
 
-                string basePath = AppDomain.CurrentDomain.BaseDirectory;
-                string devPath = Path.Combine(basePath, "dev", devFileName);
-
-                if (File.Exists(devPath) && new FileInfo(devPath).Length > 0)
-                {
-                    File.Copy(devPath, targetPath);
-                }
-                else
-                {
-                    // Create an empty JSON array if dev file missing or empty
-                    File.WriteAllText(targetPath, "[]");
-                }
-            }
-
-            EnsureFile(emulatorPath, "dev_emulators.json");
-            EnsureFile(gamePath, "dev_games.json");
-
-            // Now load from disk
+            // now load them for real
             LoadData(emulatorPath, gamePath);
+        }
+
+        private void SeedDataFileFromDev(string targetPath, string devSampleFileName)
+        {
+            if (File.Exists(targetPath))
+                return;
+
+            var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            var devPath = Path.Combine(baseDir, "dev", devSampleFileName);
+
+            if (File.Exists(devPath) && new FileInfo(devPath).Length > 0)
+            {
+                // copy in the sample data
+                File.Copy(devPath, targetPath);
+            }
+            else
+            {
+                // fall back to an empty array
+                File.WriteAllText(targetPath, "[]");
+            }
         }
 
         // Serialize and save the Games collection to disk

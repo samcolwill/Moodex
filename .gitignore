@@ -24,3 +24,6 @@ project.lock.json
 *.log
 *.tlog
 *.cache
+
+# Sample/dev data
+dev/
