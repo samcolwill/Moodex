@@ -1,5 +1,7 @@
 # SamsGameLauncher
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 SamsGameLauncher is a video game management system and launcher for Windows, designed to help you organize, categorize, and launch both native and emulated games from a unified interface.
 
 ---

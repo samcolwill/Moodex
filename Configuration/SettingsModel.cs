@@ -24,8 +24,6 @@
         public bool LaunchDs4WindowsOnStartup { get; set; } = false;
     }
 
-
-
     public enum LibraryKind
     {
         Active,   // the drive you launch from
