@@ -7,6 +7,10 @@ obj/
 *.sln.docstates
 *.VC.db
 
+# Publish results
+publish/
+publish/**
+
 # Visual Studio folders
 .vscode/
 .vs/

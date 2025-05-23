@@ -4,6 +4,14 @@
 
 SamsGameLauncher is a video game management system and launcher for Windows, designed to help you organize, categorize, and launch both native and emulated games from a unified interface.
 
+## Download
+
+> **Prerequisite:** [.NET 9 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/9.0/runtime)
+
+- **Windows x64 (framework-dependent ZIP, ~5 MB)**  
+  [SamsGameLauncher-v1.0.0-win-x64.zip](https://github.com/samcolwill/SamsGameLauncher/releases/download/v1.0.0/SamsGameLauncher-v1.0.0-win-x64.zip)  
+  Unzip and run `SamsGameLauncher.exe`.
+
 ---
 
 ## Features

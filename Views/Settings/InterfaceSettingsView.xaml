@@ -17,18 +17,18 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
         </StackPanel>
-
-        <!-- Launch Mode -->
+        
+        <!-- Launch Mode --><!--
         <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
             <TextBlock Text="Launch Mode:" VerticalAlignment="Center" Width="120"/>
             <ComboBox ItemsSource="{Binding LaunchModes}"
                 SelectedItem="{Binding SelectedLaunchMode}"
                 Width="150"
                 IsEnabled="False"/>
-                <!-- Disabled (Remove IsEnabled="False" to enable.) -->
+                --><!-- Disabled (Remove IsEnabled="False" to enable.) --><!--
         </StackPanel>
 
-        <!-- Default Resolution -->
+        --><!-- Default Resolution --><!--
         <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
             <TextBlock Text="Default Resolution:" VerticalAlignment="Center" Width="120"/>
             <TextBox Text="{Binding ResolutionWidth, UpdateSourceTrigger=PropertyChanged}"
@@ -38,7 +38,8 @@
             <TextBox Text="{Binding ResolutionHeight, UpdateSourceTrigger=PropertyChanged}"
                IsEnabled="False"
                Width="60"/>
-                <!-- Disabled (Replace IsEnabled="False" with IsEnabled="{Binding IsResolutionEnabled}" to enable.) -->
-        </StackPanel>
+                --><!-- Disabled (Replace IsEnabled="False" with IsEnabled="{Binding IsResolutionEnabled}" to enable.) --><!--
+        </StackPanel>-->
+        
     </StackPanel>
 </UserControl>

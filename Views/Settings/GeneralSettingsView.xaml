@@ -2,7 +2,9 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <StackPanel>
-        <CheckBox Content="General Setting"
-              IsChecked="{Binding GeneralSetting}" />
+        <TextBlock Text="No general settings. To be implemented."
+    FontStyle="Italic"
+    FontSize="10"
+    Margin="10,10,0,0"/>
     </StackPanel>
 </UserControl>
