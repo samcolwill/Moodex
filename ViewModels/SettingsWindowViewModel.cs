@@ -24,7 +24,7 @@ namespace SamsGameLauncher.ViewModels.Settings
         }
 
         // DI will inject your ISettingsService here
-        public SettingsWindowViewModel(ISettingsService settingsService)
+        public SettingsWindowViewModel(ISettingsService settingsService, IDialogService dialogService)
         {
             Sections = new ObservableCollection<SettingsSection>
             {
@@ -32,7 +32,7 @@ namespace SamsGameLauncher.ViewModels.Settings
               new SettingsSection("Interface", new InterfaceSettingsViewModel(settingsService)),
               new SettingsSection("Library",   new LibrarySettingsViewModel(settingsService)),
               new SettingsSection("Storage",   new StorageSettingsViewModel(settingsService)),
-              new SettingsSection("Controller",  new ControllerSettingsViewModel(settingsService))
+              new SettingsSection("Controller",  new ControllerSettingsViewModel(settingsService, dialogService))
             };
 
             _selectedSection = Sections.First();

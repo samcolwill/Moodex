@@ -18,5 +18,7 @@ namespace SamsGameLauncher.Services
         void ShowSettings(string sectionName);
         // Shows the About Menu.
         void ShowAbout();
+        // Shows confirmation dialog.
+        Task<bool> ShowConfirmationAsync(string title, string message);
     }
 }

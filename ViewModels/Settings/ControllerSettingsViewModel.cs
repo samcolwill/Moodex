@@ -1,15 +1,16 @@
-﻿using SamsGameLauncher.Configuration;
+﻿using CommunityToolkit.Mvvm.Input;
+using SamsGameLauncher.Configuration;
 using SamsGameLauncher.Services;
+using SamsGameLauncher.Utilities;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.Input;
 using System.IO.Compression;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
-using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace SamsGameLauncher.ViewModels.Settings
 {
@@ -17,11 +18,13 @@ namespace SamsGameLauncher.ViewModels.Settings
     {
         private readonly ISettingsService _svc;
         private readonly SettingsModel _model;
+        private readonly IDialogService _dialog;
 
-        public ControllerSettingsViewModel(ISettingsService svc)
+        public ControllerSettingsViewModel(ISettingsService svc, IDialogService dialog)
         {
             _svc = svc;
             _model = _svc.Load();
+            _dialog = dialog;
 
             // Initialize from persisted model
             _launchDs4WindowsOnStartup = _model.LaunchDs4WindowsOnStartup;
@@ -30,7 +33,8 @@ namespace SamsGameLauncher.ViewModels.Settings
             // Commands
             DownloadInstallDs4Command = new AsyncRelayCommand(DownloadAndInstallDs4Async, () => CanInstallDs4);
             LaunchDs4WindowsCommand = new RelayCommand(LaunchDs4Windows, () => IsDs4Installed);
-            UninstallDs4WindowsCommand = new RelayCommand(UninstallDs4Windows, () => IsDs4Installed);
+            UninstallDs4WindowsCommand = new AsyncRelayCommand(ConfirmAndUninstallAsync, () => IsDs4Installed);
+            _dialog = dialog;
         }
 
         // ——— Properties —————————————————————————————————————————
@@ -154,91 +158,9 @@ namespace SamsGameLauncher.ViewModels.Settings
                 nested.Delete(recursive: true);
             }
 
-            // 5a) Seed Profiles.xml with your default profile data
-            var profilesPath = Path.Combine(targetDir, "Profiles.xml");
-            const string profilesXml = @"<?xml version=""1.0"" encoding=""utf-8""?>
-<!-- Profile Configuration Data. 01/01/2025 00:00:00 -->
-<!-- Made with DS4Windows version 3.3.3 -->
-<Profile app_version=""3.3.3"" config_version=""2"">
-  <useExclusiveMode>True</useExclusiveMode>
-  <startMinimized>True</startMinimized>
-  <minimizeToTaskbar>False</minimizeToTaskbar>
-  <formWidth>782</formWidth>
-  <formHeight>550</formHeight>
-  <formLocationX>0</formLocationX>
-  <formLocationY>0</formLocationY>
-  <LastChecked>01/01/0001 00:00:00</LastChecked>
-  <CheckWhen>24</CheckWhen>
-  <Notifications>2</Notifications>
-  <DisconnectBTAtStop>False</DisconnectBTAtStop>
-  <SwipeProfiles>True</SwipeProfiles>
-  <QuickCharge>False</QuickCharge>
-  <CloseMinimizes>True</CloseMinimizes>
-  <UseLang />
-  <DownloadLang>False</DownloadLang>
-  <FlashWhenLate>True</FlashWhenLate>
-  <FlashWhenLateAt>500</FlashWhenLateAt>
-  <AppIcon>Default</AppIcon>
-  <AppTheme>Default</AppTheme>
-  <UseOSCServer>False</UseOSCServer>
-  <OSCServerPort>9000</OSCServerPort>
-  <InterpretingOscMonitoring>False</InterpretingOscMonitoring>
-  <UseOSCSender>False</UseOSCSender>
-  <OSCSenderPort>9001</OSCSenderPort>
-  <OSCSenderAddress>127.0.0.1</OSCSenderAddress>
-  <UseUDPServer>False</UseUDPServer>
-  <UDPServerPort>26760</UDPServerPort>
-  <UDPServerListenAddress>127.0.0.1</UDPServerListenAddress>
-  <UDPServerSmoothingOptions>
-    <UseSmoothing>False</UseSmoothing>
-    <UdpSmoothMinCutoff>0.4</UdpSmoothMinCutoff>
-    <UdpSmoothBeta>0.2</UdpSmoothBeta>
-  </UDPServerSmoothingOptions>
-  <UseCustomSteamFolder>False</UseCustomSteamFolder>
-  <CustomSteamFolder />
-  <AutoProfileRevertDefaultProfile>True</AutoProfileRevertDefaultProfile>
-  <AbsRegionDisplay />
-  <DeviceOptions>
-    <DS4SupportSettings>
-      <Enabled>False</Enabled>
-    </DS4SupportSettings>
-    <DualSenseSupportSettings>
-      <Enabled>True</Enabled>
-    </DualSenseSupportSettings>
-    <SwitchProSupportSettings>
-      <Enabled>False</Enabled>
-    </SwitchProSupportSettings>
-    <JoyConSupportSettings>
-      <Enabled>False</Enabled>
-      <LinkMode>Joined</LinkMode>
-      <JoinedGyroProvider>JoyConL</JoinedGyroProvider>
-    </JoyConSupportSettings>
-    <DS3SupportSettings>
-      <Enabled>False</Enabled>
-    </DS3SupportSettings>
-  </DeviceOptions>
-  <CustomLed1>False:0,0,255</CustomLed1>
-  <CustomLed2>False:0,0,255</CustomLed2>
-  <CustomLed3>False:0,0,255</CustomLed3>
-  <CustomLed4>False:0,0,255</CustomLed4>
-  <CustomLed5>False:0,0,255</CustomLed5>
-  <CustomLed6>False:0,0,255</CustomLed6>
-  <CustomLed7>False:0,0,255</CustomLed7>
-  <CustomLed8>False:0,0,255</CustomLed8>
-</Profile>";
-            File.WriteAllText(profilesPath, profilesXml);
-
-            // 5b) Seed Auto Profiles.xml with your default profile data
-            var autoProfilesPath = Path.Combine(targetDir, "Auto Profiles.xml");
-            const string autoProfilesXml = @"<?xml version=""1.0"" encoding=""utf-8""?>
-<!-- Auto-Profile Configuration Data. 01/01/2025 00:00:00 -->
-<Programs />";
-            File.WriteAllText(autoProfilesPath, autoProfilesXml);
-
-            // 5c) Seed Profiles folder
-            var profilesDir = Path.Combine(targetDir, "Profiles");
-            if (!Directory.Exists(profilesDir))
-                Directory.CreateDirectory(profilesDir);
+            // 5) Seed all DS4Windows config files & folders
+            var initializer = new DS4WindowsInitializer(targetDir);
+            initializer.Initialize();
 
             // 6) Cleanup + state update
             File.Delete(tmpFile);
@@ -253,6 +175,19 @@ namespace SamsGameLauncher.ViewModels.Settings
                 UseShellExecute = true
             });
             LastLaunchedProcess = proc;
+        }
+
+        private async Task ConfirmAndUninstallAsync()
+        {
+            // 1) ask for confirmation
+            bool ok = await _dialog.ShowConfirmationAsync(
+                title: "Confirm DS4Windows Uninstall",
+                message: "Warning: In addition to uninstalling, this will delete all your DS4Windows configuration and profiles.\n\n" +
+                         "Are you sure you want to continue?");
+            if (!ok) return;
+
+            // 2) perform the uninstall logic
+            UninstallDs4Windows();
         }
 
         private void UninstallDs4Windows()

@@ -35,6 +35,7 @@ SamsGameLauncher is a video game management system and launcher for Windows, des
 - .NET (WPF) compatible runtime (see `.csproj` for details)
 - Emulators for non-native games (not included)
 - Existing collection of PC games and/or ROMs for emulators
+- [.NET 9 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/9.0/runtime)
 
 ### Build & Run
 

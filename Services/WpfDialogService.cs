@@ -1,11 +1,12 @@
-﻿using System.Runtime.Versioning;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using SamsGameLauncher.Models;
 using SamsGameLauncher.ViewModels;
 using SamsGameLauncher.ViewModels.Help;
 using SamsGameLauncher.ViewModels.Settings;
 using SamsGameLauncher.Views;
 using SamsGameLauncher.Views.Help;
+using System.Runtime.Versioning;
+using System.Windows;
 
 namespace SamsGameLauncher.Services
 {
@@ -75,6 +76,16 @@ namespace SamsGameLauncher.Services
                 Owner = System.Windows.Application.Current.MainWindow
             };
             win.ShowDialog();
+        }
+
+        public Task<bool> ShowConfirmationAsync(string title, string message)
+        {
+            var result = System.Windows.MessageBox.Show(
+                message,
+                title,
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+            return Task.FromResult(result == MessageBoxResult.Yes);
         }
     }
 }
