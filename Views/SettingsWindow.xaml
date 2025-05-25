@@ -6,7 +6,8 @@
         xmlns:views="clr-namespace:SamsGameLauncher.Views.Settings"
         Title="Settings"
         Icon="/SamsGameLauncher;component/Assets/launcher.ico"
-        Height="600" Width="800">
+        Height="600" Width="800"
+        WindowStartupLocation="CenterOwner">
 
     <Grid>
         <Grid.ColumnDefinitions>

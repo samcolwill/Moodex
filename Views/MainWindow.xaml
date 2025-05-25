@@ -16,10 +16,12 @@
     <DockPanel>
         <!-- ─── Toolbar / Menu ─────────────────────────────────────────── -->
         <Menu DockPanel.Dock="Top" Background="#353535" Foreground="White">
-            <MenuItem Header="System">
-                <!-- Commands bound to your ViewModel -->
-                <MenuItem Header="Add Emulator…" Command="{Binding AddEmulatorCommand}" />
-                <MenuItem Header="Add Game…"     Command="{Binding AddGameCommand}" />
+            <MenuItem Header="Games">
+                <MenuItem Header="Add Game" Command="{Binding AddGameCommand}" />
+            </MenuItem>
+            <MenuItem Header="Emulators">
+                <MenuItem Header="Add Emulator" Command="{Binding AddEmulatorCommand}" />
+                <MenuItem Header="Manage" Command="{Binding ShowManageEmulatorsCommand}" />
             </MenuItem>
             <MenuItem Header="Settings">
                 <MenuItem Header="General" Command="{Binding ShowSettingsCommand}" CommandParameter="General"/>
@@ -29,7 +31,7 @@
                 <MenuItem Header="Controller" Command="{Binding ShowSettingsCommand}" CommandParameter="Controller"/>
             </MenuItem>
             <MenuItem Header="Help">
-                <MenuItem Header="About…" Command="{Binding ShowAboutCommand}"/>
+                <MenuItem Header="About" Command="{Binding ShowAboutCommand}"/>
             </MenuItem>
         </Menu>
 

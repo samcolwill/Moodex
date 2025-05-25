@@ -51,6 +51,15 @@ namespace SamsGameLauncher.Services
                 : null;
         }
 
+        public void ShowManageEmulators()
+        {
+            // resolve via DI so that ManageEmulatorsWindow
+            // gets its ViewModel injected automatically
+            var win = _provider.GetRequiredService<ManageEmulatorsWindow>();
+            win.Owner = System.Windows.Application.Current.MainWindow;
+            win.ShowDialog();
+        }
+
         public void ShowSettings(string sectionName)
         {
             // 1) resolve the VM & Window

@@ -14,6 +14,9 @@ namespace SamsGameLauncher.Services
         // Shows the "Add Emulator" dialog; returns the created Emulator or null if cancelled.
         Emulator? ShowAddEmulator();
 
+        // Shows the Manage Emulators Menu.
+        void ShowManageEmulators();
+
         // Shows the Settings Menu.
         void ShowSettings(string sectionName);
         // Shows the About Menu.

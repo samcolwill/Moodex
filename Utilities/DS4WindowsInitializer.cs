@@ -62,7 +62,7 @@ namespace SamsGameLauncher.Utilities
 <Profile app_version=""3.3.3"" config_version=""2"">
   <useExclusiveMode>False</useExclusiveMode>
   <startMinimized>True</startMinimized>
-  <minimizeToTaskbar>True</minimizeToTaskbar>
+  <minimizeToTaskbar>False</minimizeToTaskbar>
   <formWidth>782</formWidth>
   <formHeight>550</formHeight>
   <formLocationX>0</formLocationX>
@@ -81,7 +81,7 @@ namespace SamsGameLauncher.Utilities
   <DisconnectBTAtStop>False</DisconnectBTAtStop>
   <SwipeProfiles>True</SwipeProfiles>
   <QuickCharge>False</QuickCharge>
-  <CloseMinimizes>False</CloseMinimizes>
+  <CloseMinimizes>True</CloseMinimizes>
   <UseLang />
   <DownloadLang>False</DownloadLang>
   <FlashWhenLate>True</FlashWhenLate>

@@ -1,0 +1,22 @@
+﻿<Window x:Class="SamsGameLauncher.Views.ManageEmulatorsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:SamsGameLauncher.ViewModels"
+        Title="Manage Emulators"
+        Height="205" Width="400"
+        Icon="/SamsGameLauncher;component/Assets/launcher.ico"
+        WindowStartupLocation="CenterOwner">
+
+    <!-- Connect the VM -->
+    <Window.DataContext>
+        <vm:ManageEmulatorsWindowViewModel/>
+    </Window.DataContext>
+
+    <Grid Margin="10">
+        <TextBlock Text="Manage Emulators"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   FontSize="20"
+                   FontWeight="Bold"/>
+    </Grid>
+</Window>

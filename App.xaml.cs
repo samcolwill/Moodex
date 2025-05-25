@@ -30,6 +30,8 @@ namespace SamsGameLauncher
             services.AddTransient<MainWindow>();
             services.AddTransient<SettingsWindowViewModel>();
             services.AddTransient<SettingsWindow>();
+            services.AddTransient<ManageEmulatorsWindowViewModel>();
+            services.AddTransient<ManageEmulatorsWindow>();
 
             // (and any other VMs you resolve manually…)
             _provider = services.BuildServiceProvider();

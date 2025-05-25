@@ -85,6 +85,7 @@ namespace SamsGameLauncher.ViewModels
         public IRelayCommand EditGameCommand { get; }
         public IRelayCommand DeleteGameCommand { get; }
         public IRelayCommand AddEmulatorCommand { get; }
+        public IRelayCommand ShowManageEmulatorsCommand { get; }
         public IRelayCommand ShowSettingsCommand { get; }
         public IRelayCommand ShowAboutCommand { get; }
         public IAsyncRelayCommand ArchiveGameCommand { get; }
@@ -139,6 +140,9 @@ namespace SamsGameLauncher.ViewModels
             EditGameCommand = new RelayCommand<GameBase>(ExecuteEditGame, game => game is not null);
             DeleteGameCommand = new RelayCommand<GameBase>(ExecuteDeleteGame, game => game is not null);
             AddEmulatorCommand = new RelayCommand(ExecuteAddEmulator);
+            ShowManageEmulatorsCommand = new RelayCommand(
+                () => _dialogs.ShowManageEmulators()
+            );
             ShowSettingsCommand = new RelayCommand<string?>(section =>
             {
                 if (!string.IsNullOrWhiteSpace(section))
