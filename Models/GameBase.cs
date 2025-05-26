@@ -9,7 +9,9 @@ namespace SamsGameLauncher.Models
     {
         // Core data loaded/saved in JSON
         public string Name { get; set; } = string.Empty;
-        public string Console { get; set; } = string.Empty;
+        public ConsoleType Console { get; set; } = ConsoleType.None;
+        [JsonIgnore]
+        public string ConsoleName => Console.GetDescription();
         public string Genre { get; set; } = string.Empty;
         public DateTime ReleaseDate { get; set; }
 

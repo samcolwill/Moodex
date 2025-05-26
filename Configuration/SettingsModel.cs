@@ -1,4 +1,7 @@
-﻿namespace SamsGameLauncher.Configuration
+﻿using SamsGameLauncher.Models;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
+
+namespace SamsGameLauncher.Configuration
 {
     public class SettingsModel
     {
@@ -9,17 +12,7 @@
         public string ActiveLibraryPath { get; set; } = @"C:\Game Library";
         public string ArchiveLibraryPath { get; set; } = @"M:\Game Library";
         public LibraryKind PrimaryLibrary { get; set; } = LibraryKind.Active;
-        public List<string> Consoles { get; set; } = new List<string>
-        {
-            "PC",
-            "PlayStation 1",
-            "PlayStation 2",
-            "PlayStation 3",
-            "Game Boy",
-            "Game Boy Color",
-            "Game Boy Advance",
-            "Nintendo Switch"
-        };
+        public List<ConsoleType> Consoles { get; set; } = Enum.GetValues<ConsoleType>().ToList();
         public bool IsDs4Installed { get; set; } = false;
         public bool LaunchDs4WindowsOnStartup { get; set; } = false;
     }

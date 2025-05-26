@@ -38,6 +38,20 @@ namespace SamsGameLauncher
             services.AddTransient<ManageEmulatorsWindow>();
             services.AddTransient<EditEmulatorWindow>();
 
+            services.AddSingleton<GameLibrary>(sp =>
+            {
+                var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                var dataFolder = Path.Combine(baseDir, "Data");
+                Directory.CreateDirectory(dataFolder);
+
+                var emuFile = Path.Combine(dataFolder, "emulators.json");
+                var gameFile = Path.Combine(dataFolder, "games.json");
+
+                var lib = new GameLibrary();
+                lib.LoadData(emuFile, gameFile);
+                return lib;
+            });
+
             services.AddTransient(sp =>
               new ManageEmulatorsWindowViewModel(
                 sp.GetRequiredService<GameLibrary>(),

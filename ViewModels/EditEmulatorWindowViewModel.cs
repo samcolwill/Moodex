@@ -14,7 +14,7 @@ namespace SamsGameLauncher.ViewModels
         private string _name = "";
         private string _executablePath = "";
         private string _defaultArguments = "";
-        private string _targetConsole = "";
+        private ConsoleType _consoleEmulated = ConsoleType.None;
 
         // ───────────── bindable props ─────────────
         public string Id
@@ -58,16 +58,18 @@ namespace SamsGameLauncher.ViewModels
             }
         }
 
-        public string TargetConsole
+        public ConsoleType ConsoleEmulated
         {
-            get => _targetConsole;
+            get => _consoleEmulated;
             set
             {
-                _targetConsole = value;
+                _consoleEmulated = value;
                 RaisePropertyChanged();
                 SaveCommand.NotifyCanExecuteChanged();
             }
         }
+
+        public Array ConsoleValues => Enum.GetValues<ConsoleType>();
 
         // ───────────── commands ─────────────
         public IRelayCommand<Window?> BrowseCommand { get; }
@@ -85,7 +87,7 @@ namespace SamsGameLauncher.ViewModels
             _name = emulator.Name;
             _executablePath = emulator.ExecutablePath;
             _defaultArguments = emulator.DefaultArguments;
-            _targetConsole = emulator.TargetConsole;
+            _consoleEmulated = emulator.ConsoleEmulated;
 
             // wire up commands
             BrowseCommand = new RelayCommand<Window?>(ExecuteBrowse);
@@ -117,7 +119,7 @@ namespace SamsGameLauncher.ViewModels
             _originalEmulator.Name = Name;
             _originalEmulator.ExecutablePath = ExecutablePath;
             _originalEmulator.DefaultArguments = DefaultArguments;
-            _originalEmulator.TargetConsole = TargetConsole;
+            _originalEmulator.ConsoleEmulated = ConsoleEmulated;
 
             if (owner != null)
             {

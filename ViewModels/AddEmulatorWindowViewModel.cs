@@ -13,7 +13,7 @@ namespace SamsGameLauncher.ViewModels
         private string _name = "";
         private string _executablePath = "";
         private string _defaultArguments = "";
-        private string _targetConsole = "";
+        private ConsoleType _consoleEmulated = ConsoleType.None;
 
         // bound to the "ID" TextBox
         public string Id
@@ -52,12 +52,12 @@ namespace SamsGameLauncher.ViewModels
             }
         }
 
-        public string TargetConsole
+        public ConsoleType ConsoleEmulated
         {
-            get => _targetConsole;
+            get => _consoleEmulated;
             set
             {
-                _targetConsole = value;
+                _consoleEmulated = value;
                 RaisePropertyChanged();
                 SaveCommand.NotifyCanExecuteChanged();
             }
@@ -73,6 +73,8 @@ namespace SamsGameLauncher.ViewModels
                 RaisePropertyChanged();
             }
         }
+
+        public Array ConsoleValues => Enum.GetValues<ConsoleType>();
 
         // holds the newly created Emulator after Save
         public Emulator? NewEmulator { get; private set; }
@@ -122,7 +124,7 @@ namespace SamsGameLauncher.ViewModels
                 Name = Name,
                 ExecutablePath = ExecutablePath,
                 DefaultArguments = DefaultArguments,
-                TargetConsole = TargetConsole
+                ConsoleEmulated = ConsoleEmulated
             };
 
             // close dialog with success result

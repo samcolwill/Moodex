@@ -2,7 +2,6 @@
 
 namespace SamsGameLauncher.Models
 {
-    // Store the enum as its string name in JSON (e.g. "Emulated" rather than 0)
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum GameType
     {

@@ -20,14 +20,14 @@ namespace SamsGameLauncher.ViewModels
         private string _name = "";
         private string _gameFilePath = "";
         private Emulator? _selectedEmulator;
-        private string _selectedConsole = "";
+        private ConsoleType _selectedConsole = ConsoleType.None;
         private string _selectedGenre = "";
         private DateTime _releaseDate;
         private bool _showEmulator;
 
         // ───────────── dropdown sources ─────────────
         public ObservableCollection<Emulator> Emulators { get; }
-        public IReadOnlyList<string> Consoles { get; }
+        public IReadOnlyList<ConsoleType> Consoles { get; }
         public IReadOnlyList<string> Genres { get; }
 
         public string GameTypeName { get; }   // display-only
@@ -51,7 +51,7 @@ namespace SamsGameLauncher.ViewModels
             set { _selectedEmulator = value; RaisePropertyChanged(); SaveCommand.NotifyCanExecuteChanged(); }
         }
 
-        public string SelectedConsole
+        public ConsoleType SelectedConsole
         {
             get => _selectedConsole;
             set { _selectedConsole = value; RaisePropertyChanged(); }

@@ -68,7 +68,7 @@
                                        FontStyle="Italic"
                                        FontSize="12"
                                        Foreground="Gray"/>
-                            <TextBlock Text="{Binding TargetConsole}"
+                            <TextBlock Text="{Binding ConsoleEmulated}"
                                        FontSize="12"/>
                         </StackPanel>
 

@@ -330,7 +330,7 @@ namespace SamsGameLauncher.ViewModels
             // set group description based on selected criteria
             PropertyGroupDescription? pgd = GroupBy switch
             {
-                "Console" => new PropertyGroupDescription(nameof(GameBase.Console)),
+                "Console" => new PropertyGroupDescription(nameof(GameBase.ConsoleName)),
                 "Genre" => new PropertyGroupDescription(nameof(GameBase.Genre)),
                 "Year" => new PropertyGroupDescription(nameof(GameBase.ReleaseYear)),
                 _ => null
@@ -370,7 +370,8 @@ namespace SamsGameLauncher.ViewModels
                 if (parent == null) break;
 
                 // If the parent is the console folder, we've reached <GameName>
-                if (string.Equals(Path.GetFileName(parent), game.Console,
+                var consoleName = game.Console.GetDescription();
+                if (string.Equals(Path.GetFileName(parent), consoleName,
                                   StringComparison.OrdinalIgnoreCase))
                     return dir;                      // <- stop here
 
@@ -394,6 +395,7 @@ namespace SamsGameLauncher.ViewModels
 
             // 1) resolve folders exactly as before
             var srcFolder = GetInstallRoot(game, set.ActiveLibraryPath, set.ArchiveLibraryPath);
+
             if (string.IsNullOrWhiteSpace(srcFolder)) return;
 
             if (!srcFolder.StartsWith(srcRoot, StringComparison.OrdinalIgnoreCase))
@@ -403,7 +405,8 @@ namespace SamsGameLauncher.ViewModels
                 return;
             }
 
-            var newFolder = Path.Combine(destRoot, game.Console, game.Name);
+            var consoleName = game.Console.GetDescription();
+            var newFolder = Path.Combine(destRoot, consoleName, game.Name);
             Directory.CreateDirectory(newFolder);
 
             // 2) show progress dialog
