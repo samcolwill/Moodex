@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SamsGameLauncher.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,21 +12,17 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using SamsGameLauncher.Models;
-using SamsGameLauncher.ViewModels;
 
 namespace SamsGameLauncher.Views
 {
     /// <summary>
-    /// Interaction logic for ManageEmulatorsWindow.xaml
+    /// Interaction logic for EditEmulatorWindow.xaml
     /// </summary>
-    public partial class ManageEmulatorsWindow : Window
+    public partial class EditEmulatorWindow : Window
     {
-        public ManageEmulatorsWindow(ManageEmulatorsWindowViewModel vm)
+        public EditEmulatorWindow(EditEmulatorWindowViewModel vm)
         {
             InitializeComponent();
-
-            // let DI give us the ViewModel
             DataContext = vm;
         }
     }

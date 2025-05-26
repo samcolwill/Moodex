@@ -51,6 +51,17 @@ namespace SamsGameLauncher.Services
                 : null;
         }
 
+        public Emulator? ShowEditEmulator(Emulator toEdit)
+        {
+            // manually new up the ViewModel, passing the selected Emulator
+            var vm = new EditEmulatorWindowViewModel(toEdit);
+            // then new up the window and give it the VM
+            var win = new EditEmulatorWindow(vm);
+            win.Owner = System.Windows.Application.Current.MainWindow;
+            var result = win.ShowDialog();
+            return result == true ? toEdit : null;
+        }
+
         public void ShowManageEmulators()
         {
             // resolve via DI so that ManageEmulatorsWindow

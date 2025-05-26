@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SamsGameLauncher.Models;
 using SamsGameLauncher.Services;
 using SamsGameLauncher.ViewModels;
 using SamsGameLauncher.ViewModels.Settings;
@@ -15,6 +16,9 @@ namespace SamsGameLauncher
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            this.DispatcherUnhandledException += App_DispatcherUnhandledException;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
             base.OnStartup(e);
 
             var services = new ServiceCollection();
@@ -32,6 +36,15 @@ namespace SamsGameLauncher
             services.AddTransient<SettingsWindow>();
             services.AddTransient<ManageEmulatorsWindowViewModel>();
             services.AddTransient<ManageEmulatorsWindow>();
+            services.AddTransient<EditEmulatorWindow>();
+
+            services.AddTransient(sp =>
+              new ManageEmulatorsWindowViewModel(
+                sp.GetRequiredService<GameLibrary>(),
+                sp.GetRequiredService<IDialogService>(),
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "emulators.json")
+              )
+            );
 
             // (and any other VMs you resolve manually…)
             _provider = services.BuildServiceProvider();
@@ -84,6 +97,25 @@ namespace SamsGameLauncher
             }
 
             base.OnExit(e);
+        }
+
+        private void App_DispatcherUnhandledException(object sender,
+                                                  System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            System.Windows.MessageBox.Show(
+                $"UI thread exception:\n{e.Exception}",
+                "Unhandled Exception",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+            e.Handled = true;      // or false to let the app crash after the dialog
+        }
+
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            var ex = e.ExceptionObject as Exception;
+            System.Windows.MessageBox.Show(
+                $"Background exception:\n{ex}",
+                "Unhandled Exception",
+                MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 }

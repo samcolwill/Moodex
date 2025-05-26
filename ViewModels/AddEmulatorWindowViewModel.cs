@@ -13,6 +13,7 @@ namespace SamsGameLauncher.ViewModels
         private string _name = "";
         private string _executablePath = "";
         private string _defaultArguments = "";
+        private string _targetConsole = "";
 
         // bound to the "ID" TextBox
         public string Id
@@ -46,6 +47,17 @@ namespace SamsGameLauncher.ViewModels
             set
             {
                 _executablePath = value;
+                RaisePropertyChanged();
+                SaveCommand.NotifyCanExecuteChanged();
+            }
+        }
+
+        public string TargetConsole
+        {
+            get => _targetConsole;
+            set
+            {
+                _targetConsole = value;
                 RaisePropertyChanged();
                 SaveCommand.NotifyCanExecuteChanged();
             }
@@ -109,7 +121,8 @@ namespace SamsGameLauncher.ViewModels
                 Id = Id,
                 Name = Name,
                 ExecutablePath = ExecutablePath,
-                DefaultArguments = DefaultArguments
+                DefaultArguments = DefaultArguments,
+                TargetConsole = TargetConsole
             };
 
             // close dialog with success result
