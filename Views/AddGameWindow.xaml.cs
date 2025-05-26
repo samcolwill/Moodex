@@ -7,13 +7,13 @@ namespace SamsGameLauncher.Views
 {
     public partial class AddGameWindow : Window
     {
-        public AddGameWindow(List<Emulator> availableEmulators)
+        public AddGameWindow()
         {
             InitializeComponent();
 
             var settingsService = new JsonSettingsService();
 
-            DataContext = new AddGameWindowViewModel(availableEmulators, settingsService);
+            DataContext = new AddGameWindowViewModel(settingsService);
         }
         public GameBase? NewGame => (DataContext as AddGameWindowViewModel)?.NewGame;
     }

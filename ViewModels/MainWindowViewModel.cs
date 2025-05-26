@@ -164,104 +164,103 @@ namespace SamsGameLauncher.ViewModels
             {
                 Process? process = null;
 
-                // handle each game type
                 switch (game)
                 {
                     case EmulatedGame em:
-                        if (em.Emulator == null)
                         {
-                            System.Windows.MessageBox.Show("No emulator associated.", "Launch Error",
-                                            MessageBoxButton.OK, MessageBoxImage.Warning);
-                            return;
+                            // Find the emulator for this console
+                            var emulator = Emulators.FirstOrDefault(e => e.ConsoleEmulated == em.Console);
+                            if (emulator == null)
+                            {
+                                MessageBox.Show($"No emulator configured for {em.Console.GetDescription()}.",
+                                    "Launch Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                return;
+                            }
+
+                            var emArgs = string.IsNullOrWhiteSpace(emulator.DefaultArguments)
+                                ? $"\"{em.GamePath}\""
+                                : emulator.DefaultArguments.Replace("{RomPath}", em.GamePath);
+
+                            process = Process.Start(new ProcessStartInfo
+                            {
+                                FileName = emulator.ExecutablePath,
+                                Arguments = emArgs,
+                                UseShellExecute = true
+                            });
+                            break;
                         }
-                        // substitute {RomPath} placeholder if needed
-                        var emArgs = string.IsNullOrWhiteSpace(em.Emulator.DefaultArguments)
-                                     ? $"\"{em.GamePath}\""
-                                     : em.Emulator.DefaultArguments.Replace("{RomPath}", em.GamePath);
-
-                        process = Process.Start(new ProcessStartInfo
-                        {
-                            FileName = em.Emulator.ExecutablePath,
-                            Arguments = emArgs,
-                            UseShellExecute = true
-                        });
-                        break;
-
-                    case NativeGame ng:
-                        var startInfo = new ProcessStartInfo
-                        {
-                            FileName = ng.ExePath,
-                            WorkingDirectory = Path.GetDirectoryName(ng.ExePath)!,
-                            UseShellExecute = false          // honour WorkingDirectory, allow args > 2 kB
-                        };
-                        process = Process.Start(startInfo);
-                        break;
 
                     case FolderBasedGame fg:
-                        if (fg.Emulator == null)
                         {
-                            System.Windows.MessageBox.Show("No emulator associated.", "Launch Error",
-                                            MessageBoxButton.OK, MessageBoxImage.Warning);
-                            return;
-                        }
-                        var fgArgs = string.IsNullOrWhiteSpace(fg.Emulator.DefaultArguments)
-                                     ? $"\"{fg.FolderPath}\""
-                                     : fg.Emulator.DefaultArguments.Replace("{FolderPath}", fg.FolderPath);
+                            var emulator = Emulators.FirstOrDefault(e => e.ConsoleEmulated == fg.Console);
+                            if (emulator == null)
+                            {
+                                MessageBox.Show($"No emulator configured for {fg.Console.GetDescription()}.",
+                                    "Launch Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                return;
+                            }
 
-                        process = Process.Start(new ProcessStartInfo
+                            var fgArgs = string.IsNullOrWhiteSpace(emulator.DefaultArguments)
+                                ? $"\"{fg.FolderPath}\""
+                                : emulator.DefaultArguments.Replace("{FolderPath}", fg.FolderPath);
+
+                            process = Process.Start(new ProcessStartInfo
+                            {
+                                FileName = emulator.ExecutablePath,
+                                Arguments = fgArgs,
+                                UseShellExecute = true
+                            });
+                            break;
+                        }
+
+                    case NativeGame ng:
                         {
-                            FileName = fg.Emulator.ExecutablePath,
-                            Arguments = fgArgs,
-                            UseShellExecute = true
-                        });
-                        break;
+                            var startInfo = new ProcessStartInfo
+                            {
+                                FileName = ng.ExePath,
+                                WorkingDirectory = Path.GetDirectoryName(ng.ExePath)!,
+                                UseShellExecute = false
+                            };
+                            process = Process.Start(startInfo);
+                            break;
+                        }
 
                     default:
-                        System.Windows.MessageBox.Show("Unsupported game type.", "Launch Error",
-                                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show("Unsupported game type.", "Launch Error",
+                            MessageBoxButton.OK, MessageBoxImage.Warning);
                         break;
                 }
 
+                // Existing logic for monitor selection and placement...
                 if (process != null)
                 {
-                    // 1) Load the user’s saved monitor index
+                    // ... (unchanged)
                     var model = _settings.Load();
                     var screens = Screen.AllScreens;
                     int idx = model.DefaultMonitorIndex;
 
                     Debug.WriteLine($"[RunGame] Saved idx={idx}, screen count={screens.Length}");
-                    // If you still want to log each monitor’s bounds, do this instead:
                     foreach (var s in screens)
                         Debug.WriteLine($"{s.DeviceName}: {s.Bounds.Width}×{s.Bounds.Height} @ ({s.Bounds.X},{s.Bounds.Y})");
 
-                    // 2) pick the target (or fallback)
-                    var target = (idx >= 0 && idx < screens.Length)
-                                   ? screens[idx]
-                                   : Screen.PrimaryScreen;
+                    var target = (idx >= 0 && idx < screens.Length) ? screens[idx] : Screen.PrimaryScreen;
                     var fallback = Screen.PrimaryScreen;
 
-                    // 3) move & resize the emulator windows
                     _placer.PlaceProcessWindows(process, target, fallback);
                 }
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show($"Failed to launch game:\n{ex.Message}", "Error",
-                                MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to launch game:\n{ex.Message}", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private void ExecuteAddGame()
         {
             // show dialog and get new game
-            var newGame = _dialogs.ShowAddGame(Emulators);
+            var newGame = _dialogs.ShowAddGame();
             if (newGame == null) return;
-
-            // wire up emulator object
-            if (newGame is EmulatedGame eem)
-                eem.Emulator = Emulators.FirstOrDefault(e => e.Id == eem.EmulatorId);
-            else if (newGame is FolderBasedGame fgm)
-                fgm.Emulator = Emulators.FirstOrDefault(e => e.Id == fgm.EmulatorId);
 
             Games.Add(newGame);
             SaveGames();
@@ -270,7 +269,7 @@ namespace SamsGameLauncher.ViewModels
         private void ExecuteEditGame(GameBase game)
         {
             // show edit dialog; returns null if cancelled
-            var edited = _dialogs.ShowEditGame(game, Emulators);
+            var edited = _dialogs.ShowEditGame(game);
             if (edited == null) return;
 
             SaveGames();

@@ -20,10 +20,10 @@ namespace SamsGameLauncher.Services
             _provider = provider;
         }
 
-        public GameBase? ShowAddGame(IEnumerable<Emulator> emulators)
+        public GameBase? ShowAddGame()
         {
             // Show AddGameWindow and pass in available emulators
-            var win = new AddGameWindow(emulators.ToList());
+            var win = new AddGameWindow();
             // Return the newly created game if OK, otherwise null
             return win.ShowDialog() == true
                 ? win.NewGame
@@ -31,10 +31,10 @@ namespace SamsGameLauncher.Services
         }
 
         [SupportedOSPlatform("windows")]
-        public GameBase? ShowEditGame(GameBase game, IEnumerable<Emulator> emulators)
+        public GameBase? ShowEditGame(GameBase game)
         {
             // Show EditGameWindow for the selected game
-            var win = new EditGameWindow(game, emulators.ToList());
+            var win = new EditGameWindow(game);
             // If saved, return the same GameBase (updated in place), else null
             return win.ShowDialog() == true
                 ? game

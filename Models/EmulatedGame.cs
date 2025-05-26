@@ -6,9 +6,6 @@ namespace SamsGameLauncher.Models
 {
     public class EmulatedGame : GameBase
     {
-        // Matches an entry in GameLibrary.Emulators
-        public string EmulatorId { get; set; } = string.Empty;
-
         // Full path to the ROM file on disk
         public string GamePath { get; set; } = string.Empty;
 
@@ -37,9 +34,5 @@ namespace SamsGameLauncher.Models
                 return new Uri(coverPath).AbsoluteUri;
             }
         }
-
-        // Runtime‐only: the Emulator instance, wired up in the ViewModel or GameLibrary
-        [JsonIgnore]
-        public Emulator? Emulator { get; set; }
     }
 }

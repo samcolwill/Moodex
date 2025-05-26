@@ -19,14 +19,11 @@ namespace SamsGameLauncher.ViewModels
         // ───────────── backing fields ─────────────
         private string _name = "";
         private string _gameFilePath = "";
-        private Emulator? _selectedEmulator;
         private ConsoleType _selectedConsole = ConsoleType.None;
         private string _selectedGenre = "";
         private DateTime _releaseDate;
-        private bool _showEmulator;
 
         // ───────────── dropdown sources ─────────────
-        public ObservableCollection<Emulator> Emulators { get; }
         public IReadOnlyList<ConsoleType> Consoles { get; }
         public IReadOnlyList<string> Genres { get; }
 
@@ -43,12 +40,6 @@ namespace SamsGameLauncher.ViewModels
         {
             get => _gameFilePath;
             set { _gameFilePath = value; RaisePropertyChanged(); SaveCommand.NotifyCanExecuteChanged(); }
-        }
-
-        public Emulator? SelectedEmulator
-        {
-            get => _selectedEmulator;
-            set { _selectedEmulator = value; RaisePropertyChanged(); SaveCommand.NotifyCanExecuteChanged(); }
         }
 
         public ConsoleType SelectedConsole
@@ -69,12 +60,6 @@ namespace SamsGameLauncher.ViewModels
             set { _releaseDate = value; RaisePropertyChanged(); }
         }
 
-        public bool ShowEmulator
-        {
-            get => _showEmulator;
-            private set { _showEmulator = value; RaisePropertyChanged(); }
-        }
-
         // ───────────── commands (Toolkit) ─────────────
         public IRelayCommand BrowseCommand { get; }
         public IRelayCommand SaveCommand { get; }
@@ -84,13 +69,11 @@ namespace SamsGameLauncher.ViewModels
         [SupportedOSPlatform("windows")]
         public EditGameWindowViewModel(
             GameBase gameToEdit,
-            IEnumerable<Emulator> availableEmulators,
             ISettingsService settingsService)
         {
             _originalGame = gameToEdit;
             _settingsService = settingsService;
 
-            Emulators = new ObservableCollection<Emulator>(availableEmulators);
             var settings = _settingsService.Load();
             Consoles = settings.Consoles;
             Genres = LauncherConstants.Genres;
@@ -111,18 +94,14 @@ namespace SamsGameLauncher.ViewModels
             {
                 case EmulatedGame em:
                     GameFilePath = em.GamePath;
-                    SelectedEmulator = Emulators.FirstOrDefault(e => e.Id == em.EmulatorId);
-                    ShowEmulator = true;
                     break;
 
                 case NativeGame ng:
                     GameFilePath = ng.ExePath;
-                    ShowEmulator = false;
                     break;
 
                 case FolderBasedGame fg:
                     GameFilePath = fg.FolderPath;
-                    ShowEmulator = false;
                     break;
             }
         }
@@ -151,8 +130,7 @@ namespace SamsGameLauncher.ViewModels
                         !string.IsNullOrWhiteSpace(GameFilePath);
 
             return GameTypeName.Equals("Emulated", StringComparison.OrdinalIgnoreCase)
-                   ? basic && SelectedEmulator != null
-                   : basic;
+                   ? basic : basic;
         }
 
         private void ExecuteSave(Window? owner)
@@ -167,8 +145,6 @@ namespace SamsGameLauncher.ViewModels
             {
                 case EmulatedGame em:
                     em.GamePath = GameFilePath;
-                    em.EmulatorId = SelectedEmulator?.Id ?? "";
-                    em.Emulator = SelectedEmulator;
                     break;
 
                 case NativeGame ng:

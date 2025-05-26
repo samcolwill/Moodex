@@ -10,13 +10,13 @@ namespace SamsGameLauncher.Views
     public partial class EditGameWindow : Window
     {
         [SupportedOSPlatform("windows")]
-        public EditGameWindow(GameBase gameToEdit, List<Emulator> availableEmulators)
+        public EditGameWindow(GameBase gameToEdit)
         {
             InitializeComponent();
 
             var settingsService = new JsonSettingsService();
 
-            DataContext = new EditGameWindowViewModel(gameToEdit, availableEmulators, settingsService);
+            DataContext = new EditGameWindowViewModel(gameToEdit, settingsService);
         }
     }
 }

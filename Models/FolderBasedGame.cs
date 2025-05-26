@@ -6,9 +6,6 @@ namespace SamsGameLauncher.Models
 {
     public class FolderBasedGame : GameBase
     {
-        // Matches an entry in GameLibrary.Emulators
-        public string EmulatorId { get; set; } = string.Empty;
-
         // Full path to the game’s folder on disk
         public string FolderPath { get; set; } = string.Empty;
 
@@ -33,9 +30,5 @@ namespace SamsGameLauncher.Models
                 return new Uri(coverPath).AbsoluteUri;
             }
         }
-
-        // Runtime‐only: populated in GameLibrary or ViewModel
-        [JsonIgnore]
-        public Emulator? Emulator { get; set; }
     }
 }

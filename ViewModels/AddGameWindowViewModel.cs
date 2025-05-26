@@ -17,7 +17,6 @@ namespace SamsGameLauncher.ViewModels
         // ───────────── backing fields ─────────────
         private string _name = "";
         private string _selectedGameType = "";
-        private Emulator? _selectedEmulator;
         private ConsoleType _selectedConsole = ConsoleType.None;
         private string _selectedGenre = "";
         private DateTime _releaseDate = DateTime.Today;
@@ -25,7 +24,6 @@ namespace SamsGameLauncher.ViewModels
 
         // ───────────── dropdown sources ─────────────
         public List<string> GameTypes { get; }
-        public ObservableCollection<Emulator> Emulators { get; }
         public IReadOnlyList<ConsoleType> Consoles { get; }
         public IReadOnlyList<string> Genres { get; }
 
@@ -48,12 +46,6 @@ namespace SamsGameLauncher.ViewModels
                 UpdateGameFileLabel();
                 SaveCommand.NotifyCanExecuteChanged();
             }
-        }
-
-        public Emulator? SelectedEmulator
-        {
-            get => _selectedEmulator;
-            set { _selectedEmulator = value; RaisePropertyChanged(); SaveCommand.NotifyCanExecuteChanged(); }
         }
 
         public ConsoleType SelectedConsole
@@ -143,11 +135,9 @@ namespace SamsGameLauncher.ViewModels
 
         // ───────────── ctor ─────────────
         public AddGameWindowViewModel(
-            IEnumerable<Emulator> availableEmulators,
             ISettingsService settingsService)
         {
             GameTypes = Enum.GetNames(typeof(GameType)).ToList();
-            Emulators = new ObservableCollection<Emulator>(availableEmulators);
             var settings = settingsService.Load();
             Consoles = settings.Consoles;
             Genres = LauncherConstants.Genres;
@@ -206,9 +196,7 @@ namespace SamsGameLauncher.ViewModels
 
         private bool CanSave() =>
                !string.IsNullOrWhiteSpace(Name)
-            && !string.IsNullOrWhiteSpace(GamePath)
-            && (!SelectedGameType.Equals("Emulated", StringComparison.OrdinalIgnoreCase)
-                || SelectedEmulator != null);
+            && !string.IsNullOrWhiteSpace(GamePath);
 
         private void ExecuteSave(Window? owner)
         {
@@ -218,7 +206,6 @@ namespace SamsGameLauncher.ViewModels
                 {
                     Name = Name,
                     GamePath = GamePath,
-                    EmulatorId = SelectedEmulator!.Id,
                     Console = SelectedConsole,
                     Genre = SelectedGenre,
                     ReleaseDate = ReleaseDate
@@ -235,7 +222,6 @@ namespace SamsGameLauncher.ViewModels
                 {
                     Name = Name,
                     FolderPath = GamePath,
-                    EmulatorId = SelectedEmulator!.Id,
                     Console = SelectedConsole,
                     Genre = SelectedGenre,
                     ReleaseDate = ReleaseDate

@@ -28,14 +28,6 @@ namespace SamsGameLauncher.Models
 
             // Populate the ObservableCollection for binding
             Games = new ObservableCollection<GameBase>(loadedGames);
-
-            // For each emulated game, find its Emulator by ID
-            foreach (var emGame in Games.OfType<EmulatedGame>())
-                emGame.Emulator = Emulators.FirstOrDefault(e => e.Id == emGame.EmulatorId);
-
-            // For each folder‑based game, do the same
-            foreach (var fbGame in Games.OfType<FolderBasedGame>())
-                fbGame.Emulator = Emulators.FirstOrDefault(e => e.Id == fbGame.EmulatorId);
         }
 
         // Ensure JSON files exist (copy from /dev or create empty), then load

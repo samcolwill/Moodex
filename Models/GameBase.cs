@@ -63,7 +63,5 @@ namespace SamsGameLauncher.Models
 
         [JsonIgnore]                 // not persisted
         public bool IsInArchive { get; set; }
-
-
     }
 }

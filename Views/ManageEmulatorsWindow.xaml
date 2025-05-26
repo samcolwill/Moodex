@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:SamsGameLauncher.ViewModels"
         xmlns:util="clr-namespace:SamsGameLauncher.Utilities"
+        xmlns:conv="clr-namespace:SamsGameLauncher.Converters"
         Title="Manage Emulators"
         Height="450" Width="600"
         Icon="/SamsGameLauncher;component/Assets/launcher.ico"
@@ -15,6 +16,7 @@
         <util:FileNameConverter x:Key="FileNameConverter"/>
         <!-- for zebra‐striping -->
         <SolidColorBrush x:Key="AltRowBrush" Color="#F7F7F7"/>
+        <conv:EnumDescriptionConverter x:Key="EnumDesc"/>
     </Window.Resources>
 
     <Grid Margin="10">
@@ -68,7 +70,7 @@
                                        FontStyle="Italic"
                                        FontSize="12"
                                        Foreground="Gray"/>
-                            <TextBlock Text="{Binding ConsoleEmulated}"
+                            <TextBlock Text="{Binding ConsoleEmulated, Converter={StaticResource EnumDesc}}"
                                        FontSize="12"/>
                         </StackPanel>
 
