@@ -1,33 +1,32 @@
-﻿using System.IO;
-using System.Text.Json;
+﻿using SamsGameLauncher.Utilities;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
+using System.Text.Json;
 
 namespace SamsGameLauncher.Models
 {
     public class GameLibrary
     {
         // Backing collections for emulators and games
-        public List<Emulator> Emulators { get; set; } = new();
-        public ObservableCollection<GameBase> Games { get; set; } = new();
+        public List<EmulatorInfo> Emulators { get; set; } = new();
+        public ObservableCollection<GameInfo> Games { get; set; } = new();
 
         // Load from JSON files and wire up emulator references
         public void LoadData(string emulatorPath, string gamePath)
         {
             // Read and deserialize emulators.json
             string emuJson = File.ReadAllText(emulatorPath);
-            Emulators = JsonSerializer.Deserialize<List<Emulator>>(emuJson)
-                        ?? new List<Emulator>();
+            Emulators = JsonSerializer.Deserialize<List<EmulatorInfo>>(emuJson)
+                        ?? new List<EmulatorInfo>();
 
             // Read and deserialize games.json using our custom converter
             string gameJson = File.ReadAllText(gamePath);
-            var options = new JsonSerializerOptions();
-            options.Converters.Add(new GameJsonConverter());
-            var loadedGames = JsonSerializer
-                .Deserialize<List<GameBase>>(gameJson, options)
-                ?? new List<GameBase>();
+            var loadedGames = JsonSerializer.Deserialize<List<GameInfo>>(gameJson)
+                ?? new List<GameInfo>();
 
             // Populate the ObservableCollection for binding
-            Games = new ObservableCollection<GameBase>(loadedGames);
+            Games = new ObservableCollection<GameInfo>(loadedGames);
         }
 
         // Ensure JSON files exist (copy from /dev or create empty), then load
@@ -71,7 +70,6 @@ namespace SamsGameLauncher.Models
         public void SaveGames(string gamePath)
         {
             var options = new JsonSerializerOptions { WriteIndented = true };
-            options.Converters.Add(new GameJsonConverter());
             string gameJson = JsonSerializer.Serialize(Games, options);
             File.WriteAllText(gamePath, gameJson);
         }

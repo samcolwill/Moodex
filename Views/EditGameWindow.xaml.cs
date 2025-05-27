@@ -10,7 +10,7 @@ namespace SamsGameLauncher.Views
     public partial class EditGameWindow : Window
     {
         [SupportedOSPlatform("windows")]
-        public EditGameWindow(GameBase gameToEdit)
+        public EditGameWindow(GameInfo gameToEdit)
         {
             InitializeComponent();
 

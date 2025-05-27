@@ -6,6 +6,7 @@
                FontWeight="Bold" Margin="0,0,0,5"/>
         <ListBox ItemsSource="{Binding Consoles}"
              SelectedItem="{Binding SelectedConsole}"
+             DisplayMemberPath="Name"
              Height="200"/>
 
         <StackPanel Orientation="Horizontal" Margin="0,10,0,0">

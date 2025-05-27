@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SamsGameLauncher.Models;
 using SamsGameLauncher.Services;
+using SamsGameLauncher.Utilities;
 using SamsGameLauncher.ViewModels;
 using SamsGameLauncher.ViewModels.Settings;
 using SamsGameLauncher.Views;
@@ -36,6 +37,9 @@ namespace SamsGameLauncher
             services.AddTransient<SettingsWindow>();
             services.AddTransient<ManageEmulatorsWindowViewModel>();
             services.AddTransient<ManageEmulatorsWindow>();
+            services.AddTransient<AddEmulatorWindowViewModel>();
+            services.AddTransient<AddEmulatorWindow>();
+            services.AddTransient<EditEmulatorWindowViewModel>();
             services.AddTransient<EditEmulatorWindow>();
 
             services.AddSingleton<GameLibrary>(sp =>
@@ -63,14 +67,19 @@ namespace SamsGameLauncher
             // (and any other VMs you resolve manually…)
             _provider = services.BuildServiceProvider();
 
+            // Configure settings
+            var settingsService = _provider.GetRequiredService<ISettingsService>();
+            var settings = settingsService.Load();
+
+            // ── refresh the ConsoleRegistry so GameInfo.ConsoleName will work ─────────────
+            ConsoleRegistry.Refresh(settingsService);
+
             // set up the main window
             var mainWin = _provider.GetRequiredService<MainWindow>();
             mainWin.DataContext = _provider.GetRequiredService<MainWindowViewModel>();
             mainWin.Show();
 
             // ── launch DS4Windows if enabled ─────────────────────────────
-            var settingsService = _provider.GetRequiredService<ISettingsService>();
-            var settings = settingsService.Load();
             if (settings.LaunchDs4WindowsOnStartup)
             {
                 var exeDir = AppContext.BaseDirectory;

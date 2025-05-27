@@ -10,6 +10,6 @@ namespace SamsGameLauncher.Views
         {
             InitializeComponent();
         }
-        public Emulator? NewEmulator => (DataContext as AddEmulatorWindowViewModel)?.NewEmulator;
+        public EmulatorInfo? NewEmulator => (DataContext as AddEmulatorWindowViewModel)?.NewEmulator;
     }
 }

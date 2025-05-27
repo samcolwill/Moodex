@@ -16,7 +16,6 @@
         <util:FileNameConverter x:Key="FileNameConverter"/>
         <!-- for zebra‐striping -->
         <SolidColorBrush x:Key="AltRowBrush" Color="#F7F7F7"/>
-        <conv:EnumDescriptionConverter x:Key="EnumDesc"/>
     </Window.Resources>
 
     <Grid Margin="10">
@@ -70,7 +69,7 @@
                                        FontStyle="Italic"
                                        FontSize="12"
                                        Foreground="Gray"/>
-                            <TextBlock Text="{Binding ConsoleEmulated, Converter={StaticResource EnumDesc}}"
+                            <TextBlock Text="{Binding EmulatedConsoleName}"
                                        FontSize="12"/>
                         </StackPanel>
 

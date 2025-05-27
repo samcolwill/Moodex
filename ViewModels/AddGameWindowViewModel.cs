@@ -16,15 +16,20 @@ namespace SamsGameLauncher.ViewModels
     {
         // ───────────── backing fields ─────────────
         private string _name = "";
-        private string _selectedGameType = "";
-        private ConsoleType _selectedConsole = ConsoleType.None;
-        private string _selectedGenre = "";
+        private string _consoleId = "";
+        private string _fileSystemPath = "";
+        private string _genre = "";
         private DateTime _releaseDate = DateTime.Today;
-        private string _gamePath = "";
+
+        private static readonly HashSet<string> _folderConsoleIds = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "Playstation3"
+        };
+        private bool IsFolderBasedConsole => !string.IsNullOrEmpty(ConsoleId)
+            && _folderConsoleIds.Contains(ConsoleId);
 
         // ───────────── dropdown sources ─────────────
-        public List<string> GameTypes { get; }
-        public IReadOnlyList<ConsoleType> Consoles { get; }
+        public IReadOnlyList<ConsoleInfo> Consoles { get; }
         public IReadOnlyList<string> Genres { get; }
 
         // ───────────── form-bound properties ─────────────
@@ -34,30 +39,25 @@ namespace SamsGameLauncher.ViewModels
             set { _name = value; RaisePropertyChanged(); SaveCommand.NotifyCanExecuteChanged(); }
         }
 
-        public string SelectedGameType
+        public string ConsoleId
         {
-            get => _selectedGameType;
+            get => _consoleId;
             set
             {
-                _selectedGameType = value;
+                if (_consoleId == value) return;
+                _consoleId = value;
                 RaisePropertyChanged();
-                UpdateEnabledState();
-                ShowEmulator = !value.Equals("Native", StringComparison.OrdinalIgnoreCase);
-                UpdateGameFileLabel();
+
+                SetAllControlsEnabled(true);
+                UpdateFileSystemPathLabel();
                 SaveCommand.NotifyCanExecuteChanged();
             }
         }
 
-        public ConsoleType SelectedConsole
+        public string Genre
         {
-            get => _selectedConsole;
-            set { _selectedConsole = value; RaisePropertyChanged(); }
-        }
-
-        public string SelectedGenre
-        {
-            get => _selectedGenre;
-            set { _selectedGenre = value; RaisePropertyChanged(); }
+            get => _genre;
+            set { _genre = value; RaisePropertyChanged(); }
         }
 
         public DateTime ReleaseDate
@@ -66,32 +66,18 @@ namespace SamsGameLauncher.ViewModels
             set { _releaseDate = value; RaisePropertyChanged(); }
         }
 
-        public string GamePath
+        public string FileSystemPath
         {
-            get => _gamePath;
-            set { _gamePath = value; RaisePropertyChanged(); SaveCommand.NotifyCanExecuteChanged(); }
+            get => _fileSystemPath;
+            set { _fileSystemPath = value; RaisePropertyChanged(); SaveCommand.NotifyCanExecuteChanged(); }
         }
 
         // ───────────── UI-state flags ─────────────
-        private bool _isGamePathEnabled;
-        public bool IsGamePathEnabled
+        private bool _isFileSystemPathEnabled;
+        public bool IsFileSystemPathEnabled
         {
-            get => _isGamePathEnabled;
-            private set { _isGamePathEnabled = value; RaisePropertyChanged(); }
-        }
-
-        private bool _isEmulatorEnabled;
-        public bool IsEmulatorEnabled
-        {
-            get => _isEmulatorEnabled;
-            private set { _isEmulatorEnabled = value; RaisePropertyChanged(); }
-        }
-
-        private bool _isConsoleEnabled;
-        public bool IsConsoleEnabled
-        {
-            get => _isConsoleEnabled;
-            private set { _isConsoleEnabled = value; RaisePropertyChanged(); }
+            get => _isFileSystemPathEnabled;
+            private set { _isFileSystemPathEnabled = value; RaisePropertyChanged(); }
         }
 
         private bool _isGenreEnabled;
@@ -115,14 +101,6 @@ namespace SamsGameLauncher.ViewModels
             private set { _isBrowseEnabled = value; RaisePropertyChanged(); }
         }
 
-        // show / hide emulator picker for “Native”
-        private bool _showEmulator;
-        public bool ShowEmulator
-        {
-            get => _showEmulator;
-            private set { _showEmulator = value; RaisePropertyChanged(); }
-        }
-
         public string GameFileLabelText { get; private set; }
 
         // ───────────── commands (Toolkit) ─────────────
@@ -131,13 +109,12 @@ namespace SamsGameLauncher.ViewModels
         public IRelayCommand CancelCommand { get; }
 
         // result object
-        public GameBase? NewGame { get; private set; }
+        public GameInfo? NewGame { get; private set; }
 
         // ───────────── ctor ─────────────
         public AddGameWindowViewModel(
             ISettingsService settingsService)
         {
-            GameTypes = Enum.GetNames(typeof(GameType)).ToList();
             var settings = settingsService.Load();
             Consoles = settings.Consoles;
             Genres = LauncherConstants.Genres;
@@ -154,79 +131,60 @@ namespace SamsGameLauncher.ViewModels
         // ───────────── helpers ─────────────
         private void SetAllControlsEnabled(bool enabled)
         {
-            IsGamePathEnabled = enabled;
-            IsEmulatorEnabled = enabled;
-            IsConsoleEnabled = enabled;
+            IsFileSystemPathEnabled = enabled;
+            IsBrowseEnabled = enabled;
             IsGenreEnabled = enabled;
             IsReleaseDateEnabled = enabled;
-            IsBrowseEnabled = enabled;
         }
 
-        private void UpdateEnabledState() =>
-            SetAllControlsEnabled(!string.IsNullOrEmpty(SelectedGameType));
-
-        private void UpdateGameFileLabel()
+        private void UpdateFileSystemPathLabel()
         {
-            GameFileLabelText = SelectedGameType switch
+            if (ConsoleId.Equals("PC", StringComparison.OrdinalIgnoreCase))
             {
-                "Emulated" => "Game File:",
-                "Native" => "Game Executable:",
-                "FolderBased" => "Game Folder:",
-                _ => "Game File:"
-            };
+                GameFileLabelText = "Game Executable:";
+            }
+            else if (IsFolderBasedConsole)
+            {
+                GameFileLabelText = "Game Folder:";
+            }
+            else
+            {
+                GameFileLabelText = "Game File:";
+            }
+
             RaisePropertyChanged(nameof(GameFileLabelText));
         }
 
         // ───────────── command bodies ─────────────
         private void ExecuteBrowse(Window? owner)
         {
-            if (SelectedGameType.Equals("FolderBased", StringComparison.OrdinalIgnoreCase))
+            if (IsFolderBasedConsole)
             {
-                var dlg = new System.Windows.Forms.FolderBrowserDialog();
+                using var dlg = new System.Windows.Forms.FolderBrowserDialog();
                 if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                    GamePath = dlg.SelectedPath;
+                    FileSystemPath = dlg.SelectedPath;
             }
             else
             {
                 var dlg = new OpenFileDialog { Filter = "All Files (*.*)|*.*" };
                 if (dlg.ShowDialog(owner) == true)
-                    GamePath = dlg.FileName;
+                    FileSystemPath = dlg.FileName;
             }
         }
 
         private bool CanSave() =>
                !string.IsNullOrWhiteSpace(Name)
-            && !string.IsNullOrWhiteSpace(GamePath);
+            && !string.IsNullOrWhiteSpace(FileSystemPath);
 
         private void ExecuteSave(Window? owner)
         {
-            NewGame = SelectedGameType switch
+            NewGame = new GameInfo
             {
-                "Emulated" => new EmulatedGame
-                {
-                    Name = Name,
-                    GamePath = GamePath,
-                    Console = SelectedConsole,
-                    Genre = SelectedGenre,
-                    ReleaseDate = ReleaseDate
-                },
-                "Native" => new NativeGame
-                {
-                    Name = Name,
-                    ExePath = GamePath,
-                    Console = SelectedConsole,
-                    Genre = SelectedGenre,
-                    ReleaseDate = ReleaseDate
-                },
-                "FolderBased" => new FolderBasedGame
-                {
-                    Name = Name,
-                    FolderPath = GamePath,
-                    Console = SelectedConsole,
-                    Genre = SelectedGenre,
-                    ReleaseDate = ReleaseDate
-                },
-                _ => null
+                Name = Name,
+                ConsoleId = ConsoleId,
+                FileSystemPath = FileSystemPath,
+                Genre = Genre,
+                ReleaseDate = ReleaseDate
             };
 
             if (owner is not null)

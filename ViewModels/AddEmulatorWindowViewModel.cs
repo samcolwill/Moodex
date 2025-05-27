@@ -1,21 +1,23 @@
-﻿using System.Windows;
-using System.Windows.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using SamsGameLauncher.Models;
-using CommunityToolkit.Mvvm.Input;
+using SamsGameLauncher.Services;
+using System.Windows;
+using System.Windows.Input;
 
 namespace SamsGameLauncher.ViewModels
 {
     // ViewModel for AddEmulatorWindow.xaml
     public class AddEmulatorWindowViewModel : BaseViewModel
     {
+        private readonly ISettingsService _settingsService;
+
         // backing fields for input fields
         private string _id = "";
         private string _name = "";
+        private string _emulatedConsoleId = "";
         private string _executablePath = "";
         private string _defaultArguments = "";
-        private ConsoleType _consoleEmulated = ConsoleType.None;
 
-        // bound to the "ID" TextBox
         public string Id
         {
             get => _id;
@@ -23,12 +25,10 @@ namespace SamsGameLauncher.ViewModels
             {
                 _id = value;
                 RaisePropertyChanged();
-                // update CanExecute for Save button
                 SaveCommand.NotifyCanExecuteChanged();
             }
         }
 
-        // bound to the "Name" TextBox
         public string Name
         {
             get => _name;
@@ -40,7 +40,18 @@ namespace SamsGameLauncher.ViewModels
             }
         }
 
-        // bound to the "Executable Path" TextBox
+        public string EmulatedConsoleId
+        {
+            get => _emulatedConsoleId;
+            set
+            {
+                if (_emulatedConsoleId == value) return;
+                _emulatedConsoleId = value;
+                RaisePropertyChanged();
+                SaveCommand.NotifyCanExecuteChanged();
+            }
+        }
+
         public string ExecutablePath
         {
             get => _executablePath;
@@ -52,18 +63,6 @@ namespace SamsGameLauncher.ViewModels
             }
         }
 
-        public ConsoleType ConsoleEmulated
-        {
-            get => _consoleEmulated;
-            set
-            {
-                _consoleEmulated = value;
-                RaisePropertyChanged();
-                SaveCommand.NotifyCanExecuteChanged();
-            }
-        }
-
-        // bound to the "Arguments" TextBox (optional)
         public string DefaultArguments
         {
             get => _defaultArguments;
@@ -74,23 +73,22 @@ namespace SamsGameLauncher.ViewModels
             }
         }
 
-        public Array ConsoleValues => Enum.GetValues<ConsoleType>();
+        public IReadOnlyList<ConsoleInfo> Consoles { get; }
 
-        // holds the newly created Emulator after Save
-        public Emulator? NewEmulator { get; private set; }
+        public EmulatorInfo? NewEmulator { get; private set; }
 
         // commands bound to buttons in the view
         public IRelayCommand BrowseCommand { get; }
         public IRelayCommand SaveCommand { get; }
         public IRelayCommand CancelCommand { get; }
 
-        public AddEmulatorWindowViewModel()
+        public AddEmulatorWindowViewModel(ISettingsService settingsService)
         {
-            // wire up Browse -> open file dialog
+            _settingsService = settingsService;
+            Consoles = _settingsService.Load().Consoles.ToArray();
+
             BrowseCommand = new RelayCommand<Window?>(ExecuteBrowse);
-            // Save only enabled when required fields are non-empty
             SaveCommand = new RelayCommand<Window?>(ExecuteSave, _ => CanSave());
-            // Cancel simply closes the window
             CancelCommand = new RelayCommand<Window?>(w => w?.Close());
         }
 
@@ -118,13 +116,13 @@ namespace SamsGameLauncher.ViewModels
         private void ExecuteSave(Window? owner)
         {
             // construct the new Emulator instance
-            NewEmulator = new Emulator
+            NewEmulator = new EmulatorInfo
             {
                 Id = Id,
                 Name = Name,
+                EmulatedConsoleId = EmulatedConsoleId,
                 ExecutablePath = ExecutablePath,
-                DefaultArguments = DefaultArguments,
-                ConsoleEmulated = ConsoleEmulated
+                DefaultArguments = DefaultArguments
             };
 
             // close dialog with success result

@@ -12,7 +12,16 @@ namespace SamsGameLauncher.Configuration
         public string ActiveLibraryPath { get; set; } = @"C:\Game Library";
         public string ArchiveLibraryPath { get; set; } = @"M:\Game Library";
         public LibraryKind PrimaryLibrary { get; set; } = LibraryKind.Active;
-        public List<ConsoleType> Consoles { get; set; } = Enum.GetValues<ConsoleType>().ToList();
+        public List<ConsoleInfo> Consoles { get; set; } = new List<ConsoleInfo>
+        {
+            new ConsoleInfo { Id="gameboyadvance", Name="Game Boy Advance" },
+            new ConsoleInfo { Id="nintendoswitch", Name="Nintendo Switch" },
+            new ConsoleInfo { Id="pc", Name="PC" },
+            new ConsoleInfo { Id="playstation1", Name="Playstation 1" },
+            new ConsoleInfo { Id="playstation2", Name="Playstation 2" },
+            new ConsoleInfo { Id="playstation3", Name="Playstation 3" },
+            new ConsoleInfo { Id="xbox", Name="Xbox" }
+        };
         public bool IsDs4Installed { get; set; } = false;
         public bool LaunchDs4WindowsOnStartup { get; set; } = false;
     }

@@ -6,14 +6,14 @@ namespace SamsGameLauncher.Services
     public interface IDialogService
     {
         // Shows the "Add Game" dialog; returns the created GameBase or null if cancelled.
-        GameBase? ShowAddGame();
+        GameInfo? ShowAddGame();
 
         // Shows the "Edit Game" dialog for an existing game; returns the same GameBase if saved, or null.
-        GameBase? ShowEditGame(GameBase game);
+        GameInfo? ShowEditGame(GameInfo game);
 
         // Shows the "Add Emulator" dialog; returns the created Emulator or null if cancelled.
-        Emulator? ShowAddEmulator();
-        Emulator? ShowEditEmulator(Emulator e);
+        EmulatorInfo? ShowAddEmulator();
+        EmulatorInfo? ShowEditEmulator(EmulatorInfo e);
 
         // Shows the Manage Emulators Menu.
         void ShowManageEmulators();

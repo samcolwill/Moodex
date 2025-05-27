@@ -13,9 +13,8 @@ namespace SamsGameLauncher.ViewModels.Settings
     {
         private readonly ISettingsService _settingsService;
 
-        // ─── backing field for selection ─────────────────
-        private ConsoleType? _selectedConsole;
-        public ConsoleType? SelectedConsole
+        private ConsoleInfo? _selectedConsole;
+        public ConsoleInfo? SelectedConsole
         {
             get => _selectedConsole;
             set
@@ -23,14 +22,13 @@ namespace SamsGameLauncher.ViewModels.Settings
                 if (_selectedConsole == value) return;
                 _selectedConsole = value;
                 OnPropertyChanged();
-                // Update Edit/Remove availability
                 EditConsoleCommand.NotifyCanExecuteChanged();
                 RemoveConsoleCommand.NotifyCanExecuteChanged();
             }
         }
 
         // ─── the scrollable, editable list ────────────────
-        public ObservableCollection<ConsoleType> Consoles { get; }
+        public ObservableCollection<ConsoleInfo> Consoles { get; }
 
         // ─── commands for the three buttons ──────────────
         public IRelayCommand AddConsoleCommand { get; }
@@ -41,61 +39,52 @@ namespace SamsGameLauncher.ViewModels.Settings
         {
             _settingsService = settingsService;
 
-            // seed from JSON
             var cfg = _settingsService.Load();
-            Consoles = new ObservableCollection<ConsoleType>(cfg.Consoles);
+            Consoles = new ObservableCollection<ConsoleInfo>(cfg.Consoles);
 
-            // wire up commands
             AddConsoleCommand = new RelayCommand(OnAddConsole);
-            EditConsoleCommand = new RelayCommand(OnEditConsole, () => SelectedConsole.HasValue);
-            RemoveConsoleCommand = new RelayCommand(OnRemoveConsole, () => SelectedConsole.HasValue);
+            EditConsoleCommand = new RelayCommand(OnEditConsole, () => SelectedConsole is not null);
+            RemoveConsoleCommand = new RelayCommand(OnRemoveConsole, () => SelectedConsole is not null);
         }
 
         private void OnAddConsole()
         {
-            var dlg = new InputDialog("Add Console", "Enter new console name:");
+            // e.g. show a dialog asking for Id & Name
+            var dlg = new InputTwoFieldDialog("Add Console",
+                                              "Console ID:",
+                                              "Console Name:");
             if (dlg.ShowDialog() != true) return;
 
-            var input = dlg.InputText?.Trim();
-            if (string.IsNullOrEmpty(input)) return;
-
-            // Try parse into enum
-            if (!Enum.TryParse<ConsoleType>(input, ignoreCase: true, out var consoleType))
-                return;  // or show validation error
-
-            if (Consoles.Contains(consoleType)) return;
-
-            Consoles.Add(consoleType);
+            var newInfo = new ConsoleInfo
+            {
+                Id = dlg.Field1Text.Trim(),
+                Name = dlg.Field2Text.Trim()
+            };
+            Consoles.Add(newInfo);
             SaveConsoles();
         }
 
         private void OnEditConsole()
         {
-            if (SelectedConsole is not ConsoleType oldConsole) return;
-
-            var dlg = new InputDialog(
-                "Edit Console",
-                "Modify console name:",
-                oldConsole.ToString());
+            if (SelectedConsole == null) return;
+            var ci = SelectedConsole;
+            var dlg = new InputTwoFieldDialog("Edit Console",
+               "Console ID:", "Console Name:",
+               ci.Id, ci.Name);
             if (dlg.ShowDialog() != true) return;
 
-            var input = dlg.InputText?.Trim();
-            if (string.IsNullOrEmpty(input)) return;
-            if (!Enum.TryParse<ConsoleType>(input, ignoreCase: true, out var newConsole))
-                return;  // or show validation error
-            if (Consoles.Contains(newConsole)) return;
-
-            var idx = Consoles.IndexOf(oldConsole);
-            Consoles[idx] = newConsole;
-            SelectedConsole = newConsole;
+            ci.Id = dlg.Field1Text.Trim();
+            ci.Name = dlg.Field2Text.Trim();
+            var idx = Consoles.IndexOf(ci);
+            Consoles.RemoveAt(idx);
+            Consoles.Insert(idx, ci);
             SaveConsoles();
         }
 
         private void OnRemoveConsole()
         {
-            if (SelectedConsole is not ConsoleType consoleToRemove) return;
-
-            Consoles.Remove(consoleToRemove);
+            if (SelectedConsole == null) return;
+            Consoles.Remove(SelectedConsole);
             SelectedConsole = null;
             SaveConsoles();
         }

@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Versioning;
 using System.Windows;
-using CommunityToolkit.Mvvm.Input;                 // ✅ Toolkit commands
+using CommunityToolkit.Mvvm.Input;
 using SamsGameLauncher.Constants;
 using SamsGameLauncher.Models;
 using SamsGameLauncher.Services;
@@ -13,21 +13,27 @@ namespace SamsGameLauncher.ViewModels
 {
     public class EditGameWindowViewModel : BaseViewModel
     {
-        private readonly GameBase _originalGame;
-        private readonly ISettingsService _settingsService;
+        private readonly GameInfo _originalGame;
 
         // ───────────── backing fields ─────────────
         private string _name = "";
-        private string _gameFilePath = "";
-        private ConsoleType _selectedConsole = ConsoleType.None;
-        private string _selectedGenre = "";
-        private DateTime _releaseDate;
+        private string _fileSystemPath = "";
+        private string _consoleId = "";
+        private string _genre = "";
+        private DateTime _releaseDate = DateTime.Today;
+
+        // which console-IDs should show the “folder picker”?
+        private static readonly HashSet<string> _folderConsoleIds = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "Playstation3"
+        };
+
+        private bool IsFolderBasedConsole => !string.IsNullOrEmpty(ConsoleId)
+            && _folderConsoleIds.Contains(ConsoleId);
 
         // ───────────── dropdown sources ─────────────
-        public IReadOnlyList<ConsoleType> Consoles { get; }
+        public IReadOnlyList<ConsoleInfo> Consoles { get; }
         public IReadOnlyList<string> Genres { get; }
-
-        public string GameTypeName { get; }   // display-only
 
         // ───────────── bindable props ─────────────
         public string Name
@@ -36,22 +42,22 @@ namespace SamsGameLauncher.ViewModels
             set { _name = value; RaisePropertyChanged(); SaveCommand.NotifyCanExecuteChanged(); }
         }
 
-        public string GameFilePath
+        public string FileSystemPath
         {
-            get => _gameFilePath;
-            set { _gameFilePath = value; RaisePropertyChanged(); SaveCommand.NotifyCanExecuteChanged(); }
+            get => _fileSystemPath;
+            set { _fileSystemPath = value; RaisePropertyChanged(); SaveCommand.NotifyCanExecuteChanged(); }
         }
 
-        public ConsoleType SelectedConsole
+        public string ConsoleId
         {
-            get => _selectedConsole;
-            set { _selectedConsole = value; RaisePropertyChanged(); }
+            get => _consoleId;
+            set { _consoleId = value; RaisePropertyChanged(); }
         }
 
-        public string SelectedGenre
+        public string Genre
         {
-            get => _selectedGenre;
-            set { _selectedGenre = value; RaisePropertyChanged(); }
+            get => _genre;
+            set { _genre = value; RaisePropertyChanged(); }
         }
 
         public DateTime ReleaseDate
@@ -67,96 +73,61 @@ namespace SamsGameLauncher.ViewModels
 
         // ───────────── ctor ─────────────
         [SupportedOSPlatform("windows")]
-        public EditGameWindowViewModel(
-            GameBase gameToEdit,
-            ISettingsService settingsService)
+        public EditGameWindowViewModel(GameInfo gameToEdit,
+                                       ISettingsService settingsService)
         {
             _originalGame = gameToEdit;
-            _settingsService = settingsService;
 
-            var settings = _settingsService.Load();
+            var settings = settingsService.Load();
             Consoles = settings.Consoles;
             Genres = LauncherConstants.Genres;
 
-            // Toolkit commands
+            // wire up commands
             BrowseCommand = new RelayCommand<Window?>(ExecuteBrowse);
             SaveCommand = new RelayCommand<Window?>(ExecuteSave, _ => CanSave());
             CancelCommand = new RelayCommand<Window?>(w => w?.Close());
 
-            // populate fields
+            // seed the form
             Name = gameToEdit.Name;
-            SelectedConsole = gameToEdit.Console;
-            SelectedGenre = gameToEdit.Genre;
+            FileSystemPath = gameToEdit.FileSystemPath;
+            ConsoleId = gameToEdit.ConsoleId;
+            Genre = gameToEdit.Genre;
             ReleaseDate = gameToEdit.ReleaseDate;
-            GameTypeName = gameToEdit.GameType.ToString();
-
-            switch (gameToEdit)
-            {
-                case EmulatedGame em:
-                    GameFilePath = em.GamePath;
-                    break;
-
-                case NativeGame ng:
-                    GameFilePath = ng.ExePath;
-                    break;
-
-                case FolderBasedGame fg:
-                    GameFilePath = fg.FolderPath;
-                    break;
-            }
         }
 
         // ───────────── command bodies ─────────────
         [SupportedOSPlatform("windows")]
         private void ExecuteBrowse(Window? owner)
         {
-            if (_originalGame is FolderBasedGame)
+            if (IsFolderBasedConsole)
             {
                 var fb = new System.Windows.Forms.FolderBrowserDialog();
                 if (fb.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                    GameFilePath = fb.SelectedPath;
+                    FileSystemPath = fb.SelectedPath;
             }
             else
             {
                 var ofd = new Microsoft.Win32.OpenFileDialog { Filter = "All Files (*.*)|*.*" };
                 if (ofd.ShowDialog(owner) == true)
-                    GameFilePath = ofd.FileName;
+                    FileSystemPath = ofd.FileName;
             }
         }
 
         private bool CanSave()
-        {
-            var basic = !string.IsNullOrWhiteSpace(Name) &&
-                        !string.IsNullOrWhiteSpace(GameFilePath);
-
-            return GameTypeName.Equals("Emulated", StringComparison.OrdinalIgnoreCase)
-                   ? basic : basic;
-        }
+            => !string.IsNullOrWhiteSpace(Name)
+            && !string.IsNullOrWhiteSpace(FileSystemPath)
+            && !string.IsNullOrWhiteSpace(ConsoleId);
 
         private void ExecuteSave(Window? owner)
         {
-            // update shared fields
+            // copy back into the model
             _originalGame.Name = Name;
-            _originalGame.Console = SelectedConsole;
-            _originalGame.Genre = SelectedGenre;
+            _originalGame.FileSystemPath = FileSystemPath;
+            _originalGame.ConsoleId = ConsoleId;
+            _originalGame.Genre = Genre;
             _originalGame.ReleaseDate = ReleaseDate;
 
-            switch (_originalGame)
-            {
-                case EmulatedGame em:
-                    em.GamePath = GameFilePath;
-                    break;
-
-                case NativeGame ng:
-                    ng.ExePath = GameFilePath;
-                    break;
-
-                case FolderBasedGame fg:
-                    fg.FolderPath = GameFilePath;
-                    break;
-            }
-
-            if (owner is not null)
+            if (owner != null)
             {
                 owner.DialogResult = true;
                 owner.Close();

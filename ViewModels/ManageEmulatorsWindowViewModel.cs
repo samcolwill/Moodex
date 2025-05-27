@@ -16,9 +16,9 @@ namespace SamsGameLauncher.ViewModels
         private readonly string _emuFilePath;
         private readonly IDialogService _dialogs;
 
-        public ObservableCollection<Emulator> Emulators { get; }
-        public IRelayCommand<Emulator> EditEmulatorCommand { get; }
-        public IAsyncRelayCommand<Emulator> RemoveEmulatorCommand { get; }
+        public ObservableCollection<EmulatorInfo> Emulators { get; }
+        public IRelayCommand<EmulatorInfo> EditEmulatorCommand { get; }
+        public IAsyncRelayCommand<EmulatorInfo> RemoveEmulatorCommand { get; }
         public IRelayCommand<Window> CloseCommand { get; }
 
         public ManageEmulatorsWindowViewModel(
@@ -30,15 +30,15 @@ namespace SamsGameLauncher.ViewModels
             _emuFilePath = emuFilePath;
             _dialogs = dialogs;
 
-            Emulators = new ObservableCollection<Emulator>(
+            Emulators = new ObservableCollection<EmulatorInfo>(
                 _gameLibrary.Emulators);
 
-            EditEmulatorCommand = new RelayCommand<Emulator>(OnEditEmulator);
-            RemoveEmulatorCommand = new AsyncRelayCommand<Emulator>(OnRemoveEmulatorAsync);
+            EditEmulatorCommand = new RelayCommand<EmulatorInfo>(OnEditEmulator);
+            RemoveEmulatorCommand = new AsyncRelayCommand<EmulatorInfo>(OnRemoveEmulatorAsync);
             CloseCommand = new RelayCommand<Window>(w => w?.Close());
         }
 
-        private void OnEditEmulator(Emulator emulator)
+        private void OnEditEmulator(EmulatorInfo emulator)
         {
             // this pops the Edit dialog and, on OK, mutates 'emulator' in place
             var edited = _dialogs.ShowEditEmulator(emulator);
@@ -53,7 +53,7 @@ namespace SamsGameLauncher.ViewModels
                 Emulators.Add(e);
         }
 
-        private async Task OnRemoveEmulatorAsync(Emulator emulator)
+        private async Task OnRemoveEmulatorAsync(EmulatorInfo emulator)
         {
             if (!await _dialogs.ShowConfirmationAsync(
                     $"Remove emulator '{emulator.Name}'?",

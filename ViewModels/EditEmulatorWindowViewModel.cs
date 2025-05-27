@@ -1,20 +1,25 @@
-﻿using System;
-using System.Windows;
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using SamsGameLauncher.Models;
+using SamsGameLauncher.Services;
+using System;
+using System.Windows;
 
 namespace SamsGameLauncher.ViewModels
 {
     public class EditEmulatorWindowViewModel : BaseViewModel
     {
-        private readonly Emulator _originalEmulator;
+        private readonly ISettingsService _settingsService;
+        private readonly EmulatorInfo _originalEmulator;
 
         // ───────────── backing fields ─────────────
         private string _id;
         private string _name = "";
         private string _executablePath = "";
         private string _defaultArguments = "";
-        private ConsoleType _consoleEmulated = ConsoleType.None;
+        private string _emulatedConsoleId = "";
+
+        // ───────────── dropdown source ─────────────
+        public IReadOnlyList<ConsoleInfo> Consoles { get; }
 
         // ───────────── bindable props ─────────────
         public string Id
@@ -58,18 +63,17 @@ namespace SamsGameLauncher.ViewModels
             }
         }
 
-        public ConsoleType ConsoleEmulated
+        public string EmulatedConsoleId
         {
-            get => _consoleEmulated;
+            get => _emulatedConsoleId;
             set
             {
-                _consoleEmulated = value;
+                if (_emulatedConsoleId == value) return;
+                _emulatedConsoleId = value;
                 RaisePropertyChanged();
                 SaveCommand.NotifyCanExecuteChanged();
             }
         }
-
-        public Array ConsoleValues => Enum.GetValues<ConsoleType>();
 
         // ───────────── commands ─────────────
         public IRelayCommand<Window?> BrowseCommand { get; }
@@ -77,17 +81,24 @@ namespace SamsGameLauncher.ViewModels
         public IRelayCommand<Window?> CancelCommand { get; }
 
         // ───────────── ctor ─────────────
-        public EditEmulatorWindowViewModel(Emulator emulator)
+        public EditEmulatorWindowViewModel(ISettingsService settingsService, EmulatorInfo emulator)
         {
+            _settingsService = settingsService
+                                   ?? throw new ArgumentNullException(nameof(settingsService));
+
             _originalEmulator = emulator
                 ?? throw new ArgumentNullException(nameof(emulator));
+
+            // Load the console definitions once:
+            var cfg = _settingsService.Load();
+            Consoles = cfg.Consoles;
 
             // initialize backing fields from the original model
             _id = emulator.Id;
             _name = emulator.Name;
             _executablePath = emulator.ExecutablePath;
             _defaultArguments = emulator.DefaultArguments;
-            _consoleEmulated = emulator.ConsoleEmulated;
+            _emulatedConsoleId = emulator.EmulatedConsoleId;
 
             // wire up commands
             BrowseCommand = new RelayCommand<Window?>(ExecuteBrowse);
@@ -119,7 +130,7 @@ namespace SamsGameLauncher.ViewModels
             _originalEmulator.Name = Name;
             _originalEmulator.ExecutablePath = ExecutablePath;
             _originalEmulator.DefaultArguments = DefaultArguments;
-            _originalEmulator.ConsoleEmulated = ConsoleEmulated;
+            _originalEmulator.EmulatedConsoleId = EmulatedConsoleId;
 
             if (owner != null)
             {

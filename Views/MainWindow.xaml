@@ -12,7 +12,6 @@
 
     <Window.Resources>
         <conv:FreezingBitmapConverter x:Key="FreezingBitmap"/>
-        <conv:EnumDescriptionConverter x:Key="EnumDesc"/>
     </Window.Resources>
 
     <DockPanel>
@@ -85,7 +84,7 @@
                     <GroupStyle>
                         <GroupStyle.HeaderTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Name, Converter={StaticResource EnumDesc}}"
+                                <TextBlock Text="{Binding Name}"
                                            FontSize="16" FontWeight="Bold"
                                            Foreground="White"
                                            Margin="10,20,10,10"/>
@@ -117,22 +116,41 @@
 
                             <!-- cover art -->
                             <Border x:Name="ImageBorder"
-                                    Width="150" Height="200"
                                     Background="Black">
-                                <Image Source="{Binding ThumbnailPath, Converter={StaticResource FreezingBitmap}}"
+                                <!-- default size -->
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Width"  Value="150"/>
+                                        <Setter Property="Height" Value="200"/>
+
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ConsoleId}" Value="playstation1">
+                                                <Setter Property="Width"  Value="150"/>
+                                                <Setter Property="Height" Value="150"/>
+                                            </DataTrigger>
+
+                                            <DataTrigger Binding="{Binding ConsoleId}" Value="playstation3">
+                                                <Setter Property="Height" Value="180"/>
+                                            </DataTrigger>
+
+                                            <DataTrigger Binding="{Binding ConsoleId}" Value="gameboyadvance">
+                                                <Setter Property="Width"  Value="150"/>
+                                                <Setter Property="Height" Value="150"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+
+                                <Image Source="{Binding GameCoverUri, Converter={StaticResource FreezingBitmap}}"
                                        Stretch="Fill"
                                        HorizontalAlignment="Stretch"
                                        VerticalAlignment="Stretch">
                                     <Image.Style>
                                         <Style TargetType="Image">
                                             <Setter Property="Opacity" Value="1"/>
-                                            <!-- normal -->
-
                                             <Style.Triggers>
-                                                <!-- if the game is archived, fade it -->
                                                 <DataTrigger Binding="{Binding IsInArchive}" Value="True">
                                                     <Setter Property="Opacity" Value="0.25"/>
-                                                    <!-- 40 % visible -->
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
@@ -167,7 +185,7 @@
                                               CommandParameter="{Binding PlacementTarget.DataContext,
                                                 RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                     <MenuItem Header="Send to Archive"
-                                          Visibility="{Binding PlacementTarget.DataContext.IsInArchive,
+                                              Visibility="{Binding PlacementTarget.DataContext.IsInArchive,
                                                                RelativeSource={RelativeSource AncestorType=ContextMenu},
                                                                Converter={StaticResource BoolToVis},
                                                                ConverterParameter=Invert}"
@@ -176,8 +194,8 @@
                                           CommandParameter="{Binding PlacementTarget.DataContext,
                                                             RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
 
-                                                                <!-- game archived → show Make Active -->
-                                                                <MenuItem Header="Make Active"
+                                    <!-- game archived → show Make Active -->
+                                    <MenuItem Header="Make Active"
                                           Visibility="{Binding PlacementTarget.DataContext.IsInArchive,
                                                                RelativeSource={RelativeSource AncestorType=ContextMenu},
                                                                Converter={StaticResource BoolToVis}}"
@@ -188,22 +206,6 @@
                                 </ContextMenu>
                             </StackPanel.ContextMenu>
                         </StackPanel>
-
-                        <!-- adjust cover size based on Console -->
-                        <DataTemplate.Triggers>
-                            <DataTrigger Binding="{Binding Console}" Value="{x:Static models:ConsoleType.Playstation1}">
-                                <Setter TargetName="ImageBorder" Property="Width" Value="150"/>
-                                <Setter TargetName="ImageBorder" Property="Height" Value="150"/>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding Console}" Value="{x:Static models:ConsoleType.Playstation3}">
-                                <Setter TargetName="ImageBorder" Property="Width" Value="150"/>
-                                <Setter TargetName="ImageBorder" Property="Height" Value="180"/>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding Console}"  Value="{x:Static models:ConsoleType.GameBoyAdvance}">
-                                <Setter TargetName="ImageBorder" Property="Width" Value="150"/>
-                                <Setter TargetName="ImageBorder" Property="Height" Value="150"/>
-                            </DataTrigger>
-                        </DataTemplate.Triggers>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

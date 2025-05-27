@@ -9,7 +9,6 @@
     <!-- allows binding a bool to Visibility (Visible/Collapsed) -->
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
-        <conv:EnumDescriptionConverter x:Key="EnumDesc"/>
     </Window.Resources>
 
     <Grid Margin="5">
@@ -46,53 +45,42 @@
         <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="5"
                  Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
 
-        <!-- Game Type selector -->
-        <Label Grid.Row="1" Grid.Column="0" Content="Game Type:" VerticalAlignment="Center"/>
+        <!-- Console selector -->
+        <Label Grid.Row="1" Grid.Column="0" Content="Console:" VerticalAlignment="Center"/>
         <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="5"
-                  ItemsSource="{Binding GameTypes}"
-                  SelectedItem="{Binding SelectedGameType}"/>
+          ItemsSource="{Binding Consoles}"
+          SelectedValue="{Binding ConsoleId, Mode=TwoWay}"
+          SelectedValuePath="Id"
+          DisplayMemberPath="Name"
+          IsEnabled="{Binding IsConsoleEnabled}"/>
 
         <!-- Game Path and Browse button -->
         <Label Grid.Row="2" Grid.Column="0"
-               Content="{Binding GameFileLabelText}" VerticalAlignment="Center"/>
+               Content="{Binding GameFileLabelText}"
+               VerticalAlignment="Center"/>
         <TextBox Grid.Row="2" Grid.Column="1" Margin="5"
-                 Text="{Binding GamePath, UpdateSourceTrigger=PropertyChanged}"
-                 IsEnabled="{Binding IsGamePathEnabled}"/>
+                 Text="{Binding FileSystemPath, UpdateSourceTrigger=PropertyChanged}"
+                 IsEnabled="{Binding IsFileSystemPathEnabled}"/>
         <Button Grid.Row="2" Grid.Column="2" Margin="5" Content="Browse..."
                 Command="{Binding BrowseCommand}"
                 CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                 IsEnabled="{Binding IsBrowseEnabled}"/>
 
-        <!-- Console selector -->
-        <Label Grid.Row="3" Grid.Column="0" Content="Console:" VerticalAlignment="Center"/>
-        <ComboBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="5"
-                  ItemsSource="{Binding Consoles}"
-                  SelectedItem="{Binding SelectedConsole, Mode=TwoWay}"
-                  IsEnabled="{Binding IsConsoleEnabled}">
-
-            <ComboBox.ItemTemplate>
-                <DataTemplate>
-                    <!-- This will call your GetDescription() under the hood -->
-                    <TextBlock Text="{Binding Converter={StaticResource EnumDesc}}" />
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-        </ComboBox>
-
         <!-- Genre selector -->
-        <Label Grid.Row="4" Grid.Column="0" Content="Genre:" VerticalAlignment="Center"/>
-        <ComboBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Margin="5"
+        <Label Grid.Row="3" Grid.Column="0" Content="Genre:" VerticalAlignment="Center"/>
+        <ComboBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="5"
                   ItemsSource="{Binding Genres}"
-                  SelectedItem="{Binding SelectedGenre}"
+                  SelectedItem="{Binding Genre}"
                   IsEnabled="{Binding IsGenreEnabled}"/>
 
         <!-- Release Date picker -->
-        <Label Grid.Row="5" Grid.Column="0" Content="Release Date:" VerticalAlignment="Center"/>
-        <DatePicker Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Margin="5"
+        <Label Grid.Row="4" Grid.Column="0" Content="Release Date:" VerticalAlignment="Center"/>
+        <DatePicker Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Margin="5"
                     SelectedDate="{Binding ReleaseDate}"
                     IsEnabled="{Binding IsReleaseDateEnabled}"/>
 
         <!-- Action buttons -->
-        <StackPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3"
+        <StackPanel Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3"
                     Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
             <Button Content="Cancel" Width="75" Margin="5,0"
                     Command="{Binding CancelCommand}"

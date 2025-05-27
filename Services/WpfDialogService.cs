@@ -20,7 +20,7 @@ namespace SamsGameLauncher.Services
             _provider = provider;
         }
 
-        public GameBase? ShowAddGame()
+        public GameInfo? ShowAddGame()
         {
             // Show AddGameWindow and pass in available emulators
             var win = new AddGameWindow();
@@ -31,7 +31,7 @@ namespace SamsGameLauncher.Services
         }
 
         [SupportedOSPlatform("windows")]
-        public GameBase? ShowEditGame(GameBase game)
+        public GameInfo? ShowEditGame(GameInfo game)
         {
             // Show EditGameWindow for the selected game
             var win = new EditGameWindow(game);
@@ -41,20 +41,24 @@ namespace SamsGameLauncher.Services
                 : null;
         }
 
-        public Emulator? ShowAddEmulator()
+        public EmulatorInfo? ShowAddEmulator()
         {
-            // Show AddEmulatorWindow
-            var win = new AddEmulatorWindow();
-            // Return the created emulator if OK, otherwise null
+            // resolve via DI so that the VM ctor with dependencies is used
+            var win = _provider.GetRequiredService<AddEmulatorWindow>();
+            var vm = _provider.GetRequiredService<AddEmulatorWindowViewModel>();
+            win.DataContext = vm;
+            win.Owner = System.Windows.Application.Current.MainWindow;
+
             return win.ShowDialog() == true
                 ? win.NewEmulator
                 : null;
         }
 
-        public Emulator? ShowEditEmulator(Emulator toEdit)
+        public EmulatorInfo? ShowEditEmulator(EmulatorInfo toEdit)
         {
+            var settingsService = _provider.GetRequiredService<ISettingsService>();
             // manually new up the ViewModel, passing the selected Emulator
-            var vm = new EditEmulatorWindowViewModel(toEdit);
+            var vm = new EditEmulatorWindowViewModel(settingsService, toEdit);
             // then new up the window and give it the VM
             var win = new EditEmulatorWindow(vm);
             win.Owner = System.Windows.Application.Current.MainWindow;

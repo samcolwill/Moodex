@@ -15,6 +15,6 @@ namespace SamsGameLauncher.Views
 
             DataContext = new AddGameWindowViewModel(settingsService);
         }
-        public GameBase? NewGame => (DataContext as AddGameWindowViewModel)?.NewGame;
+        public GameInfo? NewGame => (DataContext as AddGameWindowViewModel)?.NewGame;
     }
 }

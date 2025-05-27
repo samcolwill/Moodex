@@ -8,11 +8,6 @@
         Icon="/SamsGameLauncher;component/Assets/launcher.ico"
         WindowStartupLocation="CenterOwner">
 
-    <Window.Resources>
-        <!-- other converters… -->
-        <conv:EnumDescriptionConverter x:Key="EnumDesc"/>
-    </Window.Resources>
-
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -44,30 +39,26 @@
         <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="5"
                  Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
 
+        <!-- Console Emulated -->
+        <Label Grid.Row="2" Grid.Column="0" Content="Target Console:" VerticalAlignment="Center"/>
+        <ComboBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="5"
+                  ItemsSource="{Binding Consoles}"
+                  DisplayMemberPath="Name"
+                  SelectedValuePath="Id"
+                  SelectedValue="{Binding EmulatedConsoleId, Mode=TwoWay}" />
+
         <!-- Executable Path -->
-        <Label Grid.Row="2" Grid.Column="0" Content="Executable:" VerticalAlignment="Center"/>
-        <TextBox Grid.Row="2" Grid.Column="1" Margin="5"
+        <Label Grid.Row="3" Grid.Column="0" Content="Executable:" VerticalAlignment="Center"/>
+        <TextBox Grid.Row="3" Grid.Column="1" Margin="5"
                  Text="{Binding ExecutablePath, UpdateSourceTrigger=PropertyChanged}"/>
-        <Button Grid.Row="2" Grid.Column="2" Margin="5" Content="Browse..."
+        <Button Grid.Row="3" Grid.Column="2" Margin="5" Content="Browse..."
                 Command="{Binding BrowseCommand}"
                 CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
 
         <!-- Default Arguments -->
-        <Label Grid.Row="3" Grid.Column="0" Content="Arguments:" VerticalAlignment="Center"/>
-        <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="5"
+        <Label Grid.Row="4" Grid.Column="0" Content="Arguments:" VerticalAlignment="Center"/>
+        <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Margin="5"
                  Text="{Binding DefaultArguments, UpdateSourceTrigger=PropertyChanged}"/>
-
-        <Label Grid.Row="4" Grid.Column="0" Content="Target Console:" VerticalAlignment="Center"/>
-
-        <ComboBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Margin="5"
-          ItemsSource="{Binding ConsoleValues}"
-          SelectedItem="{Binding ConsoleEmulated, Mode=TwoWay}">
-            <ComboBox.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding Converter={StaticResource EnumDesc}}" />
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-        </ComboBox>
 
         <!-- Actions -->
         <StackPanel Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3"
