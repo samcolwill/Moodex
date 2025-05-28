@@ -28,5 +28,16 @@ namespace SamsGameLauncher.Views
             // let DI give us the ViewModel
             DataContext = vm;
         }
+
+        private void ListView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is System.Windows.Controls.ListView list
+             && list.SelectedItem is EmulatorInfo emu
+             && DataContext is ManageEmulatorsWindowViewModel vm
+             && vm.OpenEmulatorCommand.CanExecute(emu))
+            {
+                vm.OpenEmulatorCommand.Execute(emu);
+            }
+        }
     }
 }

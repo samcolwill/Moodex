@@ -80,6 +80,19 @@ namespace SamsGameLauncher.ViewModels
             }
         }
 
+        private bool _showArchived = true;
+        public bool ShowArchived
+        {
+            get => _showArchived;
+            set
+            {
+                if (_showArchived == value) return;
+                _showArchived = value;
+                RaisePropertyChanged();
+                ApplyFilter();
+            }
+        }
+
         // ──── Commands ─────────────────────────────────────────────────────
         public IRelayCommand RunCommand { get; }
         public IRelayCommand AddGameCommand { get; }
@@ -291,8 +304,19 @@ namespace SamsGameLauncher.ViewModels
             GamesView.Filter = o =>
             {
                 if (o is GameInfo g)
-                    return string.IsNullOrWhiteSpace(SearchText)
-                        || g.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
+                {
+                    // if “ShowArchived” is false, hide archived games
+                    if (!ShowArchived && g.IsInArchive)
+                        return false;
+
+                    // then your existing search‐text filter
+                    if (!string.IsNullOrWhiteSpace(SearchText)
+                     && !g.Name.Contains(SearchText,
+                                          StringComparison.OrdinalIgnoreCase))
+                    {
+                        return false;
+                    }
+                }
                 return true;
             };
             GamesView.Refresh();
