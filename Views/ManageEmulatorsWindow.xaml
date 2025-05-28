@@ -11,9 +11,9 @@
 
     <Window.Resources>
         <!-- converts an EXE path into a 32×32 ImageSource -->
-        <util:ExecutableToIconConverter x:Key="IconConverter"/>
+        <conv:ExecutableToIconConverter x:Key="IconConverter"/>
         <!-- strips path, shows only filename -->
-        <util:FileNameConverter x:Key="FileNameConverter"/>
+        <conv:FileNameConverter x:Key="FileNameConverter"/>
         <!-- for zebra‐striping -->
         <SolidColorBrush x:Key="AltRowBrush" Color="#F7F7F7"/>
     </Window.Resources>

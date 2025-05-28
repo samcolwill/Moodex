@@ -8,7 +8,7 @@ using System.Drawing;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
 
-namespace SamsGameLauncher.Utilities
+namespace SamsGameLauncher.Converters
 {
     public class ExecutableToIconConverter : IValueConverter
     {
@@ -30,7 +30,7 @@ namespace SamsGameLauncher.Utilities
 
                 var img = Imaging.CreateBitmapSourceFromHBitmap(
                     hBitmap,
-                    IntPtr.Zero,
+                    nint.Zero,
                     System.Windows.Int32Rect.Empty,
                     BitmapSizeOptions.FromWidthAndHeight(TargetSize, TargetSize)); // Fixed issue here
 
@@ -50,6 +50,6 @@ namespace SamsGameLauncher.Utilities
     internal static class NativeMethods
     {
         [System.Runtime.InteropServices.DllImport("gdi32.dll")]
-        public static extern bool DeleteObject(IntPtr hObject);
+        public static extern bool DeleteObject(nint hObject);
     }
 }

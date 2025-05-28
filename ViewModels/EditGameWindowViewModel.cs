@@ -5,7 +5,6 @@ using System.Linq;
 using System.Runtime.Versioning;
 using System.Windows;
 using CommunityToolkit.Mvvm.Input;
-using SamsGameLauncher.Constants;
 using SamsGameLauncher.Models;
 using SamsGameLauncher.Services;
 
@@ -80,7 +79,7 @@ namespace SamsGameLauncher.ViewModels
 
             var settings = settingsService.Load();
             Consoles = settings.Consoles;
-            Genres = LauncherConstants.Genres;
+            Genres = settings.Genres;
 
             // wire up commands
             BrowseCommand = new RelayCommand<Window?>(ExecuteBrowse);

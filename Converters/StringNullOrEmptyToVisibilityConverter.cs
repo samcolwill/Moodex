@@ -1,20 +1,18 @@
-﻿// File: Utilities/FileNameConverter.cs
-using System;
+﻿using System;
 using System.Globalization;
-using System.IO;
+using System.Windows;
 using System.Windows.Data;
 
-namespace SamsGameLauncher.Utilities
+namespace SamsGameLauncher.Converters
 {
-    public class FileNameConverter : IValueConverter
+    public class StringNullOrEmptyToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var path = value as string;
-            if (string.IsNullOrWhiteSpace(path))
-                return string.Empty;
-
-            return Path.GetFileName(path);
+            var s = value as string;
+            return string.IsNullOrEmpty(s)
+                ? Visibility.Visible
+                : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

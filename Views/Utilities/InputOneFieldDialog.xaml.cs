@@ -4,7 +4,7 @@ using System.Windows;
 
 namespace SamsGameLauncher.Views.Utilities
 {
-    public partial class InputDialog : Window, INotifyPropertyChanged
+    public partial class InputOneFieldDialog : Window, INotifyPropertyChanged
     {
         public string DialogTitle { get; }
         public string Message { get; }
@@ -16,7 +16,7 @@ namespace SamsGameLauncher.Views.Utilities
             set { _inputText = value; OnPropertyChanged(); }
         }
 
-        public InputDialog(string title, string message, string defaultText = "")
+        public InputOneFieldDialog(string title, string message, string defaultText = "")
         {
             InitializeComponent();
             DialogTitle = title;

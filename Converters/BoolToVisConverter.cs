@@ -5,7 +5,7 @@ using System.Windows.Data;
 
 namespace SamsGameLauncher.Converters
 {
-    public sealed class BoolToVis : IValueConverter
+    public sealed class BoolToVisConverter : IValueConverter
     {
         public object Convert(object value, Type _, object parameter, CultureInfo __)
         {

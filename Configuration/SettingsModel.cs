@@ -22,6 +22,20 @@ namespace SamsGameLauncher.Configuration
             new ConsoleInfo { Id="playstation3", Name="Playstation 3" },
             new ConsoleInfo { Id="xbox", Name="Xbox" }
         };
+        public List<string> Genres { get; set; } = new List<string>
+        {
+            "Action",
+            "Adventure",
+            "Fighting",
+            "Platform",
+            "Puzzle",
+            "Racing",
+            "Role-playing",
+            "Shooter",
+            "Simulation",
+            "Sports",
+            "Strategy"
+        };
         public bool IsDs4Installed { get; set; } = false;
         public bool LaunchDs4WindowsOnStartup { get; set; } = false;
     }

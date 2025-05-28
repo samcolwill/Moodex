@@ -1,9 +1,9 @@
 ﻿<Application x:Class="SamsGameLauncher.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:SamsGameLauncher.Converters">
+             xmlns:conv="clr-namespace:SamsGameLauncher.Converters">
     <Application.Resources>
-        <local:BoolToVis x:Key="BoolToVis"/>
+        <conv:BoolToVisConverter x:Key="BoolToVis"/>
         
         <!-- Implicit style for all MenuItems in the app -->
         <Style TargetType="MenuItem">

@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using Microsoft.Win32;
-using SamsGameLauncher.Constants;
 using SamsGameLauncher.Services;
 using SamsGameLauncher.Models;
 using CommunityToolkit.Mvvm.Input;
@@ -117,7 +116,7 @@ namespace SamsGameLauncher.ViewModels
         {
             var settings = settingsService.Load();
             Consoles = settings.Consoles;
-            Genres = LauncherConstants.Genres;
+            Genres = settings.Genres;
 
             GameFileLabelText = "Game File:";
             SetAllControlsEnabled(false);
