@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SamsGameLauncher.Models;
@@ -17,6 +18,7 @@ namespace SamsGameLauncher.ViewModels
         private readonly IDialogService _dialogs;
 
         public ObservableCollection<EmulatorInfo> Emulators { get; }
+        public IRelayCommand<EmulatorInfo> OpenEmulatorCommand { get; }
         public IRelayCommand<EmulatorInfo> EditEmulatorCommand { get; }
         public IAsyncRelayCommand<EmulatorInfo> RemoveEmulatorCommand { get; }
         public IRelayCommand<Window> CloseCommand { get; }
@@ -33,9 +35,31 @@ namespace SamsGameLauncher.ViewModels
             Emulators = new ObservableCollection<EmulatorInfo>(
                 _gameLibrary.Emulators);
 
+            OpenEmulatorCommand = new RelayCommand<EmulatorInfo>(OnOpenEmulator);
             EditEmulatorCommand = new RelayCommand<EmulatorInfo>(OnEditEmulator);
             RemoveEmulatorCommand = new AsyncRelayCommand<EmulatorInfo>(OnRemoveEmulatorAsync);
             CloseCommand = new RelayCommand<Window>(w => w?.Close());
+        }
+
+        private void OnOpenEmulator(EmulatorInfo emulator)
+        {
+            try
+            {
+                var psi = new ProcessStartInfo(emulator.ExecutablePath)
+                {
+                    UseShellExecute = true,
+                    Arguments = emulator.DefaultArguments
+                };
+                Process.Start(psi);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(
+                    $"Error launching '{emulator.Name}':\n{ex.Message}",
+                    "Launch Failed",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
         }
 
         private void OnEditEmulator(EmulatorInfo emulator)

@@ -49,6 +49,7 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
                         <!-- 32×32 Icon -->
@@ -73,8 +74,18 @@
                                        FontSize="12"/>
                         </StackPanel>
 
+                        <!-- Open button -->
+                        <Button Grid.Column="2"
+                                Content="Open"
+                                Margin="0,0,8,0"
+                                Padding="8,0"
+                                Height="24"
+                                Command="{Binding DataContext.OpenEmulatorCommand,
+                                         RelativeSource={RelativeSource AncestorType=Window}}"
+                                CommandParameter="{Binding}"/>
+
                         <!-- Edit btn -->
-                        <Button Grid.Column="2" Content="Edit"
+                        <Button Grid.Column="3" Content="Edit"
                                 Margin="0,0,8,0"
                                 Padding="8,0,8,0"
                                 Height="24"
@@ -83,7 +94,7 @@
                                 CommandParameter="{Binding}"/>
 
                         <!-- Remove btn -->
-                        <Button Grid.Column="3" Content="Remove"
+                        <Button Grid.Column="4" Content="Remove"
                                 Margin="0,0,0,0"
                                 Padding="8,0,8,0"
                                 Height="24"
