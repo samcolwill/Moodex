@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -29,11 +30,20 @@ namespace SamsGameLauncher.ViewModels.Settings
             // Initialize from persisted model
             _launchDs4WindowsOnStartup = _model.LaunchDs4WindowsOnStartup;
             _isDs4Installed = _model.IsDs4Installed;
+            _isAutoHotKeyInstalled = _model.IsAutoHotKeyInstalled;
+
+            // Check if tools are already installed
+            CheckDs4Installation();
+            CheckAutoHotKeyInstallation();
 
             // Commands
             DownloadInstallDs4Command = new AsyncRelayCommand(DownloadAndInstallDs4Async, () => CanInstallDs4);
             LaunchDs4WindowsCommand = new RelayCommand(LaunchDs4Windows, () => IsDs4Installed);
             UninstallDs4WindowsCommand = new AsyncRelayCommand(ConfirmAndUninstallAsync, () => IsDs4Installed);
+            
+            // AutoHotKey commands
+            DownloadInstallAutoHotKeyCommand = new AsyncRelayCommand(DownloadAndInstallAutoHotKeyAsync, () => CanInstallAutoHotKey);
+            UninstallAutoHotKeyCommand = new AsyncRelayCommand(ConfirmAndUninstallAutoHotKeyAsync, () => IsAutoHotKeyInstalled);
             _dialog = dialog;
         }
 
@@ -80,12 +90,40 @@ namespace SamsGameLauncher.ViewModels.Settings
 
         public bool CanInstallDs4 => !IsDs4Installed;
 
+        private bool _isAutoHotKeyInstalled;
+        public bool IsAutoHotKeyInstalled
+        {
+            get => _isAutoHotKeyInstalled;
+            private set
+            {
+                if (_isAutoHotKeyInstalled != value)
+                {
+                    _isAutoHotKeyInstalled = value;
+                    _model.IsAutoHotKeyInstalled = value;
+                    _svc.Save(_model);
+                    OnPropertyChanged();
+
+                    // Refresh command enabled/disabled states
+                    DownloadInstallAutoHotKeyCommand.NotifyCanExecuteChanged();
+                    UninstallAutoHotKeyCommand.NotifyCanExecuteChanged();
+
+                    OnPropertyChanged(nameof(CanInstallAutoHotKey));
+                }
+            }
+        }
+
+        public bool CanInstallAutoHotKey => !IsAutoHotKeyInstalled;
+
         // ——— Commands —————————————————————————————————————————
 
         public IAsyncRelayCommand DownloadInstallDs4Command { get; }
         public IRelayCommand LaunchDs4WindowsCommand { get; }
         public Process? LastLaunchedProcess { get; private set; }
         public IRelayCommand UninstallDs4WindowsCommand { get; }
+
+        // AutoHotKey commands
+        public IAsyncRelayCommand DownloadInstallAutoHotKeyCommand { get; }
+        public IRelayCommand UninstallAutoHotKeyCommand { get; }
 
         // ——— Command Handlers ——————————————————————————————————
 
@@ -94,7 +132,7 @@ namespace SamsGameLauncher.ViewModels.Settings
         {
             // 1) Prepare install folder
             var exeDir = AppContext.BaseDirectory;
-            var targetDir = Path.Combine(exeDir, "DS4Windows");
+            var targetDir = Path.Combine(exeDir, "External Tools", "DS4Windows");
 
             if (Directory.Exists(targetDir))
                 Directory.Delete(targetDir, recursive: true);
@@ -169,7 +207,7 @@ namespace SamsGameLauncher.ViewModels.Settings
 
         private void LaunchDs4Windows()
         {
-            var exe = Path.Combine(AppContext.BaseDirectory, "DS4Windows", "DS4Windows.exe");
+            var exe = Path.Combine(AppContext.BaseDirectory, "External Tools", "DS4Windows", "DS4Windows.exe");
             var proc = Process.Start(new ProcessStartInfo(exe)
             {
                 UseShellExecute = true
@@ -192,7 +230,7 @@ namespace SamsGameLauncher.ViewModels.Settings
 
         private void UninstallDs4Windows()
         {
-            var dir = Path.Combine(AppContext.BaseDirectory, "DS4Windows");
+            var dir = Path.Combine(AppContext.BaseDirectory, "External Tools", "DS4Windows");
 
             // 1) Find any running DS4Windows.exe in that folder
             var running = Process.GetProcessesByName("DS4Windows")
@@ -237,6 +275,129 @@ namespace SamsGameLauncher.ViewModels.Settings
             // 4) Reset the flags
             IsDs4Installed = false;
             LaunchDs4WindowsOnStartup = false;
+        }
+
+        // ——— AutoHotKey Command Handlers ———————————————————————
+
+        private const string AutoHotKeyGitHubLatestReleaseUrl = "https://api.github.com/repos/AutoHotkey/AutoHotkey/releases/latest";
+        private async Task DownloadAndInstallAutoHotKeyAsync()
+        {
+            // 1) Prepare install folder
+            var exeDir = AppContext.BaseDirectory;
+            var targetDir = Path.Combine(exeDir, "External Tools", "AutoHotKey");
+
+            if (Directory.Exists(targetDir))
+                Directory.Delete(targetDir, recursive: true);
+            Directory.CreateDirectory(targetDir);
+
+            // 2) Fetch release metadata
+            using var http = new HttpClient();
+            http.DefaultRequestHeaders.UserAgent.ParseAdd("SamsGameLauncher");
+            var json = await http.GetStringAsync(AutoHotKeyGitHubLatestReleaseUrl);
+            using var doc = JsonDocument.Parse(json);
+            var assets = doc.RootElement.GetProperty("assets").EnumerateArray();
+
+            string? zipUrl = null;
+            foreach (var asset in assets)
+            {
+                var name = asset.GetProperty("name").GetString();
+                if (name?.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) == true && 
+                    !name.Contains("Source"))
+                {
+                    zipUrl = asset.GetProperty("browser_download_url").GetString();
+                    break;
+                }
+            }
+            if (zipUrl == null)
+                throw new InvalidOperationException("No ZIP asset found in AutoHotKey release.");
+
+            // 3) Download ZIP to temp file
+            var tmpFile = Path.GetTempFileName();
+            using (var resp = await http.GetAsync(zipUrl, HttpCompletionOption.ResponseHeadersRead))
+            {
+                resp.EnsureSuccessStatusCode();
+                await using var fs = File.Create(tmpFile);
+                await resp.Content.CopyToAsync(fs);
+            }
+
+            // 4) Extract
+            ZipFile.ExtractToDirectory(tmpFile, targetDir);
+
+            // 5) Cleanup + state update
+            File.Delete(tmpFile);
+            IsAutoHotKeyInstalled = true;
+        }
+
+        private async Task ConfirmAndUninstallAutoHotKeyAsync()
+        {
+            bool ok = await _dialog.ShowConfirmationAsync(
+                title: "Confirm AutoHotKey Uninstall",
+                message: "Are you sure you want to uninstall AutoHotKey?");
+            if (!ok) return;
+
+            UninstallAutoHotKey();
+        }
+
+        private void UninstallAutoHotKey()
+        {
+            // Find and terminate any running AutoHotKey processes
+            var running = Process.GetProcessesByName("AutoHotkey64")
+                                 .Concat(Process.GetProcessesByName("AutoHotkey"))
+                                 .Concat(Process.GetProcessesByName("AutoHotkeyU64"))
+                                 .Concat(Process.GetProcessesByName("AutoHotkeyU32"))
+                                 .ToList();
+
+            foreach (var p in running)
+            {
+                try
+                {
+                    p.CloseMainWindow();
+                    if (!p.WaitForExit(2000))
+                        p.Kill();
+                }
+                catch
+                {
+                    // ignore any errors shutting it down
+                }
+            }
+
+            // Delete the AutoHotKey folder
+            var dir = Path.Combine(AppContext.BaseDirectory, "External Tools", "AutoHotKey");
+            if (Directory.Exists(dir))
+            {
+                try
+                {
+                    Directory.Delete(dir, recursive: true);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    // in the unlikely case something is still locked,
+                    // wait a moment and try again once
+                    System.Threading.Thread.Sleep(500);
+                    Directory.Delete(dir, recursive: true);
+                }
+            }
+
+            // Reset the flags
+            IsAutoHotKeyInstalled = false;
+        }
+
+        private void CheckDs4Installation()
+        {
+            var ds4ExePath = Path.Combine(AppContext.BaseDirectory, "External Tools", "DS4Windows", "DS4Windows.exe");
+            if (File.Exists(ds4ExePath))
+            {
+                IsDs4Installed = true;
+            }
+        }
+
+        private void CheckAutoHotKeyInstallation()
+        {
+            var ahkExePath = Path.Combine(AppContext.BaseDirectory, "External Tools", "AutoHotKey", "AutoHotkey64.exe");
+            if (File.Exists(ahkExePath))
+            {
+                IsAutoHotKeyInstalled = true;
+            }
         }
 
         // ——— INotifyPropertyChanged —————————————————————————————

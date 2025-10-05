@@ -6,6 +6,9 @@
             mc:Ignorable="d">
    <StackPanel Margin="10" DataContext="{Binding}">
         <TextBlock Text="DS4Windows" FontWeight="Bold" Margin="0,0,0,5"/>
+        <TextBlock Text="DS4Windows increases compatibility of DualSense controllers by mapping them to act as Xbox 360 controllers."
+            FontSize="10"
+            Margin="0,0,0,5"/>
         <!-- DS4Windows integration row -->
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
             <!-- Links for Download, Open, Uninstall -->
@@ -26,13 +29,73 @@
                </Hyperlink>
            </TextBlock>
        </StackPanel>
-        <!-- Enable/launch at startup checkbox -->
-        <CheckBox Content="Launch on SGL Startup"
-          IsChecked="{Binding LaunchDs4WindowsOnStartup}"
-          IsEnabled="{Binding IsDs4Installed}" />
         <TextBlock Text="Preconfigured for DualSense (PS5) controller; manual configuration required for other controllers."
             FontStyle="Italic"
             FontSize="10"
-            Margin="0,5,0,5"/>
+            Margin="0,5,0,5">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsDs4Installed}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+        <!-- Enable/launch at startup checkbox -->
+        <CheckBox Content="Launch on SGL Startup"
+          IsChecked="{Binding LaunchDs4WindowsOnStartup}"
+          IsEnabled="{Binding IsDs4Installed}">
+            <CheckBox.Style>
+                <Style TargetType="CheckBox">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsDs4Installed}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </CheckBox.Style>
+        </CheckBox>
+
+        <!-- AutoHotKey section -->
+        <TextBlock Text="AutoHotKey" FontWeight="Bold" Margin="0,20,0,5"/>
+        <TextBlock Text="AutoHotKey allows you to create custom key mappings and macros for games that don't support key customization."
+            FontSize="10"
+            Margin="0,0,0,5"/>
+        <!-- AutoHotKey integration row -->
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <!-- Links for Download, Uninstall -->
+           <TextBlock VerticalAlignment="Center" Margin="0,0,0,8">
+               <Hyperlink Command="{Binding DownloadInstallAutoHotKeyCommand}"
+                          IsEnabled="{Binding CanInstallAutoHotKey}">
+                   Download &amp; Install
+               </Hyperlink>
+               <Run Text=" | " />
+               <Hyperlink Command="{Binding UninstallAutoHotKeyCommand}"
+                          IsEnabled="{Binding IsAutoHotKeyInstalled}">
+                   Uninstall
+               </Hyperlink>
+           </TextBlock>
+       </StackPanel>
+        
+        <!-- Show right-click instructions when AutoHotKey is installed -->
+        <TextBlock Text="Right-click on a game to configure an AutoHotKey script for that game."
+            FontStyle="Italic"
+            FontSize="10"
+            Margin="0,5,0,5">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsAutoHotKeyInstalled}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
     </StackPanel>
 </UserControl>
