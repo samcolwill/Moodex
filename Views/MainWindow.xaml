@@ -230,6 +230,57 @@
                                                             Source={x:Reference RootWindow}}"
                                           CommandParameter="{Binding PlacementTarget.DataContext,
                                                             RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+
+                                    <!-- AutoHotKey Script Menu Items (only for PC games with AutoHotKey installed) -->
+                                    <Separator>
+                                        <Separator.Style>
+                                            <Style TargetType="Separator">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding PlacementTarget.DataContext.ConsoleId,
+                                                                       RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="pc"/>
+                                                            <Condition Binding="{Binding DataContext.AutoHotKeyInstalled,
+                                                                       Source={x:Reference RootWindow}}" Value="True"/>
+                                                        </MultiDataTrigger.Conditions>
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </MultiDataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Separator.Style>
+                                    </Separator>
+                                    
+                                    <!-- Create Script (only when no script exists and AutoHotKey is installed) -->
+                                    <MenuItem Header="Add AHK Script"
+                                          Visibility="{Binding PlacementTarget.DataContext.HasAutoHotKeyScript,
+                                                               RelativeSource={RelativeSource AncestorType=ContextMenu},
+                                                               Converter={StaticResource BoolToVis},
+                                                               ConverterParameter=Invert}"
+                                          Command="{Binding DataContext.CreateScriptCommand,
+                                                            Source={x:Reference RootWindow}}"
+                                          CommandParameter="{Binding PlacementTarget.DataContext,
+                                                            RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+
+                                    <!-- Edit Script (only when script exists and AutoHotKey is installed) -->
+                                    <MenuItem Header="Edit AHK Script"
+                                          Visibility="{Binding PlacementTarget.DataContext.HasAutoHotKeyScript,
+                                                               RelativeSource={RelativeSource AncestorType=ContextMenu},
+                                                               Converter={StaticResource BoolToVis}}"
+                                          Command="{Binding DataContext.EditScriptCommand,
+                                                            Source={x:Reference RootWindow}}"
+                                          CommandParameter="{Binding PlacementTarget.DataContext,
+                                                            RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+
+                                    <!-- Delete Script (only when script exists and AutoHotKey is installed) -->
+                                    <MenuItem Header="Delete AHK Script"
+                                          Visibility="{Binding PlacementTarget.DataContext.HasAutoHotKeyScript,
+                                                               RelativeSource={RelativeSource AncestorType=ContextMenu},
+                                                               Converter={StaticResource BoolToVis}}"
+                                          Command="{Binding DataContext.DeleteScriptCommand,
+                                                            Source={x:Reference RootWindow}}"
+                                          CommandParameter="{Binding PlacementTarget.DataContext,
+                                                            RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                 </ContextMenu>
                             </StackPanel.ContextMenu>
                         </StackPanel>

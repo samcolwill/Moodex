@@ -29,6 +29,7 @@ namespace SamsGameLauncher
             services.AddSingleton<ISettingsService, JsonSettingsService>();
             services.AddSingleton<IWindowPlacementService, WindowPlacementService>();
             services.AddSingleton<IFileMoveService, FileMoveService>();
+            services.AddSingleton<IAutoHotKeyScriptService, AutoHotKeyScriptService>();
 
             // register your VM
             services.AddTransient<MainWindowViewModel>();

@@ -13,6 +13,9 @@ namespace SamsGameLauncher.Models
         public string FileSystemPath { get; set; } = string.Empty;
         public string Genre { get; set; } = string.Empty;
         public DateTime ReleaseDate { get; set; } = DateTime.MinValue;
+        
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public bool HasAutoHotKeyScript { get; set; } = false;
 
         // Runtime-only helpers
         [JsonIgnore]

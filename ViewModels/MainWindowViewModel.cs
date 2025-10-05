@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Management;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -29,6 +30,8 @@ namespace SamsGameLauncher.ViewModels
         private readonly IWindowPlacementService _placer;
         private readonly ISettingsService _settings;
         private readonly IFileMoveService _fileMover;
+        private readonly IAutoHotKeyScriptService _scriptService;
+        private readonly Dictionary<int, Process> _trackedGameProcesses = new();
 
         // ──── Exposed Collections & Views ──────────────────────────────────
         public ObservableCollection<GameInfo> Games => _gameLibrary.Games;
@@ -105,13 +108,19 @@ namespace SamsGameLauncher.ViewModels
         public IAsyncRelayCommand ArchiveGameCommand { get; }
         public IAsyncRelayCommand ActivateGameCommand { get; }
 
+        // AutoHotKey Script Commands
+        public IRelayCommand CreateScriptCommand { get; }
+        public IRelayCommand EditScriptCommand { get; }
+        public IRelayCommand DeleteScriptCommand { get; }
+
         // ──── Constructor ──────────────────────────────────────────────────
-        public MainWindowViewModel(IDialogService dialogs, IWindowPlacementService placer, ISettingsService settings, IFileMoveService fileMover)
+        public MainWindowViewModel(IDialogService dialogs, IWindowPlacementService placer, ISettingsService settings, IFileMoveService fileMover, IAutoHotKeyScriptService scriptService)
         {
             _dialogs = dialogs;
             _placer = placer;
             _settings = settings;
             _fileMover = fileMover;
+            _scriptService = scriptService;
             _dataFolder = Path.Combine(_basePath, "Data");
             _gamesFile = Path.Combine(_dataFolder, "games.json");
             _emuFile = Path.Combine(_dataFolder, "emulators.json");
@@ -155,11 +164,18 @@ namespace SamsGameLauncher.ViewModels
                 if (!string.IsNullOrWhiteSpace(section))
                 {
                     _dialogs.ShowSettings(section);
+                    // Refresh script commands after settings dialog closes
+                    RefreshScriptCommands();
                 }
             });
             ShowAboutCommand = new RelayCommand(ExecuteShowAbout);
             ArchiveGameCommand = new AsyncRelayCommand<GameInfo>(g => MoveGameAsync(g, toArchive: true), g => g is not null);
             ActivateGameCommand = new AsyncRelayCommand<GameInfo>(g => MoveGameAsync(g, toArchive: false), g => g is not null);
+
+            // AutoHotKey Script Commands
+            CreateScriptCommand = new RelayCommand<GameInfo>(ExecuteCreateScript, CanCreateScript);
+            EditScriptCommand = new RelayCommand<GameInfo>(ExecuteEditScript, CanEditScript);
+            DeleteScriptCommand = new RelayCommand<GameInfo>(ExecuteDeleteScript, CanDeleteScript);
 
             _fileMover = fileMover;
         }
@@ -225,7 +241,16 @@ namespace SamsGameLauncher.ViewModels
                 var process = Process.Start(startInfo);
                 if (process != null)
                 {
-                    // Position its window on the user’s chosen monitor
+                    // Launch AutoHotKey script if this is a PC game with a script
+                    if (game.ConsoleId == "pc" && _scriptService.HasScript(game))
+                    {
+                        _scriptService.LaunchScript(game);
+                    }
+
+                    // Track the process for cleanup when it exits
+                    TrackGameProcess(process, game);
+
+                    // Position its window on the user's chosen monitor
                     var settings = _settings.Load();
                     var screens = Screen.AllScreens;
                     int idx = settings.DefaultMonitorIndex;
@@ -462,6 +487,244 @@ namespace SamsGameLauncher.ViewModels
             game.IsInArchive = toArchive;
             SaveGames();
             GamesView.Refresh();
+        }
+
+        // ──── AutoHotKey Script Commands ─────────────────────────────────────
+
+        private void ExecuteCreateScript(GameInfo game)
+        {
+            try
+            {
+                var scriptPath = _scriptService.CreateScript(game);
+                SaveGames();
+                GamesView.Refresh();
+                
+                // Open the script for editing
+                _scriptService.EditScript(game);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to create script:\n{ex.Message}",
+                    "Script Creation Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void ExecuteEditScript(GameInfo game)
+        {
+            try
+            {
+                _scriptService.EditScript(game);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to edit script:\n{ex.Message}",
+                    "Script Edit Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void ExecuteDeleteScript(GameInfo game)
+        {
+            try
+            {
+                var result = MessageBox.Show(
+                    $"Are you sure you want to delete the AutoHotKey script for '{game.Name}'?",
+                    "Delete Script", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                
+                if (result == MessageBoxResult.Yes)
+                {
+                    _scriptService.DeleteScript(game);
+                    SaveGames();
+                    GamesView.Refresh();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to delete script:\n{ex.Message}",
+                    "Script Delete Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private bool CanCreateScript(GameInfo game)
+        {
+            return game != null && 
+                   game.ConsoleId == "pc" && 
+                   IsAutoHotKeyInstalled();
+        }
+
+        private bool CanEditScript(GameInfo game)
+        {
+            return game != null && 
+                   game.ConsoleId == "pc" && 
+                   _scriptService.HasScript(game) &&
+                   IsAutoHotKeyInstalled();
+        }
+
+        private bool CanDeleteScript(GameInfo game)
+        {
+            return game != null && 
+                   game.ConsoleId == "pc" && 
+                   _scriptService.HasScript(game) &&
+                   IsAutoHotKeyInstalled();
+        }
+
+        private bool IsAutoHotKeyInstalled()
+        {
+            var settings = _settings.Load();
+            return settings.IsAutoHotKeyInstalled;
+        }
+
+        /// <summary>
+        /// Public property to expose AutoHotKey installation status for XAML binding
+        /// </summary>
+        public bool AutoHotKeyInstalled => IsAutoHotKeyInstalled();
+
+        /// <summary>
+        /// Refreshes the AutoHotKey script command states
+        /// Call this when returning from settings to update command availability
+        /// </summary>
+        public void RefreshScriptCommands()
+        {
+            CreateScriptCommand.NotifyCanExecuteChanged();
+            EditScriptCommand.NotifyCanExecuteChanged();
+            DeleteScriptCommand.NotifyCanExecuteChanged();
+            RaisePropertyChanged(nameof(AutoHotKeyInstalled));
+        }
+
+        /// <summary>
+        /// Tracks a game process and sets up cleanup when it exits
+        /// </summary>
+        /// <param name="process">The game process to track</param>
+        /// <param name="game">The game being launched</param>
+        private void TrackGameProcess(Process process, GameInfo game)
+        {
+            // Store the process for cleanup
+            _trackedGameProcesses[process.Id] = process;
+
+            // Set up cleanup when the process exits
+            process.EnableRaisingEvents = true;
+            process.Exited += (sender, e) => OnGameProcessExited(process, game);
+        }
+
+        /// <summary>
+        /// Handles cleanup when a game process exits
+        /// </summary>
+        /// <param name="process">The exited game process</param>
+        /// <param name="game">The game that was running</param>
+        private void OnGameProcessExited(Process process, GameInfo game)
+        {
+            try
+            {
+                // Remove from tracking
+                _trackedGameProcesses.Remove(process.Id);
+
+                // Clean up AutoHotKey scripts for this game
+                if (game.ConsoleId == "pc" && _scriptService.HasScript(game))
+                {
+                    CleanupAutoHotKeyScripts(game);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the error but don't show to user as this happens in background
+                System.Diagnostics.Debug.WriteLine($"Error during game cleanup: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Cleans up AutoHotKey scripts for a specific game
+        /// </summary>
+        /// <param name="game">The game to clean up scripts for</param>
+        private void CleanupAutoHotKeyScripts(GameInfo game)
+        {
+            try
+            {
+                // Find and terminate any AutoHotKey processes that might be running scripts for this game
+                var runningAhkProcesses = Process.GetProcessesByName("AutoHotkey64")
+                    .Concat(Process.GetProcessesByName("AutoHotkey"))
+                    .Concat(Process.GetProcessesByName("AutoHotkeyU64"))
+                    .Concat(Process.GetProcessesByName("AutoHotkeyU32"))
+                    .ToList();
+
+                foreach (var ahkProcess in runningAhkProcesses)
+                {
+                    try
+                    {
+                        // Check if this AHK process is running a script for our game
+                        if (IsAutoHotKeyProcessForGame(ahkProcess, game))
+                        {
+                            ahkProcess.Kill();
+                            ahkProcess.WaitForExit(5000); // Wait up to 5 seconds for graceful shutdown
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Error terminating AHK process {ahkProcess.Id}: {ex.Message}");
+                    }
+                    finally
+                    {
+                        ahkProcess.Dispose();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error during AHK cleanup for {game.Name}: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Determines if an AutoHotKey process is running a script for the specified game
+        /// </summary>
+        /// <param name="ahkProcess">The AutoHotKey process to check</param>
+        /// <param name="game">The game to check against</param>
+        /// <returns>True if the process is running a script for this game</returns>
+        private bool IsAutoHotKeyProcessForGame(Process ahkProcess, GameInfo game)
+        {
+            try
+            {
+                // Get the command line of the AHK process
+                var commandLine = GetProcessCommandLine(ahkProcess.Id);
+                
+                // Check if the command line contains the game's script path
+                var scriptPath = _scriptService.GetAhkScriptPath(game);
+                if (!string.IsNullOrEmpty(scriptPath))
+                {
+                    return commandLine.Contains(scriptPath, StringComparison.OrdinalIgnoreCase);
+                }
+            }
+            catch
+            {
+                // If we can't determine the command line, assume it might be for this game
+                // This is a conservative approach to ensure cleanup
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Gets the command line of a process by its ID
+        /// </summary>
+        /// <param name="processId">The process ID</param>
+        /// <returns>The command line string</returns>
+        private string GetProcessCommandLine(int processId)
+        {
+            try
+            {
+                using var searcher = new System.Management.ManagementObjectSearcher(
+                    $"SELECT CommandLine FROM Win32_Process WHERE ProcessId = {processId}");
+                
+                foreach (System.Management.ManagementObject obj in searcher.Get())
+                {
+                    return obj["CommandLine"]?.ToString() ?? string.Empty;
+                }
+            }
+            catch
+            {
+                // If WMI fails, return empty string
+            }
+
+            return string.Empty;
         }
 
     }

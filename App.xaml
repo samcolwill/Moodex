@@ -4,6 +4,7 @@
              xmlns:conv="clr-namespace:SamsGameLauncher.Converters">
     <Application.Resources>
         <conv:BoolToVisConverter x:Key="BoolToVis"/>
+        <conv:StringToVisConverter x:Key="StringToVis"/>
         
         <!-- Implicit style for all MenuItems in the app -->
         <Style TargetType="MenuItem">
