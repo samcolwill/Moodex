@@ -31,7 +31,7 @@ namespace SamsGameLauncher.ViewModels.Settings
               new SettingsSection("General",   new GeneralSettingsViewModel(settingsService)),
               new SettingsSection("Interface", new InterfaceSettingsViewModel(settingsService)),
               new SettingsSection("Library",   new LibrarySettingsViewModel(settingsService)),
-              new SettingsSection("Storage",   new StorageSettingsViewModel(settingsService)),
+              new SettingsSection("Storage",   new StorageSettingsViewModel(settingsService, dialogService)),
               new SettingsSection("Controller",  new ControllerSettingsViewModel(settingsService, dialogService))
             };
 

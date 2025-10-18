@@ -39,6 +39,7 @@ namespace SamsGameLauncher.Configuration
         public bool IsDs4Installed { get; set; } = false;
         public bool LaunchDs4WindowsOnStartup { get; set; } = false;
         public bool IsAutoHotKeyInstalled { get; set; } = false;
+        public string SevenZipPath { get; set; } = "";
     }
 
     public enum LibraryKind

@@ -23,10 +23,49 @@
         </StackPanel>
 
         <!-- Archive (cold) library -->
-        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
             <TextBlock Text="Archive Path:" Width="120" VerticalAlignment="Center"/>
             <TextBox Text="{Binding ArchiveLibraryPath, UpdateSourceTrigger=PropertyChanged}"
                      Width="300"/>
         </StackPanel>
+
+        <!-- 7zip section -->
+        <TextBlock Text="7zip" FontWeight="Bold" Margin="0,0,0,5"/>
+        <TextBlock Text="7zip is required for compressing games when archiving to save storage space."
+            FontSize="10"
+            Margin="0,0,0,5"/>
+        <TextBlock Text="Download 7zip from the official website: "
+            FontSize="10"
+            Margin="0,0,0,5">
+            <Hyperlink NavigateUri="https://www.7-zip.org/download.html" RequestNavigate="Hyperlink_RequestNavigate">
+                https://www.7-zip.org/download.html
+            </Hyperlink>
+        </TextBlock>
+        
+        <!-- 7zip path selection -->
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+            <TextBlock Text="7zip Path:" Width="120" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding SevenZipPath, UpdateSourceTrigger=PropertyChanged}"
+                     Width="300" Margin="0,0,5,0"/>
+            <Button Content="Browse..." Command="{Binding BrowseFor7zipCommand}" Width="80"/>
+        </StackPanel>
+        
+        <!-- Status indicator -->
+        <TextBlock Text="7zip is configured and ready to use."
+            FontStyle="Italic"
+            FontSize="10"
+            Margin="0,5,0,5"
+            Foreground="Green">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Is7zipConfigured}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
     </StackPanel>
 </UserControl>
