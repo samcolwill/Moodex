@@ -8,6 +8,7 @@ namespace SamsGameLauncher.ViewModels
 {
     public partial class ProgressWindowViewModel : ObservableObject
     {
+        [ObservableProperty] private string title = "Moving Game";
         [ObservableProperty] private double percent;
         [ObservableProperty] private string? currentFile;
 

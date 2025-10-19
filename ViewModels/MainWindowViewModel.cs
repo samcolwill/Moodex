@@ -501,7 +501,10 @@ namespace SamsGameLauncher.ViewModels
             }
 
             // show progress…
-            var vm = new ProgressWindowViewModel();
+            var vm = new ProgressWindowViewModel
+            {
+                Title = toArchive ? "Moving Game to Archive" : "Moving Game to Active"
+            };
             var dlg = new ProgressWindow
             {
                 Owner = Application.Current.MainWindow,

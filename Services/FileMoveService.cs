@@ -103,11 +103,11 @@ public class FileMoveService : IFileMoveService
 
             // Use 7zip to create a zip file with the folder structure preserved
             // This will create MyGame.zip containing MyGame\file1, MyGame\file2, etc.
-            // Command: 7z a -tzip "output.zip" "sourceFolder" -mx=5
+            // Command: 7z a -tzip "output.zip" "sourceFolder" -mx=5 -bsp1 (progress to stdout)
             var processInfo = new ProcessStartInfo
             {
                 FileName = sevenZipPath,
-                Arguments = $"a -tzip \"{zipFilePath}\" \"{srcFolder}\" -mx=5",
+                Arguments = $"a -tzip \"{zipFilePath}\" \"{srcFolder}\" -mx=5 -bsp1",
                 CreateNoWindow = true,
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
@@ -117,6 +117,20 @@ public class FileMoveService : IFileMoveService
 
             using var process = new Process { StartInfo = processInfo };
             process.Start();
+
+            // Track progress updates
+            double lastReportedPercent = 10;
+            var progressTimer = new System.Timers.Timer(500); // Update every 500ms
+            progressTimer.Elapsed += (s, e) =>
+            {
+                // Gradually increase progress if we haven't received updates
+                if (lastReportedPercent < 90)
+                {
+                    lastReportedPercent += 2;
+                    prog.Report(new MoveProgress(lastReportedPercent, "Compressing..."));
+                }
+            };
+            progressTimer.Start();
 
             // Read output for progress
             var outputTask = Task.Run(async () =>
@@ -133,6 +147,7 @@ public class FileMoveService : IFileMoveService
                             var percentStr = new string(parts[0].Reverse().TakeWhile(char.IsDigit).Reverse().ToArray());
                             if (double.TryParse(percentStr, out double percent))
                             {
+                                lastReportedPercent = percent;
                                 prog.Report(new MoveProgress(percent, "Compressing..."));
                             }
                         }
@@ -142,6 +157,7 @@ public class FileMoveService : IFileMoveService
 
             await process.WaitForExitAsync(token);
             await outputTask;
+            progressTimer.Stop();
 
             if (process.ExitCode != 0)
             {
@@ -178,11 +194,11 @@ public class FileMoveService : IFileMoveService
             if (!string.IsNullOrEmpty(sevenZipPath) && File.Exists(sevenZipPath))
             {
                 // Use 7zip to extract
-                // Command: 7z x "archive.zip" -o"outputFolder" -y
+                // Command: 7z x "archive.zip" -o"outputFolder" -y -bsp1 (progress to stdout)
                 var processInfo = new ProcessStartInfo
                 {
                     FileName = sevenZipPath,
-                    Arguments = $"x \"{zipFilePath}\" -o\"{dstFolder}\" -y",
+                    Arguments = $"x \"{zipFilePath}\" -o\"{dstFolder}\" -y -bsp1",
                     CreateNoWindow = true,
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
@@ -191,6 +207,20 @@ public class FileMoveService : IFileMoveService
 
                 using var process = new Process { StartInfo = processInfo };
                 process.Start();
+
+                // Track progress updates
+                double lastReportedPercent = 10;
+                var progressTimer = new System.Timers.Timer(500); // Update every 500ms
+                progressTimer.Elapsed += (s, e) =>
+                {
+                    // Gradually increase progress if we haven't received updates
+                    if (lastReportedPercent < 90)
+                    {
+                        lastReportedPercent += 2;
+                        prog.Report(new MoveProgress(lastReportedPercent, "Extracting..."));
+                    }
+                };
+                progressTimer.Start();
 
                 // Read output for progress
                 var outputTask = Task.Run(async () =>
@@ -207,6 +237,7 @@ public class FileMoveService : IFileMoveService
                                 var percentStr = new string(parts[0].Reverse().TakeWhile(char.IsDigit).Reverse().ToArray());
                                 if (double.TryParse(percentStr, out double percent))
                                 {
+                                    lastReportedPercent = percent;
                                     prog.Report(new MoveProgress(percent, "Extracting..."));
                                 }
                             }
@@ -216,6 +247,7 @@ public class FileMoveService : IFileMoveService
 
                 await process.WaitForExitAsync(token);
                 await outputTask;
+                progressTimer.Stop();
 
                 if (process.ExitCode != 0)
                 {
@@ -226,10 +258,12 @@ public class FileMoveService : IFileMoveService
             else
             {
                 // Fallback to .NET's built-in ZipFile
+                prog.Report(new MoveProgress(20, "Extracting..."));
                 await Task.Run(() =>
                 {
                     System.IO.Compression.ZipFile.ExtractToDirectory(zipFilePath, dstFolder, true);
                 }, token);
+                prog.Report(new MoveProgress(90, "Extraction complete..."));
             }
 
             prog.Report(new MoveProgress(95, "Cleaning up zip file..."));
