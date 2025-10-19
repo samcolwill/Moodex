@@ -67,5 +67,21 @@
                 </Style>
             </TextBlock.Style>
         </TextBlock>
+        
+        <!-- Compress on archive checkbox -->
+        <CheckBox Content="Compress to zip on archive"
+                  IsChecked="{Binding CompressOnArchive}"
+                  Margin="0,5,0,5">
+            <CheckBox.Style>
+                <Style TargetType="CheckBox">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Is7zipConfigured}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </CheckBox.Style>
+        </CheckBox>
     </StackPanel>
 </UserControl>

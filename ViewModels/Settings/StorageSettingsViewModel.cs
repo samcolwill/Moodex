@@ -85,6 +85,7 @@ namespace SamsGameLauncher.ViewModels.Settings
             ActiveLibraryPath = _model.ActiveLibraryPath;
             ArchiveLibraryPath = _model.ArchiveLibraryPath;
             _sevenZipPath = _model.SevenZipPath;
+            _compressOnArchive = _model.CompressOnArchive;
 
             // Commands
             BrowseFor7zipCommand = new RelayCommand(BrowseFor7zip);
@@ -109,6 +110,22 @@ namespace SamsGameLauncher.ViewModels.Settings
         }
 
         public bool Is7zipConfigured => !string.IsNullOrEmpty(SevenZipPath) && File.Exists(SevenZipPath);
+
+        private bool _compressOnArchive;
+        public bool CompressOnArchive
+        {
+            get => _compressOnArchive;
+            set
+            {
+                if (_compressOnArchive != value)
+                {
+                    _compressOnArchive = value;
+                    _model.CompressOnArchive = value;
+                    _svc.Save(_model);
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         // ——— Commands —————————————————————————————————————————
         public IRelayCommand BrowseFor7zipCommand { get; }
