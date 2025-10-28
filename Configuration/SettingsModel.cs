@@ -41,6 +41,10 @@ namespace SamsGameLauncher.Configuration
         public bool IsAutoHotKeyInstalled { get; set; } = false;
         public string SevenZipPath { get; set; } = "";
         public bool CompressOnArchive { get; set; } = false;
+		public List<string> AhkEnabledConsoleIds { get; set; } = new List<string>
+		{
+			"pc"
+		};
     }
 
     public enum LibraryKind

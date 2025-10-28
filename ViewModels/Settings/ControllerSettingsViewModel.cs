@@ -5,6 +5,8 @@ using SamsGameLauncher.Utilities;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -114,6 +116,34 @@ namespace SamsGameLauncher.ViewModels.Settings
 
         public bool CanInstallAutoHotKey => !IsAutoHotKeyInstalled;
 
+        // ——— AHK-enabled consoles selection ————————————————
+        public ObservableCollection<AhkConsoleOption> AhkConsoleOptions { get; } = new();
+        public bool HasAhkConsoleOptions => AhkConsoleOptions.Count > 0;
+
+        private void InitializeAhkConsoleOptions()
+        {
+            AhkConsoleOptions.Clear();
+            var enabled = new HashSet<string>(_model.AhkEnabledConsoleIds, StringComparer.OrdinalIgnoreCase);
+            foreach (var c in _model.Consoles)
+            {
+                var opt = new AhkConsoleOption(c.Id, c.Name, enabled.Contains(c.Id), OnAhkConsoleToggled);
+                AhkConsoleOptions.Add(opt);
+            }
+        }
+
+        private void OnAhkConsoleToggled(string consoleId, bool isEnabled)
+        {
+            // Update model list and persist
+            var set = new HashSet<string>(_model.AhkEnabledConsoleIds, StringComparer.OrdinalIgnoreCase);
+            if (isEnabled)
+                set.Add(consoleId);
+            else
+                set.Remove(consoleId);
+
+            _model.AhkEnabledConsoleIds = set.ToList();
+            _svc.Save(_model);
+        }
+
         // ——— Commands —————————————————————————————————————————
 
         public IAsyncRelayCommand DownloadInstallDs4Command { get; }
@@ -124,6 +154,7 @@ namespace SamsGameLauncher.ViewModels.Settings
         // AutoHotKey commands
         public IAsyncRelayCommand DownloadInstallAutoHotKeyCommand { get; }
         public IRelayCommand UninstallAutoHotKeyCommand { get; }
+        // removed input debugger
 
         // ——— Command Handlers ——————————————————————————————————
 
@@ -326,6 +357,12 @@ namespace SamsGameLauncher.ViewModels.Settings
             // 5) Cleanup + state update
             File.Delete(tmpFile);
             IsAutoHotKeyInstalled = true;
+            // Ensure options exist after installation too
+            if (AhkConsoleOptions.Count == 0)
+            {
+                InitializeAhkConsoleOptions();
+                OnPropertyChanged(nameof(HasAhkConsoleOptions));
+            }
         }
 
         private async Task ConfirmAndUninstallAutoHotKeyAsync()
@@ -382,6 +419,8 @@ namespace SamsGameLauncher.ViewModels.Settings
             IsAutoHotKeyInstalled = false;
         }
 
+        // input debugger removed
+
         private void CheckDs4Installation()
         {
             var ds4ExePath = Path.Combine(AppContext.BaseDirectory, "External Tools", "DS4Windows", "DS4Windows.exe");
@@ -398,6 +437,9 @@ namespace SamsGameLauncher.ViewModels.Settings
             {
                 IsAutoHotKeyInstalled = true;
             }
+            // Initialize console options regardless; visible only when AHK installed
+            InitializeAhkConsoleOptions();
+            OnPropertyChanged(nameof(HasAhkConsoleOptions));
         }
 
         // ——— INotifyPropertyChanged —————————————————————————————
@@ -405,5 +447,34 @@ namespace SamsGameLauncher.ViewModels.Settings
         public event PropertyChangedEventHandler? PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string? name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    }
+
+    public class AhkConsoleOption : INotifyPropertyChanged
+    {
+        private readonly Action<string, bool> _onToggle;
+        public string ConsoleId { get; }
+        public string ConsoleName { get; }
+        private bool _isEnabled;
+        public bool IsEnabled
+        {
+            get => _isEnabled;
+            set
+            {
+                if (_isEnabled == value) return;
+                _isEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsEnabled)));
+                _onToggle(ConsoleId, _isEnabled);
+            }
+        }
+
+        public AhkConsoleOption(string id, string name, bool enabled, Action<string, bool> onToggle)
+        {
+            ConsoleId = id;
+            ConsoleName = name;
+            _isEnabled = enabled;
+            _onToggle = onToggle;
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
     }
 }

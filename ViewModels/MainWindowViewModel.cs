@@ -254,8 +254,8 @@ namespace SamsGameLauncher.ViewModels
                 var process = Process.Start(startInfo);
                 if (process != null)
                 {
-                    // Launch AutoHotKey script if this is a PC game with a script
-                    if (game.ConsoleId == "pc" && _scriptService.HasScript(game))
+                    // Launch AutoHotKey script if this console is AHK-enabled and a script exists
+                    if (IsConsoleAhkEnabled(game.ConsoleId) && _scriptService.HasScript(game))
                     {
                         _scriptService.LaunchScript(game);
                     }
@@ -639,14 +639,14 @@ namespace SamsGameLauncher.ViewModels
         private bool CanCreateScript(GameInfo game)
         {
             return game != null && 
-                   game.ConsoleId == "pc" && 
+                   IsConsoleAhkEnabled(game.ConsoleId) && 
                    IsAutoHotKeyInstalled();
         }
 
         private bool CanEditScript(GameInfo game)
         {
             return game != null && 
-                   game.ConsoleId == "pc" && 
+                   IsConsoleAhkEnabled(game.ConsoleId) && 
                    _scriptService.HasScript(game) &&
                    IsAutoHotKeyInstalled();
         }
@@ -654,7 +654,7 @@ namespace SamsGameLauncher.ViewModels
         private bool CanDeleteScript(GameInfo game)
         {
             return game != null && 
-                   game.ConsoleId == "pc" && 
+                   IsConsoleAhkEnabled(game.ConsoleId) && 
                    _scriptService.HasScript(game) &&
                    IsAutoHotKeyInstalled();
         }
@@ -663,6 +663,19 @@ namespace SamsGameLauncher.ViewModels
         {
             var settings = _settings.Load();
             return settings.IsAutoHotKeyInstalled;
+        }
+
+        private bool IsConsoleAhkEnabled(string consoleId)
+        {
+            try
+            {
+                var settings = _settings.Load();
+                return settings.AhkEnabledConsoleIds?.Contains(consoleId, StringComparer.OrdinalIgnoreCase) == true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -710,7 +723,7 @@ namespace SamsGameLauncher.ViewModels
                 _trackedGameProcesses.Remove(process.Id);
 
                 // Clean up AutoHotKey scripts for this game
-                if (game.ConsoleId == "pc" && _scriptService.HasScript(game))
+                if (IsConsoleAhkEnabled(game.ConsoleId) && _scriptService.HasScript(game))
                 {
                     CleanupAutoHotKeyScripts(game);
                 }

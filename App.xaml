@@ -5,6 +5,7 @@
     <Application.Resources>
         <conv:BoolToVisConverter x:Key="BoolToVis"/>
         <conv:StringToVisConverter x:Key="StringToVis"/>
+        <conv:ConsoleAhkEnabledConverter x:Key="ConsoleAhkEnabled"/>
         
         <!-- Implicit style for all MenuItems in the app -->
         <Style TargetType="MenuItem">
