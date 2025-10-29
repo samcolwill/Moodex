@@ -1,7 +1,7 @@
-﻿using SamsGameLauncher.Models;
+﻿using Moodex.Models;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
-namespace SamsGameLauncher.Configuration
+namespace Moodex.Configuration
 {
     public class SettingsModel
     {
@@ -39,6 +39,12 @@ namespace SamsGameLauncher.Configuration
         public bool IsDs4Installed { get; set; } = false;
         public bool LaunchDs4WindowsOnStartup { get; set; } = false;
         public bool IsAutoHotKeyInstalled { get; set; } = false;
+        public string SevenZipPath { get; set; } = "";
+        public bool CompressOnArchive { get; set; } = false;
+		public List<string> AhkEnabledConsoleIds { get; set; } = new List<string>
+		{
+			"pc"
+		};
     }
 
     public enum LibraryKind
@@ -47,3 +53,4 @@ namespace SamsGameLauncher.Configuration
         Archive   // long‑term storage
     }
 }
+

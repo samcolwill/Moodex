@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using SamsGameLauncher.Converters;
-using SamsGameLauncher.Models;
-using SamsGameLauncher.Services;
-using SamsGameLauncher.Views.Utilities;
+using Moodex.Converters;
+using Moodex.Models;
+using Moodex.Services;
+using Moodex.Views.Utilities;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -14,7 +14,7 @@ using System.Windows.Input;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 
-namespace SamsGameLauncher.ViewModels
+namespace Moodex.ViewModels
 {
     public class MainWindowViewModel : BaseViewModel
     {
@@ -185,6 +185,19 @@ namespace SamsGameLauncher.ViewModels
         {
             try
             {
+                // Check if the game is archived as a zip file
+                var settings = _settings.Load();
+                var installRoot = GetInstallRoot(game, settings.ActiveLibraryPath, settings.ArchiveLibraryPath);
+                if (installRoot.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+                {
+                    MessageBox.Show(
+                        "This game is archived and compressed. Please move it to Active storage before launching.",
+                        "Game Archived",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+                    return;
+                }
+
                 ProcessStartInfo startInfo;
 
                 // If the game is on PC, launch the executable directly
@@ -241,8 +254,8 @@ namespace SamsGameLauncher.ViewModels
                 var process = Process.Start(startInfo);
                 if (process != null)
                 {
-                    // Launch AutoHotKey script if this is a PC game with a script
-                    if (game.ConsoleId == "pc" && _scriptService.HasScript(game))
+                    // Launch AutoHotKey script if this console is AHK-enabled and a script exists
+                    if (IsConsoleAhkEnabled(game.ConsoleId) && _scriptService.HasScript(game))
                     {
                         _scriptService.LaunchScript(game);
                     }
@@ -251,14 +264,14 @@ namespace SamsGameLauncher.ViewModels
                     TrackGameProcess(process, game);
 
                     // Position its window on the user's chosen monitor
-                    var settings = _settings.Load();
                     var screens = Screen.AllScreens;
                     int idx = settings.DefaultMonitorIndex;
+                    var primaryScreen = Screen.PrimaryScreen ?? screens[0];
                     var targetScreen = (idx >= 0 && idx < screens.Length)
                                        ? screens[idx]
-                                       : Screen.PrimaryScreen;
+                                       : primaryScreen;
 
-                    _placer.PlaceProcessWindows(process, targetScreen, Screen.PrimaryScreen);
+                    _placer.PlaceProcessWindows(process, targetScreen, primaryScreen);
                 }
             }
             catch (Exception ex)
@@ -387,6 +400,24 @@ namespace SamsGameLauncher.ViewModels
             if (string.IsNullOrEmpty(path))
                 return "";
 
+            // Special case: if the path is a zip file, return it as-is
+            if (File.Exists(path) && path.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+            {
+                return path;
+            }
+
+            // Special case: if the path is a folder in the archive that contains a zip file
+            // (this is the new compressed archive structure with cover images)
+            if (Directory.Exists(path))
+            {
+                var folderName = Path.GetFileName(path.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+                var zipInFolder = Path.Combine(path, $"{folderName}.zip");
+                if (File.Exists(zipInFolder))
+                {
+                    return zipInFolder;
+                }
+            }
+
             // 1) start from the folder that *contains* the file (if any)
             string dir = File.Exists(path)
                        ? Path.GetDirectoryName(path)!
@@ -434,8 +465,11 @@ namespace SamsGameLauncher.ViewModels
             var srcFolder = GetInstallRoot(game, set.ActiveLibraryPath, set.ArchiveLibraryPath);
             if (string.IsNullOrWhiteSpace(srcFolder)) return;
 
+            // Check if we're extracting a zip file (moving from archive)
+            bool isSourceZipped = !toArchive && srcFolder.EndsWith(".zip", StringComparison.OrdinalIgnoreCase);
+            
             // avoid trying to move if already on target drive
-            if (!srcFolder.StartsWith(srcRoot, StringComparison.OrdinalIgnoreCase))
+            if (!isSourceZipped && !srcFolder.StartsWith(srcRoot, StringComparison.OrdinalIgnoreCase))
             {
                 MessageBox.Show("Game is already on the requested drive.", "Move",
                                 MessageBoxButton.OK, MessageBoxImage.Information);
@@ -444,11 +478,33 @@ namespace SamsGameLauncher.ViewModels
 
             // create new <Drive>\<Console>\<GameName> folder
             var consoleName = game.ConsoleName;
+            if (string.IsNullOrEmpty(consoleName))
+            {
+                MessageBox.Show("Game console name is not set.", "Move Error",
+                                MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             var newFolder = Path.Combine(dstRoot, consoleName, game.Name);
-            Directory.CreateDirectory(newFolder);
+            
+            // When extracting a zip, extract to the console directory (zip contains the game folder)
+            // Otherwise, create the game folder
+            if (isSourceZipped)
+            {
+                // Extract to console directory, the zip will create the game folder
+                newFolder = Path.Combine(dstRoot, consoleName);
+                Directory.CreateDirectory(newFolder);
+            }
+            else if (!(toArchive && set.CompressOnArchive))
+            {
+                // Only create directory if not compressing (compression will handle it differently)
+                Directory.CreateDirectory(newFolder);
+            }
 
             // show progress…
-            var vm = new ProgressWindowViewModel();
+            var vm = new ProgressWindowViewModel
+            {
+                Title = toArchive ? "Moving Game to Archive" : "Moving Game to Active"
+            };
             var dlg = new ProgressWindow
             {
                 Owner = Application.Current.MainWindow,
@@ -464,7 +520,9 @@ namespace SamsGameLauncher.ViewModels
             bool success = false;
             try
             {
-                success = await _fileMover.MoveFolderAsync(srcFolder, newFolder, prog, vm.Token);
+                // Pass compression settings to the file mover
+                bool shouldCompress = toArchive && set.CompressOnArchive && !string.IsNullOrEmpty(set.SevenZipPath);
+                success = await _fileMover.MoveFolderAsync(srcFolder, newFolder, prog, vm.Token, shouldCompress, set.SevenZipPath);
             }
             catch (OperationCanceledException) { /* user hit Cancel */ }
             catch (Exception ex)
@@ -476,13 +534,47 @@ namespace SamsGameLauncher.ViewModels
 
             if (!success) return;   // aborted or failed
 
-            // rebuild the stored path for EVERY game the same way:
-            //   - if we moved a file, preserve its filename under newFolder
-            //   - if we moved a folder, that folder IS newFolder
-            var rel = Path.GetRelativePath(srcFolder, game.FileSystemPath);
-            game.FileSystemPath = (rel == "." || string.IsNullOrEmpty(rel))
-                ? newFolder
-                : Path.Combine(newFolder, rel);
+            // Update the stored path based on whether we compressed or extracted
+            if (toArchive && set.CompressOnArchive)
+            {
+                // Game was compressed - point to the archive folder (not the zip)
+                // This folder contains both the cover image and the zip file
+                // Structure: <Archive>\<Console>\<GameName>\ with <GameName>.jpg and <GameName>.zip inside
+                var archiveFolder = Path.Combine(dstRoot, consoleName, game.Name);
+                game.FileSystemPath = archiveFolder;
+            }
+            else if (isSourceZipped)
+            {
+                // Game was extracted from a zip file
+                // The zip contains a folder with the game name, which was extracted to the console directory
+                // So the extracted game folder is at: <dstRoot>\<Console>\<GameName>\
+                var extractedGameFolder = Path.Combine(dstRoot, consoleName, game.Name);
+                game.FileSystemPath = extractedGameFolder;
+                
+                // Clean up the archive folder (which contained the cover and zip)
+                try
+                {
+                    var archiveFolder = Path.GetDirectoryName(srcFolder);
+                    if (!string.IsNullOrEmpty(archiveFolder) && Directory.Exists(archiveFolder))
+                    {
+                        Directory.Delete(archiveFolder, recursive: true);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Don't fail if cleanup fails
+                    System.Diagnostics.Debug.WriteLine($"Failed to clean up archive folder: {ex.Message}");
+                }
+            }
+            else
+            {
+                // Normal folder move
+                var finalFolder = Path.Combine(dstRoot, consoleName, game.Name);
+                var rel = Path.GetRelativePath(srcFolder, game.FileSystemPath);
+                game.FileSystemPath = (rel == "." || string.IsNullOrEmpty(rel))
+                    ? finalFolder
+                    : Path.Combine(finalFolder, rel);
+            }
 
             game.IsInArchive = toArchive;
             SaveGames();
@@ -547,14 +639,14 @@ namespace SamsGameLauncher.ViewModels
         private bool CanCreateScript(GameInfo game)
         {
             return game != null && 
-                   game.ConsoleId == "pc" && 
+                   IsConsoleAhkEnabled(game.ConsoleId) && 
                    IsAutoHotKeyInstalled();
         }
 
         private bool CanEditScript(GameInfo game)
         {
             return game != null && 
-                   game.ConsoleId == "pc" && 
+                   IsConsoleAhkEnabled(game.ConsoleId) && 
                    _scriptService.HasScript(game) &&
                    IsAutoHotKeyInstalled();
         }
@@ -562,7 +654,7 @@ namespace SamsGameLauncher.ViewModels
         private bool CanDeleteScript(GameInfo game)
         {
             return game != null && 
-                   game.ConsoleId == "pc" && 
+                   IsConsoleAhkEnabled(game.ConsoleId) && 
                    _scriptService.HasScript(game) &&
                    IsAutoHotKeyInstalled();
         }
@@ -571,6 +663,19 @@ namespace SamsGameLauncher.ViewModels
         {
             var settings = _settings.Load();
             return settings.IsAutoHotKeyInstalled;
+        }
+
+        private bool IsConsoleAhkEnabled(string consoleId)
+        {
+            try
+            {
+                var settings = _settings.Load();
+                return settings.AhkEnabledConsoleIds?.Contains(consoleId, StringComparer.OrdinalIgnoreCase) == true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -618,7 +723,7 @@ namespace SamsGameLauncher.ViewModels
                 _trackedGameProcesses.Remove(process.Id);
 
                 // Clean up AutoHotKey scripts for this game
-                if (game.ConsoleId == "pc" && _scriptService.HasScript(game))
+                if (IsConsoleAhkEnabled(game.ConsoleId) && _scriptService.HasScript(game))
                 {
                     CleanupAutoHotKeyScripts(game);
                 }

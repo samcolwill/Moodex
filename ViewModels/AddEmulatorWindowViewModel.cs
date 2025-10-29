@@ -1,10 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using SamsGameLauncher.Models;
-using SamsGameLauncher.Services;
+using Moodex.Models;
+using Moodex.Services;
 using System.Windows;
 using System.Windows.Input;
 
-namespace SamsGameLauncher.ViewModels
+namespace Moodex.ViewModels
 {
     // ViewModel for AddEmulatorWindow.xaml
     public class AddEmulatorWindowViewModel : BaseViewModel
@@ -134,3 +134,4 @@ namespace SamsGameLauncher.ViewModels
         }
     }
 }
+

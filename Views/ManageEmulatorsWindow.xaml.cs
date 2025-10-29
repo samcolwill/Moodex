@@ -11,10 +11,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using SamsGameLauncher.Models;
-using SamsGameLauncher.ViewModels;
+using Moodex.Models;
+using Moodex.ViewModels;
 
-namespace SamsGameLauncher.Views
+namespace Moodex.Views
 {
     /// <summary>
     /// Interaction logic for ManageEmulatorsWindow.xaml
@@ -41,3 +41,4 @@ namespace SamsGameLauncher.Views
         }
     }
 }
+

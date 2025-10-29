@@ -8,7 +8,7 @@ using System.Drawing;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
 
-namespace SamsGameLauncher.Converters
+namespace Moodex.Converters
 {
     public class ExecutableToIconConverter : IValueConverter
     {
@@ -53,3 +53,4 @@ namespace SamsGameLauncher.Converters
         public static extern bool DeleteObject(nint hObject);
     }
 }
+

@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using SamsGameLauncher.Services;
+using Moodex.Services;
 using CommunityToolkit.Mvvm.Input;
 
-namespace SamsGameLauncher.ViewModels.Settings
+namespace Moodex.ViewModels.Settings
 {
     public class GeneralSettingsViewModel : INotifyPropertyChanged
     {

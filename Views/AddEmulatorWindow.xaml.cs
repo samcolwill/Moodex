@@ -1,8 +1,8 @@
 ﻿using System.Windows;
-using SamsGameLauncher.Models;
-using SamsGameLauncher.ViewModels;
+using Moodex.Models;
+using Moodex.ViewModels;
 
-namespace SamsGameLauncher.Views
+namespace Moodex.Views
 {
     public partial class AddEmulatorWindow : Window
     {

@@ -1,9 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using SamsGameLauncher.Services;
+using Moodex.Services;
 
-namespace SamsGameLauncher.ViewModels.Settings
+namespace Moodex.ViewModels.Settings
 {
     public class SettingsWindowViewModel : INotifyPropertyChanged
     {
@@ -31,7 +31,7 @@ namespace SamsGameLauncher.ViewModels.Settings
               new SettingsSection("General",   new GeneralSettingsViewModel(settingsService)),
               new SettingsSection("Interface", new InterfaceSettingsViewModel(settingsService)),
               new SettingsSection("Library",   new LibrarySettingsViewModel(settingsService)),
-              new SettingsSection("Storage",   new StorageSettingsViewModel(settingsService)),
+              new SettingsSection("Storage",   new StorageSettingsViewModel(settingsService, dialogService)),
               new SettingsSection("Controller",  new ControllerSettingsViewModel(settingsService, dialogService))
             };
 
@@ -55,3 +55,4 @@ namespace SamsGameLauncher.ViewModels.Settings
         }
     }
 }
+

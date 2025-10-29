@@ -1,16 +1,16 @@
-# SamsGameLauncher
+﻿# Moodex
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-SamsGameLauncher is a video game management system and launcher for Windows, designed to help you organize, categorize, and launch both native and emulated games from a unified interface.
+Moodex is a video game management system and launcher for Windows, designed to help you organize, categorize, and launch both native and emulated games from a unified interface.
 
 ## Download
 
 > **Prerequisite:** [.NET 9 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/9.0/runtime)
 
 - **Windows x64 (framework-dependent ZIP, ~5 MB)**  
-  [SamsGameLauncher-v1.0.0-win-x64.zip](https://github.com/samcolwill/SamsGameLauncher/releases/download/v1.0.0/SamsGameLauncher-v1.0.0-win-x64.zip)  
-  Unzip and run `SamsGameLauncher.exe`.
+  [Moodex-v1.0.0-win-x64.zip](https://github.com/samcolwill/Moodex/releases/download/v1.0.0/Moodex-v1.0.0-win-x64.zip)  
+  Unzip and run `Moodex.exe`.
 
 ---
 
@@ -41,12 +41,12 @@ SamsGameLauncher is a video game management system and launcher for Windows, des
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/samcolwill/SamsGameLauncher.git
-   cd SamsGameLauncher
+   git clone https://github.com/samcolwill/Moodex.git
+   cd Moodex
    ```
 
 2. **Open in Visual Studio**
-   - Double-click `SamsGameLauncher.sln` or open it from Visual Studio.
+   - Double-click `Moodex.sln` or open it from Visual Studio.
 
 3. **Restore NuGet Packages**
    - Visual Studio should restore packages automatically; if not, right-click the solution and choose "Restore NuGet Packages".
@@ -103,6 +103,6 @@ MIT License
 
 ---
 
-For more details or to view the project source, visit: [SamsGameLauncher on GitHub](https://github.com/samcolwill/SamsGameLauncher)
+For more details or to view the project source, visit: [Moodex on GitHub](https://github.com/samcolwill/Moodex)
 
 _This README was generated based on available code and structure. For further details, check the codebase or open an issue._

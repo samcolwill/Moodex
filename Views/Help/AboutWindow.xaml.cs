@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace SamsGameLauncher.Views.Help
+namespace Moodex.Views.Help
 {
     public partial class AboutWindow : Window
     {
@@ -10,3 +10,4 @@ namespace SamsGameLauncher.Views.Help
         }
     }
 }
+

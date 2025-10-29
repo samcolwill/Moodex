@@ -5,10 +5,10 @@ using System.Linq;
 using System.Runtime.Versioning;
 using System.Windows;
 using CommunityToolkit.Mvvm.Input;
-using SamsGameLauncher.Models;
-using SamsGameLauncher.Services;
+using Moodex.Models;
+using Moodex.Services;
 
-namespace SamsGameLauncher.ViewModels
+namespace Moodex.ViewModels
 {
     public class EditGameWindowViewModel : BaseViewModel
     {
@@ -134,3 +134,4 @@ namespace SamsGameLauncher.ViewModels
         }
     }
 }
+

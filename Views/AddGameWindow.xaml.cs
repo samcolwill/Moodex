@@ -1,9 +1,9 @@
 ﻿using System.Windows;
-using SamsGameLauncher.Models;
-using SamsGameLauncher.Services;
-using SamsGameLauncher.ViewModels;
+using Moodex.Models;
+using Moodex.Services;
+using Moodex.ViewModels;
 
-namespace SamsGameLauncher.Views
+namespace Moodex.Views
 {
     public partial class AddGameWindow : Window
     {
@@ -18,3 +18,4 @@ namespace SamsGameLauncher.Views
         public GameInfo? NewGame => (DataContext as AddGameWindowViewModel)?.NewGame;
     }
 }
+

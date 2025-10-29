@@ -5,11 +5,11 @@ using System.IO;
 using System.Reflection;
 using CommunityToolkit.Mvvm.Input;
 
-namespace SamsGameLauncher.ViewModels.Help
+namespace Moodex.ViewModels.Help
 {
     public class AboutViewModel : BaseViewModel
     {
-        public string AppName => "Sam’s Game Launcher";
+        public string AppName => "Moodex";
         public string Version => Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ?? "Unknown";
         public string UpdatedDate
             => File.Exists(Assembly.GetEntryAssembly().Location)
@@ -19,7 +19,7 @@ namespace SamsGameLauncher.ViewModels.Help
 
         public string Developer => "Sam Colwill";
         public string WebsiteUrl => "https://samcolwill.com";
-        public string GitHubUrl => "https://github.com/samcolwill/SamsGameLauncher";
+        public string GitHubUrl => "https://github.com/samcolwill/Moodex";
 
         public IRelayCommand OpenWebsiteCommand { get; }
         public IRelayCommand OpenGitHubCommand { get; }
@@ -36,3 +36,4 @@ namespace SamsGameLauncher.ViewModels.Help
         }
     }
 }
+

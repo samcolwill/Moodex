@@ -4,10 +4,11 @@ using CommunityToolkit.Mvvm.Input;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SamsGameLauncher.ViewModels
+namespace Moodex.ViewModels
 {
     public partial class ProgressWindowViewModel : ObservableObject
     {
+        [ObservableProperty] private string title = "Moving Game";
         [ObservableProperty] private double percent;
         [ObservableProperty] private string? currentFile;
 

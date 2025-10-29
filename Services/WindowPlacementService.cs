@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace SamsGameLauncher.Services
+namespace Moodex.Services
 {
     public class WindowPlacementService : IWindowPlacementService
     {
@@ -101,3 +101,4 @@ namespace SamsGameLauncher.Services
         }
     }
 }
+

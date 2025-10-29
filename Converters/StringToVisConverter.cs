@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace SamsGameLauncher.Converters
+namespace Moodex.Converters
 {
     public sealed class StringToVisConverter : IValueConverter
     {
@@ -24,4 +24,5 @@ namespace SamsGameLauncher.Converters
         }
     }
 }
+
 

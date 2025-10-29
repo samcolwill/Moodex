@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace SamsGameLauncher.ViewModels
+namespace Moodex.ViewModels
 {
     public abstract class BaseViewModel : INotifyPropertyChanged
     {

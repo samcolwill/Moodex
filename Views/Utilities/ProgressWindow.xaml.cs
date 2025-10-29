@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace SamsGameLauncher.Views.Utilities
+namespace Moodex.Views.Utilities
 {
     /// <summary>
     /// Interaction logic for ProgressWindow.xaml
@@ -25,3 +25,4 @@ namespace SamsGameLauncher.Views.Utilities
         }
     }
 }
+

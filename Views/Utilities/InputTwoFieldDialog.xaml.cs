@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Windows;
 
-namespace SamsGameLauncher.Views.Utilities
+namespace Moodex.Views.Utilities
 {
     public partial class InputTwoFieldDialog : Window, INotifyPropertyChanged
     {

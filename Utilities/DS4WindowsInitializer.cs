@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace SamsGameLauncher.Utilities
+namespace Moodex.Utilities
 {
     public class DS4WindowsInitializer
     {
