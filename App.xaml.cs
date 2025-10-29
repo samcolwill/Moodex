@@ -1,15 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using SamsGameLauncher.Models;
-using SamsGameLauncher.Services;
-using SamsGameLauncher.Utilities;
-using SamsGameLauncher.ViewModels;
-using SamsGameLauncher.ViewModels.Settings;
-using SamsGameLauncher.Views;
+using Moodex.Models;
+using Moodex.Services;
+using Moodex.Utilities;
+using Moodex.ViewModels;
+using Moodex.ViewModels.Settings;
+using Moodex.Views;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
 
-namespace SamsGameLauncher
+namespace Moodex
 {
     public partial class App : System.Windows.Application
     {
@@ -143,3 +143,4 @@ namespace SamsGameLauncher
         }
     }
 }
+

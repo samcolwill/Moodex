@@ -1,7 +1,7 @@
 ﻿using System.IO;
-using SamsGameLauncher.Models;
+using Moodex.Models;
 
-namespace SamsGameLauncher.Utilities
+namespace Moodex.Utilities
 {
     public static class GameCoverLocator
     {

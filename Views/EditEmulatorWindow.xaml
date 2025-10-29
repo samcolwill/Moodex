@@ -1,11 +1,11 @@
-﻿<Window x:Class="SamsGameLauncher.Views.EditEmulatorWindow"
+﻿<Window x:Class="Moodex.Views.EditEmulatorWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="clr-namespace:SamsGameLauncher.ViewModels"
-        xmlns:conv="clr-namespace:SamsGameLauncher.Converters"
+        xmlns:vm="clr-namespace:Moodex.ViewModels"
+        xmlns:conv="clr-namespace:Moodex.Converters"
         Title="Edit Emulator"
         Height="235" Width="400"
-        Icon="/SamsGameLauncher;component/Assets/launcher.ico"
+        Icon="/Moodex;component/Assets/launcher.ico"
         WindowStartupLocation="CenterOwner">
 
     <Grid Margin="10">
@@ -74,3 +74,4 @@
         </StackPanel>
     </Grid>
 </Window>
+

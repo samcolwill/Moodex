@@ -4,7 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Windows.Data;
 
-namespace SamsGameLauncher.Converters
+namespace Moodex.Converters
 {
     public class FileNameConverter : IValueConverter
     {
@@ -21,3 +21,4 @@ namespace SamsGameLauncher.Converters
             => throw new NotImplementedException();
     }
 }
+

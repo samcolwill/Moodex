@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Versioning;
 using System.Windows;
-using SamsGameLauncher.Models;
-using SamsGameLauncher.Services;
-using SamsGameLauncher.ViewModels;
+using Moodex.Models;
+using Moodex.Services;
+using Moodex.ViewModels;
 
-namespace SamsGameLauncher.Views
+namespace Moodex.Views
 {
     public partial class EditGameWindow : Window
     {
@@ -20,3 +20,4 @@ namespace SamsGameLauncher.Views
         }
     }
 }
+

@@ -4,12 +4,12 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using Microsoft.Win32;
-using SamsGameLauncher.Services;
-using SamsGameLauncher.Models;
+using Moodex.Services;
+using Moodex.Models;
 using CommunityToolkit.Mvvm.Input;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 
-namespace SamsGameLauncher.ViewModels
+namespace Moodex.ViewModels
 {
     public class AddGameWindowViewModel : BaseViewModel
     {
@@ -194,3 +194,4 @@ namespace SamsGameLauncher.ViewModels
         }
     }
 }
+

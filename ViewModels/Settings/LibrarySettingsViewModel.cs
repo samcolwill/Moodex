@@ -3,11 +3,11 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using CommunityToolkit.Mvvm.Input;
-using SamsGameLauncher.Models;
-using SamsGameLauncher.Services;
-using SamsGameLauncher.Views.Utilities;
+using Moodex.Models;
+using Moodex.Services;
+using Moodex.Views.Utilities;
 
-namespace SamsGameLauncher.ViewModels.Settings
+namespace Moodex.ViewModels.Settings
 {
     public class LibrarySettingsViewModel : INotifyPropertyChanged
     {
@@ -169,3 +169,4 @@ namespace SamsGameLauncher.ViewModels.Settings
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(p));
     }
 }
+

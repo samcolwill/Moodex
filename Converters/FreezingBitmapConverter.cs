@@ -7,7 +7,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace SamsGameLauncher.Converters
+namespace Moodex.Converters
 {
     [ValueConversion(typeof(string), typeof(ImageSource))]
     public class FreezingBitmapConverter : IValueConverter
@@ -59,3 +59,4 @@ namespace SamsGameLauncher.Converters
         }
     }
 }
+

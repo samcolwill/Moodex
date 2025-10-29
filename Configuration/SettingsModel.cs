@@ -1,7 +1,7 @@
-﻿using SamsGameLauncher.Models;
+﻿using Moodex.Models;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
-namespace SamsGameLauncher.Configuration
+namespace Moodex.Configuration
 {
     public class SettingsModel
     {
@@ -53,3 +53,4 @@ namespace SamsGameLauncher.Configuration
         Archive   // long‑term storage
     }
 }
+

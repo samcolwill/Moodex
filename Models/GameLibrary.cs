@@ -1,10 +1,10 @@
-﻿using SamsGameLauncher.Utilities;
+﻿using Moodex.Utilities;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 
-namespace SamsGameLauncher.Models
+namespace Moodex.Models
 {
     public class GameLibrary
     {
@@ -83,3 +83,4 @@ namespace SamsGameLauncher.Models
         }
     }
 }
+

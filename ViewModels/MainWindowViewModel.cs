@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using SamsGameLauncher.Converters;
-using SamsGameLauncher.Models;
-using SamsGameLauncher.Services;
-using SamsGameLauncher.Views.Utilities;
+using Moodex.Converters;
+using Moodex.Models;
+using Moodex.Services;
+using Moodex.Views.Utilities;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -14,7 +14,7 @@ using System.Windows.Input;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 
-namespace SamsGameLauncher.ViewModels
+namespace Moodex.ViewModels
 {
     public class MainWindowViewModel : BaseViewModel
     {

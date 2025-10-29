@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Data;
-using SamsGameLauncher.Services;
+using Moodex.Services;
 
-namespace SamsGameLauncher.Converters
+namespace Moodex.Converters
 {
     public class ConsoleAhkEnabledConverter : IValueConverter
     {
@@ -35,6 +35,7 @@ namespace SamsGameLauncher.Converters
             => throw new NotSupportedException();
     }
 }
+
 
 
 

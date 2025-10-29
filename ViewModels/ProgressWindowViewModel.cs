@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SamsGameLauncher.ViewModels
+namespace Moodex.ViewModels
 {
     public partial class ProgressWindowViewModel : ObservableObject
     {

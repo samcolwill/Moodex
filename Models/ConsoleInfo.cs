@@ -1,4 +1,4 @@
-﻿namespace SamsGameLauncher.Models
+﻿namespace Moodex.Models
 {
     public class ConsoleInfo
     {
@@ -9,3 +9,4 @@
         // May be expanded to contain additional properties in the future
     }
 }
+

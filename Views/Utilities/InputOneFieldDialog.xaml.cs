@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Windows;
 
-namespace SamsGameLauncher.Views.Utilities
+namespace Moodex.Views.Utilities
 {
     public partial class InputOneFieldDialog : Window, INotifyPropertyChanged
     {
@@ -33,3 +33,4 @@ namespace SamsGameLauncher.Views.Utilities
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
     }
 }
+

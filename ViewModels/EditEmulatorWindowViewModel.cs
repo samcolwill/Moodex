@@ -1,10 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using SamsGameLauncher.Models;
-using SamsGameLauncher.Services;
+using Moodex.Models;
+using Moodex.Services;
 using System;
 using System.Windows;
 
-namespace SamsGameLauncher.ViewModels
+namespace Moodex.ViewModels
 {
     public class EditEmulatorWindowViewModel : BaseViewModel
     {
@@ -140,3 +140,4 @@ namespace SamsGameLauncher.ViewModels
         }
     }
 }
+

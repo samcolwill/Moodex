@@ -1,13 +1,13 @@
-﻿<Window x:Class="SamsGameLauncher.Views.Help.AboutWindow"
+﻿<Window x:Class="Moodex.Views.Help.AboutWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="About Sam's Game Launcher"
+        Title="About Moodex"
         SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner"
         Background="#1e1e1e"
         Foreground="White"
-        Icon="/SamsGameLauncher;component/Assets/launcher.ico">
+        Icon="/Moodex;component/Assets/launcher.ico">
 
     <Grid Margin="20">
         <Grid.ColumnDefinitions>
@@ -45,9 +45,10 @@
 
         <!-- Right: Logo -->
         <Border Grid.Column="1">
-            <Image Source="/SamsGameLauncher;component/Assets/raw_icon.png"
+            <Image Source="/Moodex;component/Assets/raw_icon.png"
                    Stretch="Uniform"
                    MaxHeight="150"/>
         </Border>
     </Grid>
 </Window>
+

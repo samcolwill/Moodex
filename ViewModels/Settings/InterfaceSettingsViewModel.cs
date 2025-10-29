@@ -7,11 +7,11 @@ using System.Management;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using SamsGameLauncher.Configuration;
-using SamsGameLauncher.Models;
-using SamsGameLauncher.Services;
+using Moodex.Configuration;
+using Moodex.Models;
+using Moodex.Services;
 
-namespace SamsGameLauncher.ViewModels.Settings
+namespace Moodex.ViewModels.Settings
 {
     public class InterfaceSettingsViewModel : INotifyPropertyChanged
     {
@@ -207,3 +207,4 @@ namespace SamsGameLauncher.ViewModels.Settings
         }
     }
 }
+

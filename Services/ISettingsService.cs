@@ -1,6 +1,6 @@
-﻿using SamsGameLauncher.Configuration;
+﻿using Moodex.Configuration;
 
-namespace SamsGameLauncher.Services
+namespace Moodex.Services
 {
     public interface ISettingsService
     {

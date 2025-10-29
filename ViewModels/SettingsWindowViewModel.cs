@@ -1,9 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using SamsGameLauncher.Services;
+using Moodex.Services;
 
-namespace SamsGameLauncher.ViewModels.Settings
+namespace Moodex.ViewModels.Settings
 {
     public class SettingsWindowViewModel : INotifyPropertyChanged
     {
@@ -55,3 +55,4 @@ namespace SamsGameLauncher.ViewModels.Settings
         }
     }
 }
+

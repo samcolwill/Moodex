@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Windows.Forms;
 
-namespace SamsGameLauncher.Services
+namespace Moodex.Services
 {
     public interface IWindowPlacementService
     {

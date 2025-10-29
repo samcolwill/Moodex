@@ -1,4 +1,4 @@
-﻿using SamsGameLauncher.Services;
+﻿using Moodex.Services;
 using System.Diagnostics;
 using System.IO;
 
@@ -305,3 +305,4 @@ public class FileMoveService : IFileMoveService
         }
     }
 }
+

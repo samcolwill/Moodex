@@ -1,12 +1,12 @@
-﻿<Window x:Class="SamsGameLauncher.Views.ManageEmulatorsWindow"
+﻿<Window x:Class="Moodex.Views.ManageEmulatorsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="clr-namespace:SamsGameLauncher.ViewModels"
-        xmlns:util="clr-namespace:SamsGameLauncher.Utilities"
-        xmlns:conv="clr-namespace:SamsGameLauncher.Converters"
+        xmlns:vm="clr-namespace:Moodex.ViewModels"
+        xmlns:util="clr-namespace:Moodex.Utilities"
+        xmlns:conv="clr-namespace:Moodex.Converters"
         Title="Manage Emulators"
         Height="450" Width="600"
-        Icon="/SamsGameLauncher;component/Assets/launcher.ico"
+        Icon="/Moodex;component/Assets/launcher.ico"
         WindowStartupLocation="CenterOwner">
 
     <Window.Resources>
@@ -117,3 +117,4 @@
                 CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
     </Grid>
 </Window>
+

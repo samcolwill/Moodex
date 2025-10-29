@@ -1,6 +1,6 @@
-﻿using SamsGameLauncher.Models;
+﻿using Moodex.Models;
 
-namespace SamsGameLauncher.Services
+namespace Moodex.Services
 {
     // Abstracts showing dialogs so ViewModels don't need to know about WPF Windows.
     public interface IDialogService

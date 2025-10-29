@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Text.Json;
 
-using SamsGameLauncher.Configuration;
+using Moodex.Configuration;
 
-namespace SamsGameLauncher.Services
+namespace Moodex.Services
 {
     public class JsonSettingsService : ISettingsService
     {
@@ -29,7 +29,7 @@ namespace SamsGameLauncher.Services
 
             var json = File.ReadAllText(_settingsFilePath);
             return JsonSerializer.Deserialize<SettingsModel>(json)
-                   ?? throw new InvalidOperationException("Couldn’t parse settings JSON");
+                   ?? throw new InvalidOperationException("Couldnâ€™t parse settings JSON");
         }
 
         public void Save(SettingsModel model)

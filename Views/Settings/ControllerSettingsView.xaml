@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="SamsGameLauncher.Views.Settings.ControllerSettingsView"
+﻿<UserControl x:Class="Moodex.Views.Settings.ControllerSettingsView"
             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -45,7 +45,7 @@
             </TextBlock.Style>
         </TextBlock>
         <!-- Enable/launch at startup checkbox -->
-        <CheckBox Content="Launch on SGL Startup"
+        <CheckBox Content="Launch on Moodex Startup"
           IsChecked="{Binding LaunchDs4WindowsOnStartup}"
           IsEnabled="{Binding IsDs4Installed}">
             <CheckBox.Style>

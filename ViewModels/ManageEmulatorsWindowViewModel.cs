@@ -6,10 +6,10 @@ using System.Windows.Input;
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using SamsGameLauncher.Models;
-using SamsGameLauncher.Services;  // assuming IDialogService lives here
+using Moodex.Models;
+using Moodex.Services;  // assuming IDialogService lives here
 
-namespace SamsGameLauncher.ViewModels
+namespace Moodex.ViewModels
 {
     public class ManageEmulatorsWindowViewModel : ObservableObject
     {
@@ -95,3 +95,4 @@ namespace SamsGameLauncher.ViewModels
         }
     }
 }
+

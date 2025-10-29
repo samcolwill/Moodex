@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using SamsGameLauncher.Configuration;
-using SamsGameLauncher.Services;
-using SamsGameLauncher.Utilities;
+using Moodex.Configuration;
+using Moodex.Services;
+using Moodex.Utilities;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -15,7 +15,7 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace SamsGameLauncher.ViewModels.Settings
+namespace Moodex.ViewModels.Settings
 {
     public class ControllerSettingsViewModel : INotifyPropertyChanged
     {
@@ -171,7 +171,7 @@ namespace SamsGameLauncher.ViewModels.Settings
 
             // 2) Fetch release metadata
             using var http = new HttpClient();
-            http.DefaultRequestHeaders.UserAgent.ParseAdd("SamsGameLauncher");
+            http.DefaultRequestHeaders.UserAgent.ParseAdd("Moodex");
             var json = await http.GetStringAsync(GitHubLatestReleaseUrl);
             using var doc = JsonDocument.Parse(json);
             var assets = doc.RootElement.GetProperty("assets").EnumerateArray();
@@ -323,7 +323,7 @@ namespace SamsGameLauncher.ViewModels.Settings
 
             // 2) Fetch release metadata
             using var http = new HttpClient();
-            http.DefaultRequestHeaders.UserAgent.ParseAdd("SamsGameLauncher");
+            http.DefaultRequestHeaders.UserAgent.ParseAdd("Moodex");
             var json = await http.GetStringAsync(AutoHotKeyGitHubLatestReleaseUrl);
             using var doc = JsonDocument.Parse(json);
             var assets = doc.RootElement.GetProperty("assets").EnumerateArray();

@@ -1,6 +1,6 @@
-using SamsGameLauncher.Models;
+﻿using Moodex.Models;
 
-namespace SamsGameLauncher.Services
+namespace Moodex.Services
 {
     public interface IAutoHotKeyScriptService
     {
@@ -44,4 +44,5 @@ namespace SamsGameLauncher.Services
         string? GetAhkScriptPath(GameInfo game);
     }
 }
+
 

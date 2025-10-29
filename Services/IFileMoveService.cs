@@ -1,4 +1,4 @@
-﻿namespace SamsGameLauncher.Services
+﻿namespace Moodex.Services
 {
     public interface IFileMoveService
     {

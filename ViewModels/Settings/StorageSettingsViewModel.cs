@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using SamsGameLauncher.Configuration;
-using SamsGameLauncher.Services;
+using Moodex.Configuration;
+using Moodex.Services;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -13,7 +13,7 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace SamsGameLauncher.ViewModels.Settings
+namespace Moodex.ViewModels.Settings
 {
     public class StorageSettingsViewModel : INotifyPropertyChanged
     {
@@ -152,3 +152,4 @@ namespace SamsGameLauncher.ViewModels.Settings
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(n));
     }
 }
+

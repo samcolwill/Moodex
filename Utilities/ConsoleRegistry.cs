@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using SamsGameLauncher.Models;
-using SamsGameLauncher.Services;
+using Moodex.Models;
+using Moodex.Services;
 
-namespace SamsGameLauncher.Utilities
+namespace Moodex.Utilities
 {
     public static class ConsoleRegistry
     {
