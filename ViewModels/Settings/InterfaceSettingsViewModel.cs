@@ -29,7 +29,7 @@ namespace Moodex.ViewModels.Settings
         public ObservableCollection<MonitorInfo> Monitors { get; }
         public ObservableCollection<string> LaunchModes { get; }
 
-        private MonitorInfo _selectedMonitor;
+        private MonitorInfo _selectedMonitor = null!;
         public MonitorInfo SelectedMonitor
         {
             get => _selectedMonitor;

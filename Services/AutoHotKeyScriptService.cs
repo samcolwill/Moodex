@@ -59,7 +59,7 @@ namespace Moodex.Services
             var ahkPath = GetAhkScriptPath(game);
             
             // If .ahk file exists, convert it to .txt for editing
-            if (File.Exists(ahkPath))
+            if (!string.IsNullOrEmpty(ahkPath) && !string.IsNullOrEmpty(txtPath) && File.Exists(ahkPath))
             {
                 File.Move(ahkPath, txtPath);
             }
@@ -105,7 +105,8 @@ namespace Moodex.Services
             var ahkPath = GetAhkScriptPath(game);
             
             // Convert .txt to .ahk if needed before launching
-            if (File.Exists(txtPath) && !File.Exists(ahkPath))
+            if (!string.IsNullOrEmpty(txtPath) && !string.IsNullOrEmpty(ahkPath)
+                && File.Exists(txtPath) && !File.Exists(ahkPath))
             {
                 File.Move(txtPath, ahkPath);
             }

@@ -6,7 +6,7 @@
         xmlns:conv="clr-namespace:Moodex.Converters"
         Title="Manage Emulators"
         Height="450" Width="600"
-        Icon="/Moodex;component/Assets/launcher.ico"
+        Icon="/Moodex;component/Assets/icon/icon.ico"
         WindowStartupLocation="CenterOwner">
 
     <Window.Resources>

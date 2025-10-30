@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:conv="clr-namespace:Moodex.Converters"
         Title="Edit Game" Height="355" Width="400"
-        Icon="/Moodex;component/Assets/launcher.ico"
+        Icon="/Moodex;component/Assets/icon/icon.ico"
         WindowStartupLocation="CenterOwner">
 
     <!-- converter to toggle emulator controls -->

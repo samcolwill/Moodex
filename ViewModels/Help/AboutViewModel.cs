@@ -11,11 +11,7 @@ namespace Moodex.ViewModels.Help
     {
         public string AppName => "Moodex";
         public string Version => Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ?? "Unknown";
-        public string UpdatedDate
-            => File.Exists(Assembly.GetEntryAssembly().Location)
-               ? File.GetLastWriteTime(Assembly.GetEntryAssembly().Location)
-                     .ToString("yyyy-MM-dd")
-               : DateTime.Now.ToString("yyyy-MM-dd");
+        public string UpdatedDate => GetUpdatedDate();
 
         public string Developer => "Sam Colwill";
         public string WebsiteUrl => "https://samcolwill.com";
@@ -33,6 +29,23 @@ namespace Moodex.ViewModels.Help
         private void OpenLink(string url)
         {
             Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+        }
+
+        private static string GetUpdatedDate()
+        {
+            try
+            {
+                var exePath = Process.GetCurrentProcess().MainModule?.FileName;
+                if (!string.IsNullOrEmpty(exePath) && File.Exists(exePath))
+                {
+                    return File.GetLastWriteTime(exePath).ToString("yyyy-MM-dd");
+                }
+            }
+            catch
+            {
+                // fall through to now
+            }
+            return DateTime.Now.ToString("yyyy-MM-dd");
         }
     }
 }

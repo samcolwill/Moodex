@@ -3,6 +3,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Windows.Data;
+using System.Windows;
 using System.Windows.Interop;
 using System.Drawing;
 using System.Windows.Media.Imaging;
@@ -18,12 +19,12 @@ namespace Moodex.Converters
         {
             var path = value as string;
             if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
-                return null;
+                return DependencyProperty.UnsetValue;
 
             try
             {
                 using var icon = Icon.ExtractAssociatedIcon(path);
-                if (icon == null) return null;
+                if (icon == null) return DependencyProperty.UnsetValue;
 
                 using var bmp = icon.ToBitmap();
                 var hBitmap = bmp.GetHbitmap();
@@ -39,7 +40,7 @@ namespace Moodex.Converters
             }
             catch
             {
-                return null;
+                return DependencyProperty.UnsetValue;
             }
         }
 

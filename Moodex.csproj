@@ -33,15 +33,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Resource Include="Assets\launcher.ico" />
-	  <Resource Include="Assets\raw_icon.png">
+	  <Resource Include="Assets\icon\icon.ico" />
+	  <Resource Include="Assets\icon\icon.png">
 	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </Resource>
 	</ItemGroup>
 
 	<PropertyGroup>
-		<ApplicationIcon>Assets\launcher.ico</ApplicationIcon>
-		<Win32Icon>Assets\launcher.ico</Win32Icon>
+		<ApplicationIcon>Assets\icon\icon.ico</ApplicationIcon>
+		<Win32Icon>Assets\icon\icon.ico</Win32Icon>
 	</PropertyGroup>
 
 </Project>

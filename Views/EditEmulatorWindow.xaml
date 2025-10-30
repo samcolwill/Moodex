@@ -5,7 +5,7 @@
         xmlns:conv="clr-namespace:Moodex.Converters"
         Title="Edit Emulator"
         Height="235" Width="400"
-        Icon="/Moodex;component/Assets/launcher.ico"
+        Icon="/Moodex;component/Assets/icon/icon.ico"
         WindowStartupLocation="CenterOwner">
 
     <Grid Margin="10">

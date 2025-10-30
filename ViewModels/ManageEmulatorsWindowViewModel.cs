@@ -41,8 +41,9 @@ namespace Moodex.ViewModels
             CloseCommand = new RelayCommand<Window>(w => w?.Close());
         }
 
-        private void OnOpenEmulator(EmulatorInfo emulator)
+        private void OnOpenEmulator(EmulatorInfo? emulator)
         {
+            if (emulator == null) return;
             try
             {
                 var psi = new ProcessStartInfo(emulator.ExecutablePath)
@@ -62,8 +63,9 @@ namespace Moodex.ViewModels
             }
         }
 
-        private void OnEditEmulator(EmulatorInfo emulator)
+        private void OnEditEmulator(EmulatorInfo? emulator)
         {
+            if (emulator == null) return;
             // this pops the Edit dialog and, on OK, mutates 'emulator' in place
             var edited = _dialogs.ShowEditEmulator(emulator);
             if (edited == null) return;
@@ -77,8 +79,9 @@ namespace Moodex.ViewModels
                 Emulators.Add(e);
         }
 
-        private async Task OnRemoveEmulatorAsync(EmulatorInfo emulator)
+        private async Task OnRemoveEmulatorAsync(EmulatorInfo? emulator)
         {
+            if (emulator == null) return;
             if (!await _dialogs.ShowConfirmationAsync(
                     $"Remove emulator '{emulator.Name}'?",
                     "Confirm Removal"))

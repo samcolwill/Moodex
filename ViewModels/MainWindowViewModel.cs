@@ -181,8 +181,9 @@ namespace Moodex.ViewModels
         }
 
         // ──── Actions ───────────────────────────────────────────────────────
-        private void RunGame(GameInfo game)
+        private void RunGame(GameInfo? game)
         {
+            if (game == null) return;
             try
             {
                 // Check if the game is archived as a zip file
@@ -294,8 +295,9 @@ namespace Moodex.ViewModels
             SaveGames();
         }
 
-        private void ExecuteEditGame(GameInfo game)
+        private void ExecuteEditGame(GameInfo? game)
         {
+            if (game == null) return;
             // show edit dialog; returns null if cancelled
             var edited = _dialogs.ShowEditGame(game);
             if (edited == null) return;
@@ -304,8 +306,9 @@ namespace Moodex.ViewModels
             GamesView.Refresh();
         }
 
-        private void ExecuteDeleteGame(GameInfo game)
+        private void ExecuteDeleteGame(GameInfo? game)
         {
+            if (game == null) return;
             // confirm deletion
             if (System.Windows.MessageBox.Show($"Delete '{game.Name}'?", "Confirm Delete",
                     MessageBoxButton.YesNo, MessageBoxImage.Question)
@@ -583,8 +586,9 @@ namespace Moodex.ViewModels
 
         // ──── AutoHotKey Script Commands ─────────────────────────────────────
 
-        private void ExecuteCreateScript(GameInfo game)
+        private void ExecuteCreateScript(GameInfo? game)
         {
+            if (game == null) return;
             try
             {
                 var scriptPath = _scriptService.CreateScript(game);
@@ -601,8 +605,9 @@ namespace Moodex.ViewModels
             }
         }
 
-        private void ExecuteEditScript(GameInfo game)
+        private void ExecuteEditScript(GameInfo? game)
         {
+            if (game == null) return;
             try
             {
                 _scriptService.EditScript(game);
@@ -614,8 +619,9 @@ namespace Moodex.ViewModels
             }
         }
 
-        private void ExecuteDeleteScript(GameInfo game)
+        private void ExecuteDeleteScript(GameInfo? game)
         {
+            if (game == null) return;
             try
             {
                 var result = MessageBox.Show(
@@ -636,25 +642,25 @@ namespace Moodex.ViewModels
             }
         }
 
-        private bool CanCreateScript(GameInfo game)
+        private bool CanCreateScript(GameInfo? game)
         {
-            return game != null && 
-                   IsConsoleAhkEnabled(game.ConsoleId) && 
+            return game != null &&
+                   IsConsoleAhkEnabled(game.ConsoleId) &&
                    IsAutoHotKeyInstalled();
         }
 
-        private bool CanEditScript(GameInfo game)
+        private bool CanEditScript(GameInfo? game)
         {
-            return game != null && 
-                   IsConsoleAhkEnabled(game.ConsoleId) && 
+            return game != null &&
+                   IsConsoleAhkEnabled(game.ConsoleId) &&
                    _scriptService.HasScript(game) &&
                    IsAutoHotKeyInstalled();
         }
 
-        private bool CanDeleteScript(GameInfo game)
+        private bool CanDeleteScript(GameInfo? game)
         {
-            return game != null && 
-                   IsConsoleAhkEnabled(game.ConsoleId) && 
+            return game != null &&
+                   IsConsoleAhkEnabled(game.ConsoleId) &&
                    _scriptService.HasScript(game) &&
                    IsAutoHotKeyInstalled();
         }
