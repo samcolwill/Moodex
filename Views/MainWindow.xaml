@@ -30,7 +30,7 @@
                 <MenuItem Header="Interface" Command="{Binding ShowSettingsCommand}" CommandParameter="Interface"/>
                 <MenuItem Header="Library" Command="{Binding ShowSettingsCommand}" CommandParameter="Library"/>
                 <MenuItem Header="Storage" Command="{Binding ShowSettingsCommand}" CommandParameter="Storage"/>
-                <MenuItem Header="Controller" Command="{Binding ShowSettingsCommand}" CommandParameter="Controller"/>
+                <MenuItem Header="Input" Command="{Binding ShowSettingsCommand}" CommandParameter="Input"/>
             </MenuItem>
             <MenuItem Header="Help">
                 <MenuItem Header="About" Command="{Binding ShowAboutCommand}"/>
@@ -335,19 +335,15 @@
                                           CommandParameter="{Binding PlacementTarget.DataContext,
                                                             RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
 
-                                    <!-- AutoHotKey Script Menu Items (only for PC games with AutoHotKey installed) -->
+                                    <!-- AutoHotKey Script Menu Items (only when AutoHotKey installed) -->
                                     <Separator>
                                         <Separator.Style>
                                             <Style TargetType="Separator">
                                                 <Setter Property="Visibility" Value="Collapsed"/>
                                                 <Style.Triggers>
-                                                    <MultiDataTrigger>
-                                                        <MultiDataTrigger.Conditions>
-                                                            <Condition Binding="{Binding PlacementTarget.DataContext.ConsoleId, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource ConsoleAhkEnabled}}" Value="True"/>
-                                                            <Condition Binding="{Binding DataContext.AutoHotKeyInstalled, Source={x:Reference RootWindow}}" Value="True"/>
-                                                        </MultiDataTrigger.Conditions>
+                                                    <DataTrigger Binding="{Binding DataContext.AutoHotKeyInstalled, Source={x:Reference RootWindow}}" Value="True">
                                                         <Setter Property="Visibility" Value="Visible"/>
-                                                    </MultiDataTrigger>
+                                                    </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
                                         </Separator.Style>
@@ -365,7 +361,6 @@
                                                 <Style.Triggers>
                                                     <MultiDataTrigger>
                                                         <MultiDataTrigger.Conditions>
-                                                            <Condition Binding="{Binding PlacementTarget.DataContext.ConsoleId, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource ConsoleAhkEnabled}}" Value="True"/>
                                                             <Condition Binding="{Binding DataContext.AutoHotKeyInstalled, Source={x:Reference RootWindow}}" Value="True"/>
                                                             <Condition Binding="{Binding PlacementTarget.DataContext.HasAutoHotKeyScript, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="False"/>
                                                         </MultiDataTrigger.Conditions>
@@ -388,7 +383,6 @@
                                                 <Style.Triggers>
                                                     <MultiDataTrigger>
                                                         <MultiDataTrigger.Conditions>
-                                                            <Condition Binding="{Binding PlacementTarget.DataContext.ConsoleId, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource ConsoleAhkEnabled}}" Value="True"/>
                                                             <Condition Binding="{Binding DataContext.AutoHotKeyInstalled, Source={x:Reference RootWindow}}" Value="True"/>
                                                             <Condition Binding="{Binding PlacementTarget.DataContext.HasAutoHotKeyScript, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True"/>
                                                         </MultiDataTrigger.Conditions>
@@ -411,7 +405,6 @@
                                                 <Style.Triggers>
                                                     <MultiDataTrigger>
                                                         <MultiDataTrigger.Conditions>
-                                                            <Condition Binding="{Binding PlacementTarget.DataContext.ConsoleId, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource ConsoleAhkEnabled}}" Value="True"/>
                                                             <Condition Binding="{Binding DataContext.AutoHotKeyInstalled, Source={x:Reference RootWindow}}" Value="True"/>
                                                             <Condition Binding="{Binding PlacementTarget.DataContext.HasAutoHotKeyScript, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True"/>
                                                         </MultiDataTrigger.Conditions>

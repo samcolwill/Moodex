@@ -32,7 +32,7 @@ namespace Moodex.ViewModels.Settings
               new SettingsSection("Interface", new InterfaceSettingsViewModel(settingsService)),
               new SettingsSection("Library",   new LibrarySettingsViewModel(settingsService)),
               new SettingsSection("Storage",   new StorageSettingsViewModel(settingsService, dialogService)),
-              new SettingsSection("Controller",  new ControllerSettingsViewModel(settingsService, dialogService))
+              new SettingsSection("Input",  new InputSettingsViewModel(settingsService, dialogService))
             };
 
             _selectedSection = Sections.First();

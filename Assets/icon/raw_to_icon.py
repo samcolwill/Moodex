@@ -109,7 +109,7 @@ def write_ico_from_png_blobs(output_path: str, png_blobs: List[Tuple[int, bytes]
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build a multi-size .ico from PNG/BMP sources in a folder.")
-    parser.add_argument("--src", default="icons", help="Folder next to this script containing source images (default: icons)")
+    parser.add_argument("--src", default="raw", help="Folder next to this script containing source images (default: icons)")
     parser.add_argument("--out", default="icon.ico", help="Output .ico filename (default: icon.ico)")
     args = parser.parse_args()
 

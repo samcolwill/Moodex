@@ -78,7 +78,7 @@ namespace Moodex.Services
             if (_settings.Load().CompressOnArchive)
             {
                 var zipPath = Path.Combine(gameDataRoot, game.GameGuid + ".zip");
-                progress?.Report(new MoveProgress(5, "Preparing compression..."));
+            progress?.Report(new MoveProgress(0, "Preparing compression..."));
                 if (File.Exists(zipPath)) File.Delete(zipPath);
 
                 await Task.Run(() =>
@@ -99,7 +99,7 @@ namespace Moodex.Services
                         using var rs = new ReportingStream(fs, bytes =>
                         {
                             done += bytes;
-                            var pct = total > 0 ? (10 + (done * 80.0 / total)) : 90;
+                            var pct = total > 0 ? (done * 100.0 / total) : 100;
                             progress?.Report(new MoveProgress(pct, rel));
                         });
                         writer.Write(rel, rs, DateTime.Now);
@@ -109,7 +109,7 @@ namespace Moodex.Services
             else
             {
                 var folderPath = Path.Combine(gameDataRoot, game.GameGuid);
-                progress?.Report(new MoveProgress(5, "Preparing move..."));
+                progress?.Report(new MoveProgress(0, "Preparing move..."));
                 Directory.CreateDirectory(folderPath);
                 await Task.Run(() =>
                 {
@@ -121,13 +121,13 @@ namespace Moodex.Services
                         Directory.CreateDirectory(Path.GetDirectoryName(dest)!);
                         File.Copy(file, dest, overwrite: true);
                         done += new FileInfo(file).Length;
-                        var pct = total > 0 ? (10 + (done * 80.0 / total)) : 90;
+                        var pct = total > 0 ? (done * 100.0 / total) : 100;
                         progress?.Report(new MoveProgress(pct, rel));
                     }
                 }, token);
             }
 
-            progress?.Report(new MoveProgress(90, "Cleaning up data folder..."));
+            progress?.Report(new MoveProgress(100, "Finalizing..."));
 
             // delete data folder content after success
             Directory.Delete(dataPath, recursive: true);
@@ -167,25 +167,37 @@ namespace Moodex.Services
             var dataPath = Path.Combine(game.GameRootPath, "data");
             Directory.CreateDirectory(dataPath);
 
-            progress?.Report(new MoveProgress(10, "Extracting..."));
+            progress?.Report(new MoveProgress(0, "Extracting..."));
 
             if (File.Exists(zipPath))
             {
-                // Extract zip
+                // Extract zip with per-byte progress for large single files
                 await Task.Run(() =>
                 {
                     using var archive = ZipArchive.Open(zipPath);
                     var entries = archive.Entries.Where(e => !e.IsDirectory).ToList();
                     long total = entries.Sum(e => (long)e.Size);
                     long done = 0;
-                    var opts = new ExtractionOptions { ExtractFullPath = true, Overwrite = true }; 
                     foreach (var entry in entries)
                     {
                         token.ThrowIfCancellationRequested();
-                        entry.WriteToDirectory(dataPath, opts);
-                        done += (long)entry.Size;
-                        var pct = total > 0 ? (10 + (done * 80.0 / total)) : 90;
-                        progress?.Report(new MoveProgress(pct, entry.Key));
+                        var outPath = Path.Combine(dataPath, entry.Key.Replace('/', Path.DirectorySeparatorChar));
+                        var outDir = Path.GetDirectoryName(outPath);
+                        if (!string.IsNullOrEmpty(outDir)) Directory.CreateDirectory(outDir);
+
+                        using var inStream = entry.OpenEntryStream();
+                        using var outStream = new FileStream(outPath, FileMode.Create, FileAccess.Write, FileShare.None, 1024 * 1024, FileOptions.SequentialScan);
+
+                        var buffer = new byte[1024 * 1024];
+                        int read;
+                        while ((read = inStream.Read(buffer, 0, buffer.Length)) > 0)
+                        {
+                            token.ThrowIfCancellationRequested();
+                            outStream.Write(buffer, 0, read);
+                            done += read;
+                            var pct = total > 0 ? (done * 100.0 / total) : 100;
+                            progress?.Report(new MoveProgress(pct, entry.Key));
+                        }
                     }
                 }, token);
                 // delete zip after successful restore
@@ -193,7 +205,7 @@ namespace Moodex.Services
             }
             else
             {
-                // Copy folder back
+                // Copy folder back with streaming progress
                 var filesToCopy = Directory.GetFiles(folderPath, "*", SearchOption.AllDirectories);
                 long totalBack = filesToCopy.Sum(f => new FileInfo(f).Length);
                 long doneBack = 0;
@@ -205,17 +217,25 @@ namespace Moodex.Services
                         var rel = Path.GetRelativePath(folderPath, f);
                         var dest = Path.Combine(dataPath, rel);
                         Directory.CreateDirectory(Path.GetDirectoryName(dest)!);
-                        File.Copy(f, dest, overwrite: true);
-                        doneBack += new FileInfo(f).Length;
-                        var pct = totalBack > 0 ? (10 + (doneBack * 80.0 / totalBack)) : 90;
-                        progress?.Report(new MoveProgress(pct, rel));
+                        using var src = new FileStream(f, FileMode.Open, FileAccess.Read, FileShare.Read, 1024 * 1024, FileOptions.SequentialScan);
+                        using var dst = new FileStream(dest, FileMode.Create, FileAccess.Write, FileShare.None, 1024 * 1024, FileOptions.SequentialScan);
+                        var buffer = new byte[1024 * 1024];
+                        int read;
+                        while ((read = src.Read(buffer, 0, buffer.Length)) > 0)
+                        {
+                            token.ThrowIfCancellationRequested();
+                            dst.Write(buffer, 0, read);
+                            doneBack += read;
+                            var pct = totalBack > 0 ? (doneBack * 100.0 / totalBack) : 100;
+                            progress?.Report(new MoveProgress(pct, rel));
+                        }
                     }
                 }, token);
                 // remove archive folder
                 Directory.Delete(folderPath, recursive: true);
             }
 
-            progress?.Report(new MoveProgress(95, "Finalizing..."));
+            progress?.Report(new MoveProgress(100, "Finalizing..."));
 
             // verify extraction
             if (!Directory.Exists(dataPath) || Directory.GetFiles(dataPath, "*", SearchOption.AllDirectories).Length == 0)

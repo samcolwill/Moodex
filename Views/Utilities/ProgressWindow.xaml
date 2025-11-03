@@ -10,11 +10,14 @@
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner">
     <StackPanel Margin="20" VerticalAlignment="Center">
-        <TextBlock Text="{Binding CurrentFile}" 
-                   TextWrapping="Wrap"
+        <TextBlock Text="{Binding CurrentFile}"
+                   TextWrapping="NoWrap"
+                   TextTrimming="CharacterEllipsis"
                    FontSize="12"
-                   Margin="0,0,0,15" 
-                   TextAlignment="Center"/>
+                   Margin="0,0,0,15"
+                   TextAlignment="Center"
+                   HorizontalAlignment="Stretch"
+                   MaxWidth="340"/>
         <ProgressBar Value="{Binding Percent}" 
                      Height="24" 
                      Margin="0,0,0,15"

@@ -247,7 +247,7 @@ namespace Moodex.ViewModels
                 if (process != null)
                 {
                     // Launch AutoHotKey script if this console is AHK-enabled and a script exists
-                    if (IsConsoleAhkEnabled(game.ConsoleId) && _scriptService.HasScript(game))
+                    if (IsAutoHotKeyInstalled() && _scriptService.HasScript(game))
                     {
                         _scriptService.LaunchScript(game);
                     }
@@ -581,25 +581,17 @@ namespace Moodex.ViewModels
 
         private bool CanCreateScript(GameInfo? game)
         {
-            return game != null &&
-                   IsConsoleAhkEnabled(game.ConsoleId) &&
-                   IsAutoHotKeyInstalled();
+            return game != null && IsAutoHotKeyInstalled();
         }
 
         private bool CanEditScript(GameInfo? game)
         {
-            return game != null &&
-                   IsConsoleAhkEnabled(game.ConsoleId) &&
-                   _scriptService.HasScript(game) &&
-                   IsAutoHotKeyInstalled();
+            return game != null && _scriptService.HasScript(game) && IsAutoHotKeyInstalled();
         }
 
         private bool CanDeleteScript(GameInfo? game)
         {
-            return game != null &&
-                   IsConsoleAhkEnabled(game.ConsoleId) &&
-                   _scriptService.HasScript(game) &&
-                   IsAutoHotKeyInstalled();
+            return game != null && _scriptService.HasScript(game) && IsAutoHotKeyInstalled();
         }
 
         private bool IsAutoHotKeyInstalled()
@@ -631,18 +623,7 @@ namespace Moodex.ViewModels
             return File.Exists(zip) || Directory.Exists(folder);
         }
 
-        private bool IsConsoleAhkEnabled(string consoleId)
-        {
-            try
-            {
-                var settings = _settings.Load();
-                return settings.AhkEnabledConsoleIds?.Contains(consoleId, StringComparer.OrdinalIgnoreCase) == true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+        // Console-level AHK enablement removed; AHK applies to all consoles when installed
 
         /// <summary>
         /// Public property to expose AutoHotKey installation status for XAML binding
@@ -689,7 +670,7 @@ namespace Moodex.ViewModels
                 _trackedGameProcesses.Remove(process.Id);
 
                 // Clean up AutoHotKey scripts for this game
-                if (IsConsoleAhkEnabled(game.ConsoleId) && _scriptService.HasScript(game))
+                if (IsAutoHotKeyInstalled() && _scriptService.HasScript(game))
                 {
                     CleanupAutoHotKeyScripts(game);
                 }

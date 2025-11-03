@@ -47,11 +47,6 @@ namespace Moodex.Configuration
         public bool LaunchDs4WindowsOnStartup { get; set; } = false;
         public bool IsAutoHotKeyInstalled { get; set; } = false;
         public bool CompressOnArchive { get; set; } = true;
-		public List<string> AhkEnabledConsoleIds { get; set; } = new List<string>
-		{
-			"pc",
-            "msx2"
-		};
     }
 }
 

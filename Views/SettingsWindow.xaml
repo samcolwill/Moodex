@@ -41,8 +41,8 @@
                 <DataTemplate DataType="{x:Type vmSettings:StorageSettingsViewModel}">
                     <views:StorageSettingsView/>
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vmSettings:ControllerSettingsViewModel}">
-                    <views:ControllerSettingsView/>
+                <DataTemplate DataType="{x:Type vmSettings:InputSettingsViewModel}">
+                    <views:InputSettingsView/>
                 </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>
