@@ -23,6 +23,12 @@ namespace Moodex.Views.Utilities
         {
             InitializeComponent();
         }
+
+        private void Background_Click(object sender, RoutedEventArgs e)
+        {
+            // Just close the window; the background task continues
+            this.Close();
+        }
     }
 }
 

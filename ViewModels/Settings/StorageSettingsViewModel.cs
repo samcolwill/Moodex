@@ -1,17 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using Moodex.Configuration;
 using Moodex.Services;
-using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Net.Http;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Moodex.ViewModels.Settings
 {
@@ -21,25 +13,19 @@ namespace Moodex.ViewModels.Settings
         private readonly SettingsModel _model;
         private readonly IDialogService _dialog;
 
-        // “Active” or “Archive” — popu­lates the two radio buttons
-        public ObservableCollection<LibraryKind> Libraries { get; }
-            = new ObservableCollection<LibraryKind>(
-                  Enum.GetValues<LibraryKind>());
-
-        private LibraryKind _primary;
-        public LibraryKind PrimaryLibrary
+        public StorageSettingsViewModel(ISettingsService svc, IDialogService dialog)
         {
-            get => _primary;
-            set
-            {
-                if (_primary != value)
-                {
-                    _primary = value;
-                    _model.PrimaryLibrary = value;
-                    _svc.Save(_model);
-                    OnPropertyChanged();
-                }
-            }
+            _svc = svc;
+            _model = _svc.Load();
+            _dialog = dialog;
+
+            // seed properties from JSON
+            ActiveLibraryPath = _model.ActiveLibraryPath;
+            ArchiveLibraryPath = _model.ArchiveLibraryPath;
+            _compressOnArchive = _model.CompressOnArchive;
+
+            BrowseLibraryPathCommand = new RelayCommand(BrowseLibraryPath);
+            BrowseArchivePathCommand = new RelayCommand(BrowseArchivePath);
         }
 
         private string _activePath = "";
@@ -74,43 +60,6 @@ namespace Moodex.ViewModels.Settings
             }
         }
 
-        public StorageSettingsViewModel(ISettingsService svc, IDialogService dialog)
-        {
-            _svc = svc;
-            _model = _svc.Load();
-            _dialog = dialog;
-
-            // seed properties from JSON
-            PrimaryLibrary = _model.PrimaryLibrary;
-            ActiveLibraryPath = _model.ActiveLibraryPath;
-            ArchiveLibraryPath = _model.ArchiveLibraryPath;
-            _sevenZipPath = _model.SevenZipPath;
-            _compressOnArchive = _model.CompressOnArchive;
-
-            // Commands
-            BrowseFor7zipCommand = new RelayCommand(BrowseFor7zip);
-        }
-
-        // ——— 7zip Properties —————————————————————————————————————————
-        private string _sevenZipPath;
-        public string SevenZipPath
-        {
-            get => _sevenZipPath;
-            set
-            {
-                if (_sevenZipPath != value)
-                {
-                    _sevenZipPath = value;
-                    _model.SevenZipPath = value;
-                    _svc.Save(_model);
-                    OnPropertyChanged();
-                    OnPropertyChanged(nameof(Is7zipConfigured));
-                }
-            }
-        }
-
-        public bool Is7zipConfigured => !string.IsNullOrEmpty(SevenZipPath) && File.Exists(SevenZipPath);
-
         private bool _compressOnArchive;
         public bool CompressOnArchive
         {
@@ -127,23 +76,26 @@ namespace Moodex.ViewModels.Settings
             }
         }
 
-        // ——— Commands —————————————————————————————————————————
-        public IRelayCommand BrowseFor7zipCommand { get; }
+        public IRelayCommand BrowseLibraryPathCommand { get; }
+        public IRelayCommand BrowseArchivePathCommand { get; }
 
-        // ——— 7zip Command Handlers ——————————————————————————————
-
-        private void BrowseFor7zip()
+        private void BrowseLibraryPath()
         {
-            var dialog = new Microsoft.Win32.OpenFileDialog
+            using var dlg = new System.Windows.Forms.FolderBrowserDialog();
+            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                Title = "Select 7zip Executable",
-                Filter = "Executable files (*.exe)|*.exe|All files (*.*)|*.*",
-                InitialDirectory = @"C:\Program Files\7-Zip"
-            };
+                var root = System.IO.Path.Combine(dlg.SelectedPath, "Moodex Library");
+                ActiveLibraryPath = root;
+            }
+        }
 
-            if (dialog.ShowDialog() == true)
+        private void BrowseArchivePath()
+        {
+            using var dlg = new System.Windows.Forms.FolderBrowserDialog();
+            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                SevenZipPath = dialog.FileName;
+                var root = System.IO.Path.Combine(dlg.SelectedPath, "Moodex Archive");
+                ArchiveLibraryPath = root;
             }
         }
 

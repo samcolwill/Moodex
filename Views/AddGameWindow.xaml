@@ -66,21 +66,36 @@
                 CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                 IsEnabled="{Binding IsBrowseEnabled}"/>
 
-        <!-- Genre selector -->
-        <Label Grid.Row="3" Grid.Column="0" Content="Genre:" VerticalAlignment="Center"/>
-        <ComboBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="5"
-                  ItemsSource="{Binding Genres}"
-                  SelectedItem="{Binding Genre}"
-                  IsEnabled="{Binding IsGenreEnabled}"/>
+        <!-- Genres selector (multi) -->
+        <Label Grid.Row="3" Grid.Column="0" Content="Genres:" VerticalAlignment="Center"/>
+        <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <ComboBox Grid.Column="0"
+                      ItemsSource="{Binding Genres}"
+                      SelectedItem="{Binding GenreToAdd}"
+                      IsEnabled="{Binding IsGenreEnabled}"/>
+            <Button Grid.Column="1" Content="Add" Width="60" Margin="5,0,0,0"
+                    Command="{Binding AddGenreCommand}"/>
+        </Grid>
+
+        <ListBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="1" Margin="5,0,5,5"
+                 ItemsSource="{Binding SelectedGenres}"
+                 SelectedItem="{Binding SelectedGenreInList}"/>
+        <Button Grid.Row="4" Grid.Column="2" Content="Remove" Width="70" Margin="5,0,5,5"
+                Command="{Binding RemoveGenreCommand}"
+                CommandParameter="{Binding SelectedGenreInList}"/>
 
         <!-- Release Date picker -->
-        <Label Grid.Row="4" Grid.Column="0" Content="Release Date:" VerticalAlignment="Center"/>
-        <DatePicker Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Margin="5"
+        <Label Grid.Row="5" Grid.Column="0" Content="Release Date:" VerticalAlignment="Center"/>
+        <DatePicker Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Margin="5"
                     SelectedDate="{Binding ReleaseDate}"
                     IsEnabled="{Binding IsReleaseDateEnabled}"/>
 
         <!-- Action buttons -->
-        <StackPanel Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3"
+        <StackPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3"
                     Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
             <Button Content="Cancel" Width="75" Margin="5,0"
                     Command="{Binding CancelCommand}"

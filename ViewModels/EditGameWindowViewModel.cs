@@ -7,6 +7,9 @@ using System.Windows;
 using CommunityToolkit.Mvvm.Input;
 using Moodex.Models;
 using Moodex.Services;
+using System.IO;
+using System.Text.Json;
+using Moodex.Models.Manifests;
 
 namespace Moodex.ViewModels
 {
@@ -18,8 +21,10 @@ namespace Moodex.ViewModels
         private string _name = "";
         private string _fileSystemPath = "";
         private string _consoleId = "";
-        private string _genre = "";
+        private string _genre = ""; // legacy single-genre field, not bound
         private DateTime _releaseDate = DateTime.Today;
+        private string _genreToAdd = "";
+        private string? _selectedGenreInList;
 
         // which console-IDs should show the “folder picker”?
         private static readonly HashSet<string> _folderConsoleIds = new(StringComparer.OrdinalIgnoreCase)
@@ -33,6 +38,7 @@ namespace Moodex.ViewModels
         // ───────────── dropdown sources ─────────────
         public IReadOnlyList<ConsoleInfo> Consoles { get; }
         public IReadOnlyList<string> Genres { get; }
+        public ObservableCollection<string> SelectedGenres { get; } = new();
 
         // ───────────── bindable props ─────────────
         public string Name
@@ -59,6 +65,18 @@ namespace Moodex.ViewModels
             set { _genre = value; RaisePropertyChanged(); }
         }
 
+        public string GenreToAdd
+        {
+            get => _genreToAdd;
+            set { _genreToAdd = value; RaisePropertyChanged(); }
+        }
+
+        public string? SelectedGenreInList
+        {
+            get => _selectedGenreInList;
+            set { _selectedGenreInList = value; RaisePropertyChanged(); }
+        }
+
         public DateTime ReleaseDate
         {
             get => _releaseDate;
@@ -68,6 +86,8 @@ namespace Moodex.ViewModels
         // ───────────── commands (Toolkit) ─────────────
         public IRelayCommand BrowseCommand { get; }
         public IRelayCommand SaveCommand { get; }
+        public IRelayCommand AddGenreCommand { get; }
+        public IRelayCommand<string?> RemoveGenreCommand { get; }
         public IRelayCommand CancelCommand { get; }
 
         // ───────────── ctor ─────────────
@@ -90,8 +110,48 @@ namespace Moodex.ViewModels
             Name = gameToEdit.Name;
             FileSystemPath = gameToEdit.FileSystemPath;
             ConsoleId = gameToEdit.ConsoleId;
-            Genre = gameToEdit.Genre;
             ReleaseDate = gameToEdit.ReleaseDate;
+
+            // load genres from manifest (fallback to GameInfo.Genre split)
+            try
+            {
+                var root = gameToEdit.GameRootPath;
+                if (!string.IsNullOrEmpty(root))
+                {
+                    var path = Path.Combine(root, ".moodex_game");
+                    if (File.Exists(path))
+                    {
+                        var json = File.ReadAllText(path);
+                        var man = JsonSerializer.Deserialize<GameManifest>(json);
+                        if (man?.Genres != null)
+                        {
+                            foreach (var g in man.Genres)
+                                if (!string.IsNullOrWhiteSpace(g)) SelectedGenres.Add(g);
+                        }
+                    }
+                }
+                if (SelectedGenres.Count == 0 && !string.IsNullOrWhiteSpace(gameToEdit.Genre))
+                {
+                    foreach (var g in gameToEdit.Genre.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                        SelectedGenres.Add(g);
+                }
+            }
+            catch { }
+
+            AddGenreCommand = new RelayCommand(() =>
+            {
+                if (!string.IsNullOrWhiteSpace(GenreToAdd) && !SelectedGenres.Any(g => string.Equals(g, GenreToAdd, StringComparison.OrdinalIgnoreCase)))
+                {
+                    SelectedGenres.Add(GenreToAdd);
+                }
+            });
+            RemoveGenreCommand = new RelayCommand<string?>(g =>
+            {
+                if (!string.IsNullOrWhiteSpace(g))
+                {
+                    SelectedGenres.Remove(g);
+                }
+            });
         }
 
         // ───────────── command bodies ─────────────
@@ -123,8 +183,38 @@ namespace Moodex.ViewModels
             _originalGame.Name = Name;
             _originalGame.FileSystemPath = FileSystemPath;
             _originalGame.ConsoleId = ConsoleId;
-            _originalGame.Genre = Genre;
+            _originalGame.Genre = SelectedGenres.Count > 0 ? string.Join(", ", SelectedGenres) : string.Empty;
             _originalGame.ReleaseDate = ReleaseDate;
+
+            // Update manifest if present
+            var root = _originalGame.GameRootPath;
+            if (!string.IsNullOrEmpty(root))
+            {
+                try
+                {
+                    var manifestPath = Path.Combine(root, ".moodex_game");
+                    GameManifest man;
+                    if (File.Exists(manifestPath))
+                    {
+                        var json = File.ReadAllText(manifestPath);
+                        man = JsonSerializer.Deserialize<GameManifest>(json) ?? new GameManifest();
+                    }
+                    else
+                    {
+                        man = new GameManifest();
+                    }
+
+                    man.Name = Name;
+                    man.ConsoleId = ConsoleId;
+                    man.LaunchTarget = Path.GetFileName(FileSystemPath);
+                    man.LaunchType = IsFolderBasedConsole ? "folder" : "file";
+                    man.Genres = SelectedGenres.ToList();
+                    man.ReleaseDateTime = ReleaseDate;
+
+                    File.WriteAllText(manifestPath, JsonSerializer.Serialize(man, new JsonSerializerOptions { WriteIndented = true }));
+                }
+                catch { /* ignore manifest write errors for now */ }
+            }
 
             if (owner != null)
             {

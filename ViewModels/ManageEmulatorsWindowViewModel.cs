@@ -13,8 +13,7 @@ namespace Moodex.ViewModels
 {
     public class ManageEmulatorsWindowViewModel : ObservableObject
     {
-        private readonly GameLibrary _gameLibrary;
-        private readonly string _emuFilePath;
+        private readonly MoodexState _moodexState;
         private readonly IDialogService _dialogs;
 
         public ObservableCollection<EmulatorInfo> Emulators { get; }
@@ -24,16 +23,13 @@ namespace Moodex.ViewModels
         public IRelayCommand<Window> CloseCommand { get; }
 
         public ManageEmulatorsWindowViewModel(
-            GameLibrary gameLibrary,
-            IDialogService dialogs,
-            string emuFilePath)
+            MoodexState moodexState,
+            IDialogService dialogs)
         {
-            _gameLibrary = gameLibrary;
-            _emuFilePath = emuFilePath;
+            _moodexState = moodexState;
             _dialogs = dialogs;
 
-            Emulators = new ObservableCollection<EmulatorInfo>(
-                _gameLibrary.Emulators);
+            Emulators = _moodexState.Emulators;
 
             OpenEmulatorCommand = new RelayCommand<EmulatorInfo>(OnOpenEmulator);
             EditEmulatorCommand = new RelayCommand<EmulatorInfo>(OnEditEmulator);
@@ -70,13 +66,7 @@ namespace Moodex.ViewModels
             var edited = _dialogs.ShowEditEmulator(emulator);
             if (edited == null) return;
 
-            // persist to disk
-            _gameLibrary.SaveEmulators(_emuFilePath);
-
-            // now _refresh_ the UI collection
-            Emulators.Clear();
-            foreach (var e in _gameLibrary.Emulators)
-                Emulators.Add(e);
+            // collection is bound directly to state; it will reflect any changes
         }
 
         private async Task OnRemoveEmulatorAsync(EmulatorInfo? emulator)
@@ -90,11 +80,10 @@ namespace Moodex.ViewModels
             // 1) Remove from the UI collection
             Emulators.Remove(emulator);
 
-            // 2) _Also_ remove from the underlying GameLibrary
-            _gameLibrary.Emulators.Remove(emulator);
+            // 2) _Also_ remove from the underlying MoodexState
+            _moodexState.Emulators.Remove(emulator);
 
-            // 3) Persist out to emulators.json
-            _gameLibrary.SaveEmulators(_emuFilePath);
+            // 3) Manifest-driven flow: persistence handled elsewhere (if needed)
         }
     }
 }

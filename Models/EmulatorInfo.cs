@@ -1,5 +1,4 @@
 ﻿using Moodex.Utilities;
-using System.Text.Json.Serialization;
 
 namespace Moodex.Models
 {
@@ -13,7 +12,6 @@ namespace Moodex.Models
         public string DefaultArguments { get; set; } = string.Empty;
 
         // Runtime-only helpers
-        [JsonIgnore]
         public string? EmulatedConsoleName => Utilities.ConsoleRegistry.GetDisplayName(EmulatedConsoleId);
     }
 }

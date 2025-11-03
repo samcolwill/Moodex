@@ -28,7 +28,7 @@ namespace Moodex
             services.AddSingleton<IDialogService, WpfDialogService>();
             services.AddSingleton<ISettingsService, JsonSettingsService>();
             services.AddSingleton<IWindowPlacementService, WindowPlacementService>();
-            services.AddSingleton<IFileMoveService, FileMoveService>();
+            // Removed FileMoveService - archive/restore handled by ArchiveService
             services.AddSingleton<IAutoHotKeyScriptService, AutoHotKeyScriptService>();
 
             // register your VM
@@ -43,25 +43,24 @@ namespace Moodex
             services.AddTransient<EditEmulatorWindowViewModel>();
             services.AddTransient<EditEmulatorWindow>();
 
-            services.AddSingleton<GameLibrary>(sp =>
+            services.AddSingleton<ILibraryScanner, LibraryScanner>();
+            services.AddSingleton<IArchiveService, ArchiveService>();
+            services.AddSingleton<MoodexState>(sp =>
             {
-                var baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                var dataFolder = Path.Combine(baseDir, "Data");
-                Directory.CreateDirectory(dataFolder);
-
-                var emuFile = Path.Combine(dataFolder, "emulators.json");
-                var gameFile = Path.Combine(dataFolder, "games.json");
-
-                var lib = new GameLibrary();
-                lib.LoadData(emuFile, gameFile);
-                return lib;
+                var settingsService = sp.GetRequiredService<ISettingsService>();
+                var scanner = sp.GetRequiredService<ILibraryScanner>();
+                var settings = settingsService.Load();
+                var state = new MoodexState();
+                var (emus, games) = scanner.Scan(settings.ActiveLibraryPath);
+                state.Emulators = new System.Collections.ObjectModel.ObservableCollection<Models.EmulatorInfo>(emus);
+                state.Games = new System.Collections.ObjectModel.ObservableCollection<Models.GameInfo>(games);
+                return state;
             });
 
             services.AddTransient(sp =>
               new ManageEmulatorsWindowViewModel(
-                sp.GetRequiredService<GameLibrary>(),
-                sp.GetRequiredService<IDialogService>(),
-                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "emulators.json")
+                sp.GetRequiredService<MoodexState>(),
+                sp.GetRequiredService<IDialogService>()
               )
             );
 

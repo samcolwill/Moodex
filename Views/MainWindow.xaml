@@ -89,18 +89,34 @@
             </StackPanel>
 
             <!-- Show Archived toggle -->
-            <StackPanel Grid.Column="3"
-                        Orientation="Horizontal"
-                        HorizontalAlignment="Center"
-                        Margin="5">
-                <TextBlock Text="Show Archived:"
-                           Foreground="White"
+            <Grid Grid.Column="3" Margin="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <TextBlock Text="Show Archived:" Foreground="White" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <ToggleButton IsChecked="{Binding ShowArchived, Mode=TwoWay}" Width="24" Height="24"/>
+                </StackPanel>
+                <TextBlock Grid.Column="2"
+                           Text="{Binding ProcessingBannerText}"
+                           Foreground="#A0FFA500"
                            VerticalAlignment="Center"
-                           Margin="0,0,5,0"/>
-                <ToggleButton IsChecked="{Binding ShowArchived, Mode=TwoWay}"
-                              Width="24"
-                              Height="24"/>
-            </StackPanel>
+                           HorizontalAlignment="Right"
+                           Margin="10,0,0,0">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Visible"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ProcessingBannerText}" Value="">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
         </Grid>
 
         <!-- ─── Game List ───────────────────────────────────────────────── -->
@@ -174,48 +190,82 @@
                             </StackPanel.InputBindings>
 
                             <!-- cover art -->
-                            <Border x:Name="ImageBorder"
-                                    Background="Black">
-                                <!-- default size -->
-                                <Border.Style>
-                                    <Style TargetType="Border">
-                                        <Setter Property="Width"  Value="150"/>
-                                        <Setter Property="Height" Value="200"/>
-
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ConsoleId}" Value="playstation1">
-                                                <Setter Property="Width"  Value="150"/>
-                                                <Setter Property="Height" Value="150"/>
-                                            </DataTrigger>
-
-                                            <DataTrigger Binding="{Binding ConsoleId}" Value="playstation3">
-                                                <Setter Property="Height" Value="180"/>
-                                            </DataTrigger>
-
-                                            <DataTrigger Binding="{Binding ConsoleId}" Value="gameboyadvance">
-                                                <Setter Property="Width"  Value="150"/>
-                                                <Setter Property="Height" Value="150"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Border.Style>
-
-                                <Image Source="{Binding GameCoverUri, Converter={StaticResource FreezingBitmap}}"
-                                       Stretch="Fill"
-                                       HorizontalAlignment="Stretch"
-                                       VerticalAlignment="Stretch">
-                                    <Image.Style>
-                                        <Style TargetType="Image">
-                                            <Setter Property="Opacity" Value="1"/>
+                            <Grid>
+                                <Border x:Name="ImageBorder" Background="Black">
+                                    <!-- default size -->
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Width"  Value="150"/>
+                                            <Setter Property="Height" Value="200"/>
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsInArchive}" Value="True">
-                                                    <Setter Property="Opacity" Value="0.25"/>
+                                                <DataTrigger Binding="{Binding ConsoleId}" Value="playstation1">
+                                                    <Setter Property="Width"  Value="150"/>
+                                                    <Setter Property="Height" Value="150"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding ConsoleId}" Value="playstation3">
+                                                    <Setter Property="Height" Value="180"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding ConsoleId}" Value="gameboyadvance">
+                                                    <Setter Property="Width"  Value="150"/>
+                                                    <Setter Property="Height" Value="150"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
-                                    </Image.Style>
-                                </Image>
-                            </Border>
+                                    </Border.Style>
+                                    <Grid>
+                                        <Image x:Name="TileImage" Source="{Binding GameCoverUri, Converter={StaticResource FreezingBitmap}}"
+                                               Stretch="Fill"
+                                               HorizontalAlignment="Stretch"
+                                               VerticalAlignment="Stretch">
+                                            <Image.Style>
+                                                <Style TargetType="Image">
+                                                    <Setter Property="Opacity" Value="1"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsInArchive}" Value="True">
+                                                            <Setter Property="Opacity" Value="0.25"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding IsProcessing}" Value="True">
+                                                            <Setter Property="Opacity" Value="0.4"/>
+                                                            <DataTrigger.EnterActions>
+                                                                <BeginStoryboard x:Name="PulseOpacity">
+                                                                    <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                                                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0.4" Duration="0:0:1.2"/>
+                                                                    </Storyboard>
+                                                                </BeginStoryboard>
+                                                            </DataTrigger.EnterActions>
+                                                            <DataTrigger.ExitActions>
+                                                                <StopStoryboard BeginStoryboardName="PulseOpacity"/>
+                                                                <BeginStoryboard>
+                                                                    <Storyboard>
+                                                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.6"/>
+                                                                    </Storyboard>
+                                                                </BeginStoryboard>
+                                                            </DataTrigger.ExitActions>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Image.Style>
+                                        </Image>
+                                        <!-- Processing overlay inside Border to guarantee sizing -->
+                                        <Border Background="#AA000000" Visibility="Collapsed">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsProcessing}" Value="True">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                <TextBlock Text="Processing..." Foreground="White" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="{Binding ProcessingPercent, StringFormat={}{0:F0}%}" Foreground="White" FontSize="12" HorizontalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </Grid>
 
                             <!-- game title -->
                             <TextBlock Text="{Binding Name}"
@@ -232,12 +282,34 @@
                                               Command="{Binding DataContext.RunCommand,
                                                 Source={x:Reference RootWindow}}"
                                               CommandParameter="{Binding PlacementTarget.DataContext,
-                                                RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                        <MenuItem.Style>
+                                            <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding PlacementTarget.DataContext.IsInArchive, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </MenuItem.Style>
+                                    </MenuItem>
                                     <MenuItem Header="Edit"
                                               Command="{Binding DataContext.EditGameCommand,
                                                 Source={x:Reference RootWindow}}"
                                               CommandParameter="{Binding PlacementTarget.DataContext,
-                                                RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                        <MenuItem.Style>
+                                            <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding PlacementTarget.DataContext.IsInArchive, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </MenuItem.Style>
+                                    </MenuItem>
                                     <MenuItem Header="Delete"
                                               Command="{Binding DataContext.DeleteGameCommand,
                                                 Source={x:Reference RootWindow}}"

@@ -23,19 +23,19 @@ namespace Moodex.ViewModels
         private readonly string _dataFolder;
         private readonly string _gamesFile;
         private readonly string _emuFile;
-        private readonly GameLibrary _gameLibrary;
+        private readonly MoodexState _moodexState;
 
         // ──── Services ───────────────────────────────────────────────────────
         private readonly IDialogService _dialogs;
         private readonly IWindowPlacementService _placer;
         private readonly ISettingsService _settings;
-        private readonly IFileMoveService _fileMover;
+        private readonly IArchiveService _archiver;
         private readonly IAutoHotKeyScriptService _scriptService;
         private readonly Dictionary<int, Process> _trackedGameProcesses = new();
 
         // ──── Exposed Collections & Views ──────────────────────────────────
-        public ObservableCollection<GameInfo> Games => _gameLibrary.Games;
-        public List<EmulatorInfo> Emulators => _gameLibrary.Emulators;
+        public ObservableCollection<GameInfo> Games => _moodexState.Games;
+        public ObservableCollection<EmulatorInfo> Emulators => _moodexState.Emulators;
         public ICollectionView GamesView { get; }
 
         // ──── Selection ────────────────────────────────────────────────────
@@ -112,38 +112,31 @@ namespace Moodex.ViewModels
         public IRelayCommand CreateScriptCommand { get; }
         public IRelayCommand EditScriptCommand { get; }
         public IRelayCommand DeleteScriptCommand { get; }
+        // ──── Processing Banner ─────────────────────────────────────────────
+        private string _processingBannerText = "";
+        public string ProcessingBannerText
+        {
+            get => _processingBannerText;
+            set { if (_processingBannerText != value) { _processingBannerText = value; RaisePropertyChanged(); } }
+        }
+
 
         // ──── Constructor ──────────────────────────────────────────────────
-        public MainWindowViewModel(IDialogService dialogs, IWindowPlacementService placer, ISettingsService settings, IFileMoveService fileMover, IAutoHotKeyScriptService scriptService)
+        public MainWindowViewModel(IDialogService dialogs, IWindowPlacementService placer, ISettingsService settings, IAutoHotKeyScriptService scriptService, IArchiveService archiver, MoodexState moodexState)
         {
             _dialogs = dialogs;
             _placer = placer;
             _settings = settings;
-            _fileMover = fileMover;
             _scriptService = scriptService;
+            _archiver = archiver;
             _dataFolder = Path.Combine(_basePath, "Data");
             _gamesFile = Path.Combine(_dataFolder, "games.json");
             _emuFile = Path.Combine(_dataFolder, "emulators.json");
 
-            // load model
-            _gameLibrary = new GameLibrary();
-            try
-            {
-                _gameLibrary.InitializeAndLoadData(_dataFolder);
-            }
-            catch (Exception ex)
-            {
-                System.Windows.MessageBox.Show($"Failed to load game library: {ex.Message}", "Error",
-                                MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            // load model via DI scanner-initialized MoodexState
+            _moodexState = moodexState;
 
-            var s = _settings.Load();
-            foreach (var g in Games)
-            {
-                var p = g.FileSystemPath;
-                g.IsInArchive = p.StartsWith(s.ArchiveLibraryPath,
-                                             StringComparison.OrdinalIgnoreCase);
-            }
+            // IsInArchive is already populated by the scanner from manifests
 
             // create view for grouping & filtering
             GamesView = CollectionViewSource.GetDefaultView(Games);
@@ -169,15 +162,13 @@ namespace Moodex.ViewModels
                 }
             });
             ShowAboutCommand = new RelayCommand(ExecuteShowAbout);
-            ArchiveGameCommand = new AsyncRelayCommand<GameInfo>(g => MoveGameAsync(g, toArchive: true), g => g is not null);
-            ActivateGameCommand = new AsyncRelayCommand<GameInfo>(g => MoveGameAsync(g, toArchive: false), g => g is not null);
+            ArchiveGameCommand = new AsyncRelayCommand<GameInfo>(g => MoveGameAsync(g, toArchive: true), CanArchiveGame);
+            ActivateGameCommand = new AsyncRelayCommand<GameInfo>(g => MoveGameAsync(g, toArchive: false), CanActivateGame);
 
             // AutoHotKey Script Commands
             CreateScriptCommand = new RelayCommand<GameInfo>(ExecuteCreateScript, CanCreateScript);
             EditScriptCommand = new RelayCommand<GameInfo>(ExecuteEditScript, CanEditScript);
             DeleteScriptCommand = new RelayCommand<GameInfo>(ExecuteDeleteScript, CanDeleteScript);
-
-            _fileMover = fileMover;
         }
 
         // ──── Actions ───────────────────────────────────────────────────────
@@ -335,9 +326,9 @@ namespace Moodex.ViewModels
             _dialogs.ShowAbout();
         }
 
-        // ──── Persistence ───────────────────────────────────────────────────
-        private void SaveGames() => _gameLibrary.SaveGames(_gamesFile);
-        private void SaveEmulators() => _gameLibrary.SaveEmulators(_emuFile);
+        // ──── Persistence (legacy JSON disabled) ────────────────────────────
+        private void SaveGames() { /* manifest-driven; no JSON save */ }
+        private void SaveEmulators() { /* manifest-driven; no JSON save */ }
 
         // ──── Filter & Group ───────────────────────────────────────────────
         private void ApplyFilter()
@@ -461,47 +452,7 @@ namespace Moodex.ViewModels
             if (game == null) return;
 
             var set = _settings.Load();
-            var srcRoot = toArchive ? set.ActiveLibraryPath : set.ArchiveLibraryPath;
-            var dstRoot = toArchive ? set.ArchiveLibraryPath : set.ActiveLibraryPath;
-
-            // resolve the folder that actually contains the game
-            var srcFolder = GetInstallRoot(game, set.ActiveLibraryPath, set.ArchiveLibraryPath);
-            if (string.IsNullOrWhiteSpace(srcFolder)) return;
-
-            // Check if we're extracting a zip file (moving from archive)
-            bool isSourceZipped = !toArchive && srcFolder.EndsWith(".zip", StringComparison.OrdinalIgnoreCase);
-            
-            // avoid trying to move if already on target drive
-            if (!isSourceZipped && !srcFolder.StartsWith(srcRoot, StringComparison.OrdinalIgnoreCase))
-            {
-                MessageBox.Show("Game is already on the requested drive.", "Move",
-                                MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
-            }
-
-            // create new <Drive>\<Console>\<GameName> folder
-            var consoleName = game.ConsoleName;
-            if (string.IsNullOrEmpty(consoleName))
-            {
-                MessageBox.Show("Game console name is not set.", "Move Error",
-                                MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            var newFolder = Path.Combine(dstRoot, consoleName, game.Name);
-            
-            // When extracting a zip, extract to the console directory (zip contains the game folder)
-            // Otherwise, create the game folder
-            if (isSourceZipped)
-            {
-                // Extract to console directory, the zip will create the game folder
-                newFolder = Path.Combine(dstRoot, consoleName);
-                Directory.CreateDirectory(newFolder);
-            }
-            else if (!(toArchive && set.CompressOnArchive))
-            {
-                // Only create directory if not compressing (compression will handle it differently)
-                Directory.CreateDirectory(newFolder);
-            }
+            // New model: archive/restore operates on data/ and guid-based zip path
 
             // show progress…
             var vm = new ProgressWindowViewModel
@@ -514,18 +465,32 @@ namespace Moodex.ViewModels
                 DataContext = vm
             };
             dlg.Show();
+            // mark processing for tile overlay and banner
+            game.IsProcessing = true;
+            ProcessingBannerText = toArchive ? $"Archiving {game.Name} (0%)" : $"Restoring {game.Name} (0%)";
             var prog = new Progress<MoveProgress>(p =>
             {
                 vm.Percent = p.Percent;
                 vm.CurrentFile = p.CurrentFile;
+                game.ProcessingPercent = p.Percent;
+                ProcessingBannerText = toArchive ? $"Archiving {game.Name} ({p.Percent:F0}%)" : $"Restoring {game.Name} ({p.Percent:F0}%)";
             });
 
             bool success = false;
             try
             {
-                // Pass compression settings to the file mover
-                bool shouldCompress = toArchive && set.CompressOnArchive && !string.IsNullOrEmpty(set.SevenZipPath);
-                success = await _fileMover.MoveFolderAsync(srcFolder, newFolder, prog, vm.Token, shouldCompress, set.SevenZipPath);
+                if (toArchive)
+                {
+                    var res = await _archiver.ArchiveGameAsync(game, set.ArchiveLibraryPath, prog, vm.Token);
+                    success = res.Success;
+                    if (!success) throw new Exception(res.Message ?? "Archive failed");
+                }
+                else
+                {
+                    var res = await _archiver.RestoreGameAsync(game, set.ArchiveLibraryPath, prog, vm.Token);
+                    success = res.Success;
+                    if (!success) throw new Exception(res.Message ?? "Restore failed");
+                }
             }
             catch (OperationCanceledException) { /* user hit Cancel */ }
             catch (Exception ex)
@@ -535,52 +500,24 @@ namespace Moodex.ViewModels
             }
             finally { dlg.Close(); }
 
-            if (!success) return;   // aborted or failed
-
-            // Update the stored path based on whether we compressed or extracted
-            if (toArchive && set.CompressOnArchive)
+            if (!success)
             {
-                // Game was compressed - point to the archive folder (not the zip)
-                // This folder contains both the cover image and the zip file
-                // Structure: <Archive>\<Console>\<GameName>\ with <GameName>.jpg and <GameName>.zip inside
-                var archiveFolder = Path.Combine(dstRoot, consoleName, game.Name);
-                game.FileSystemPath = archiveFolder;
-            }
-            else if (isSourceZipped)
-            {
-                // Game was extracted from a zip file
-                // The zip contains a folder with the game name, which was extracted to the console directory
-                // So the extracted game folder is at: <dstRoot>\<Console>\<GameName>\
-                var extractedGameFolder = Path.Combine(dstRoot, consoleName, game.Name);
-                game.FileSystemPath = extractedGameFolder;
-                
-                // Clean up the archive folder (which contained the cover and zip)
-                try
-                {
-                    var archiveFolder = Path.GetDirectoryName(srcFolder);
-                    if (!string.IsNullOrEmpty(archiveFolder) && Directory.Exists(archiveFolder))
-                    {
-                        Directory.Delete(archiveFolder, recursive: true);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    // Don't fail if cleanup fails
-                    System.Diagnostics.Debug.WriteLine($"Failed to clean up archive folder: {ex.Message}");
-                }
-            }
-            else
-            {
-                // Normal folder move
-                var finalFolder = Path.Combine(dstRoot, consoleName, game.Name);
-                var rel = Path.GetRelativePath(srcFolder, game.FileSystemPath);
-                game.FileSystemPath = (rel == "." || string.IsNullOrEmpty(rel))
-                    ? finalFolder
-                    : Path.Combine(finalFolder, rel);
+                game.IsProcessing = false;
+                game.ProcessingPercent = 0;
+                ProcessingBannerText = "";
+                return;   // aborted or failed
             }
 
+            // Update runtime fields
             game.IsInArchive = toArchive;
-            SaveGames();
+            if (!toArchive && !string.IsNullOrEmpty(game.GameRootPath) && !string.IsNullOrEmpty(game.LaunchTarget))
+            {
+                var dataDir = Path.Combine(game.GameRootPath, "data");
+                game.FileSystemPath = Path.Combine(dataDir, game.LaunchTarget);
+            }
+            game.IsProcessing = false;
+            game.ProcessingPercent = 0;
+            ProcessingBannerText = "";
             GamesView.Refresh();
         }
 
@@ -669,6 +606,29 @@ namespace Moodex.ViewModels
         {
             var settings = _settings.Load();
             return settings.IsAutoHotKeyInstalled;
+        }
+
+        private bool CanArchiveGame(GameInfo? game)
+        {
+            if (game == null) return false;
+            if (game.IsInArchive) return false;
+            var s = _settings.Load();
+            var root = game.GameRootPath;
+            if (string.IsNullOrEmpty(root)) return false;
+            var dataDir = Path.Combine(root, "data");
+            return Directory.Exists(dataDir) && Directory.GetFiles(dataDir, "*", SearchOption.AllDirectories).Any();
+        }
+
+        private bool CanActivateGame(GameInfo? game)
+        {
+            if (game == null) return false;
+            if (!game.IsInArchive) return false;
+            var s = _settings.Load();
+            if (string.IsNullOrEmpty(game.GameGuid)) return false;
+            var basePath = Path.Combine(s.ArchiveLibraryPath, "Game Data");
+            var zip = Path.Combine(basePath, game.GameGuid + ".zip");
+            var folder = Path.Combine(basePath, game.GameGuid);
+            return File.Exists(zip) || Directory.Exists(folder);
         }
 
         private bool IsConsoleAhkEnabled(string consoleId)

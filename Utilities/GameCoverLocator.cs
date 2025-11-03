@@ -9,24 +9,27 @@ namespace Moodex.Utilities
         {
             if (game == null) return null;
 
-            // 1) figure out the folder: if it's a file use its parent dir, if it's a dir use it
+            // Prefer explicit cover.* in the game root when available
+            var root = game.GameRootPath;
+            if (!string.IsNullOrEmpty(root) && Directory.Exists(root))
+            {
+                foreach (var ext in new[] { ".png", ".jpg", ".jpeg" })
+                {
+                    var c = Path.Combine(root, "cover" + ext);
+                    if (File.Exists(c)) return c;
+                }
+            }
+
+            // Fallback: old heuristic next to the file using game name
             var path = game.FileSystemPath;
             if (string.IsNullOrWhiteSpace(path)) return null;
-
-            string folder = File.Exists(path)
-                ? Path.GetDirectoryName(path)!
-                : path;
-
+            var folder = File.Exists(path) ? Path.GetDirectoryName(path)! : path;
             if (!Directory.Exists(folder)) return null;
-
-            // 2) look for Name.png/jpg/jpeg
             foreach (var ext in new[] { ".png", ".jpg", ".jpeg" })
             {
                 var candidate = Path.Combine(folder, game.Name + ext);
-                if (File.Exists(candidate))
-                    return candidate;
+                if (File.Exists(candidate)) return candidate;
             }
-
             return null;
         }
     }
