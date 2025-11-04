@@ -85,6 +85,16 @@ namespace Moodex.Services
                             gi.GameGuid = man.Guid;
                             gi.LaunchTarget = man.LaunchTarget;
 
+                            // input scripts from manifest
+                            if (man.InputScripts != null)
+                            {
+                                foreach (var s in man.InputScripts)
+                                {
+                                    gi.InputScripts.Add(new InputScriptInfo { Name = s.Name, Enabled = s.Enabled });
+                                }
+                                gi.HasAutoHotKeyScript = gi.InputScripts.Count > 0;
+                            }
+
                             games.Add(gi);
                         }
                         catch { /* skip malformed */ }

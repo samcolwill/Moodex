@@ -80,6 +80,8 @@
                </Hyperlink>
            </TextBlock>
        </StackPanel>
+
+        
         
         <!-- Show right-click instructions when AutoHotKey is installed -->
         <TextBlock Text="Right-click on a game to configure an AutoHotKey script for that game."
@@ -97,8 +99,24 @@
                 </Style>
             </TextBlock.Style>
         </TextBlock>
-        
-        <!-- Enable AHK per-console removed: AHK applies to all consoles when installed -->
+
+        <!-- Documentation link (shown after install) -->
+        <TextBlock Margin="0,0,0,5">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsAutoHotKeyInstalled}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+            <Run Text="Documentation: "/>
+            <Hyperlink NavigateUri="https://www.autohotkey.com/docs/v2/" RequestNavigate="Hyperlink_RequestNavigate">
+                https://www.autohotkey.com/docs/v2/
+            </Hyperlink>
+        </TextBlock>
     </StackPanel>
 </UserControl>
 

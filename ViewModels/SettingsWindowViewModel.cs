@@ -29,10 +29,10 @@ namespace Moodex.ViewModels.Settings
             Sections = new ObservableCollection<SettingsSection>
             {
               new SettingsSection("General",   new GeneralSettingsViewModel(settingsService)),
+              new SettingsSection("Input",  new InputSettingsViewModel(settingsService, dialogService)),
               new SettingsSection("Interface", new InterfaceSettingsViewModel(settingsService)),
               new SettingsSection("Library",   new LibrarySettingsViewModel(settingsService)),
-              new SettingsSection("Storage",   new StorageSettingsViewModel(settingsService, dialogService)),
-              new SettingsSection("Input",  new InputSettingsViewModel(settingsService, dialogService))
+              new SettingsSection("Storage",   new StorageSettingsViewModel(settingsService, dialogService))
             };
 
             _selectedSection = Sections.First();

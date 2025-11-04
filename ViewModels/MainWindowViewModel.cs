@@ -112,6 +112,9 @@ namespace Moodex.ViewModels
         public IRelayCommand CreateScriptCommand { get; }
         public IRelayCommand EditScriptCommand { get; }
         public IRelayCommand DeleteScriptCommand { get; }
+        public IRelayCommand ToggleScriptEnabledByNameCommand { get; }
+        public IRelayCommand EditScriptByNameCommand { get; }
+        public IRelayCommand DeleteScriptByNameCommand { get; }
         // ──── Processing Banner ─────────────────────────────────────────────
         private string _processingBannerText = "";
         public string ProcessingBannerText
@@ -169,6 +172,9 @@ namespace Moodex.ViewModels
             CreateScriptCommand = new RelayCommand<GameInfo>(ExecuteCreateScript, CanCreateScript);
             EditScriptCommand = new RelayCommand<GameInfo>(ExecuteEditScript, CanEditScript);
             DeleteScriptCommand = new RelayCommand<GameInfo>(ExecuteDeleteScript, CanDeleteScript);
+            ToggleScriptEnabledByNameCommand = new RelayCommand<string>(param => ExecuteToggleScriptByName(param));
+            EditScriptByNameCommand = new RelayCommand<string>(param => ExecuteEditScriptByName(param));
+            DeleteScriptByNameCommand = new RelayCommand<string>(param => ExecuteDeleteScriptByName(param));
         }
 
         // ──── Actions ───────────────────────────────────────────────────────
@@ -533,7 +539,8 @@ namespace Moodex.ViewModels
                 GamesView.Refresh();
                 
                 // Open the script for editing
-                _scriptService.EditScript(game);
+                var name = Path.GetFileNameWithoutExtension(scriptPath);
+                _scriptService.EditScript(game, name);
             }
             catch (Exception ex)
             {
@@ -724,6 +731,46 @@ namespace Moodex.ViewModels
             }
         }
 
+        // --- Script menu helpers ---
+        private (GameInfo? game, string? name) ParseScriptParam(string? param)
+        {
+            if (string.IsNullOrWhiteSpace(param)) return (null, null);
+            var parts = param.Split('|');
+            if (parts.Length != 2) return (null, null);
+            var guid = parts[0];
+            var name = parts[1];
+            var game = Games.FirstOrDefault(g => string.Equals(g.GameGuid, guid, StringComparison.OrdinalIgnoreCase));
+            return (game, name);
+        }
+
+        private void ExecuteToggleScriptByName(string? param)
+        {
+            var (game, name) = ParseScriptParam(param);
+            if (game == null || string.IsNullOrWhiteSpace(name)) return;
+            var script = game.InputScripts.FirstOrDefault(s => s.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            if (script == null) return;
+            var newEnabled = !script.Enabled;
+            _scriptService.SetScriptEnabled(game, name, newEnabled);
+            script.Enabled = newEnabled;
+        }
+
+        private void ExecuteEditScriptByName(string? param)
+        {
+            var (game, name) = ParseScriptParam(param);
+            if (game == null || string.IsNullOrWhiteSpace(name)) return;
+            _scriptService.EditScript(game, name);
+        }
+
+        private void ExecuteDeleteScriptByName(string? param)
+        {
+            var (game, name) = ParseScriptParam(param);
+            if (game == null || string.IsNullOrWhiteSpace(name)) return;
+            _scriptService.DeleteScript(game, name);
+            var s = game.InputScripts.FirstOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            if (s != null) game.InputScripts.Remove(s);
+            game.HasAutoHotKeyScript = game.InputScripts.Count > 0;
+        }
+
         /// <summary>
         /// Determines if an AutoHotKey process is running a script for the specified game
         /// </summary>
@@ -737,11 +784,12 @@ namespace Moodex.ViewModels
                 // Get the command line of the AHK process
                 var commandLine = GetProcessCommandLine(ahkProcess.Id);
                 
-                // Check if the command line contains the game's script path
-                var scriptPath = _scriptService.GetAhkScriptPath(game);
-                if (!string.IsNullOrEmpty(scriptPath))
+                // Check if the command line references any script from the game's input folder
+                if (!string.IsNullOrEmpty(game.GameRootPath))
                 {
-                    return commandLine.Contains(scriptPath, StringComparison.OrdinalIgnoreCase);
+                    var inputFolder = System.IO.Path.Combine(game.GameRootPath, "input");
+                    if (commandLine.Contains(inputFolder, StringComparison.OrdinalIgnoreCase))
+                        return true;
                 }
             }
             catch

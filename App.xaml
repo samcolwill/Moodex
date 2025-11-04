@@ -7,7 +7,7 @@
         <conv:StringToVisConverter x:Key="StringToVis"/>
         
         
-        <!-- Implicit style for all MenuItems in the app -->
+        <!-- Implicit style for Menu bar MenuItems (top navigation) -->
         <Style TargetType="MenuItem">
             <!-- white text on dark background -->
             <Setter Property="Foreground" Value="White"/>
@@ -19,9 +19,9 @@
                         <Grid>
                             <!-- MenuItem header container -->
                             <Border Name="Border" Background="{TemplateBinding Background}">
-                                <ContentPresenter ContentSource="Header"
-                                                  RecognizesAccessKey="True"
-                                                  Margin="{TemplateBinding Padding}"/>
+                                <DockPanel Margin="{TemplateBinding Padding}">
+                                    <ContentPresenter ContentSource="Header" RecognizesAccessKey="True"/>
+                                </DockPanel>
                             </Border>
                             <!-- Submenu popup -->
                             <Popup Name="Popup"
@@ -75,6 +75,53 @@
                             <StackPanel IsItemsHost="True"
                                         KeyboardNavigation.DirectionalNavigation="Cycle"/>
                         </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style for MenuItems inside ContextMenus: right-opening popup + arrow indicator -->
+        <Style x:Key="ContextMenuItemStyle" TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuItem">
+                        <Grid>
+                            <Border Name="Border" Background="{TemplateBinding Background}">
+                                <Grid Margin="{TemplateBinding Padding}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ContentPresenter ContentSource="Header" RecognizesAccessKey="True"/>
+                                    <!-- Submenu arrow on the right -->
+                                    <TextBlock x:Name="SubmenuGlyph" Grid.Column="1" Text=">" Margin="8,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/>
+                                </Grid>
+                            </Border>
+                            <Popup Name="Popup"
+                                   Placement="Right"
+                                   IsOpen="{TemplateBinding IsSubmenuOpen}"
+                                   AllowsTransparency="True"
+                                   Focusable="False"
+                                   PopupAnimation="Fade">
+                                <Border Background="#FF2A2A2A" BorderBrush="#FF444444" BorderThickness="1">
+                                    <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle"/>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#6A6A6A"/>
+                            </Trigger>
+                            <Trigger Property="IsSubmenuOpen" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#6A6A6A"/>
+                            </Trigger>
+                            <Trigger Property="HasItems" Value="True">
+                                <Setter TargetName="SubmenuGlyph" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                            <Trigger Property="HasItems" Value="False">
+                                <Setter TargetName="SubmenuGlyph" Property="Visibility" Value="Collapsed"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>

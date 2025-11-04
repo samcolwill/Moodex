@@ -1,6 +1,7 @@
 ﻿using System;
 using Moodex.Utilities;
 using System.ComponentModel;
+using System.Collections.ObjectModel;
 
 namespace Moodex.Models
 {
@@ -14,6 +15,8 @@ namespace Moodex.Models
         public DateTime ReleaseDate { get; set; } = DateTime.MinValue;
         
         public bool HasAutoHotKeyScript { get; set; } = false;
+        public ObservableCollection<InputScriptInfo> InputScripts { get; } = new ObservableCollection<InputScriptInfo>();
+        public bool HasScripts => InputScripts.Count > 0;
 
         // Runtime-only helpers
         public string? ConsoleName => Utilities.ConsoleRegistry.GetDisplayName(ConsoleId);

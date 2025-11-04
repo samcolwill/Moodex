@@ -27,10 +27,10 @@
             </MenuItem>
             <MenuItem Header="Settings">
                 <MenuItem Header="General" Command="{Binding ShowSettingsCommand}" CommandParameter="General"/>
+                <MenuItem Header="Input" Command="{Binding ShowSettingsCommand}" CommandParameter="Input"/>
                 <MenuItem Header="Interface" Command="{Binding ShowSettingsCommand}" CommandParameter="Interface"/>
                 <MenuItem Header="Library" Command="{Binding ShowSettingsCommand}" CommandParameter="Library"/>
                 <MenuItem Header="Storage" Command="{Binding ShowSettingsCommand}" CommandParameter="Storage"/>
-                <MenuItem Header="Input" Command="{Binding ShowSettingsCommand}" CommandParameter="Input"/>
             </MenuItem>
             <MenuItem Header="Help">
                 <MenuItem Header="About" Command="{Binding ShowAboutCommand}"/>
@@ -277,7 +277,7 @@
 
                             <!-- right-click context menu -->
                             <StackPanel.ContextMenu>
-                                <ContextMenu Background="#2a2a2a" Foreground="White">
+                                <ContextMenu Background="#2a2a2a" Foreground="White" Opened="GameContextMenu_Opened">
                                     <MenuItem Header="Run"
                                               Command="{Binding DataContext.RunCommand,
                                                 Source={x:Reference RootWindow}}"
@@ -335,7 +335,6 @@
                                           CommandParameter="{Binding PlacementTarget.DataContext,
                                                             RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
 
-                                    <!-- AutoHotKey Script Menu Items (only when AutoHotKey installed) -->
                                     <Separator>
                                         <Separator.Style>
                                             <Style TargetType="Separator">
@@ -348,68 +347,15 @@
                                             </Style>
                                         </Separator.Style>
                                     </Separator>
-                                    
-                                    <!-- Create Script (only when no script exists and AutoHotKey is installed) -->
-                                    <MenuItem Header="Add AHK Script"
-                                          Command="{Binding DataContext.CreateScriptCommand,
-                                                            Source={x:Reference RootWindow}}"
-                                          CommandParameter="{Binding PlacementTarget.DataContext,
-                                                            RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                    <!-- Scripts submenu -->
+                                    <MenuItem Header="Scripts">
                                         <MenuItem.Style>
-                                            <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                            <Style TargetType="MenuItem" BasedOn="{StaticResource ContextMenuItemStyle}">
                                                 <Setter Property="Visibility" Value="Collapsed"/>
                                                 <Style.Triggers>
-                                                    <MultiDataTrigger>
-                                                        <MultiDataTrigger.Conditions>
-                                                            <Condition Binding="{Binding DataContext.AutoHotKeyInstalled, Source={x:Reference RootWindow}}" Value="True"/>
-                                                            <Condition Binding="{Binding PlacementTarget.DataContext.HasAutoHotKeyScript, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="False"/>
-                                                        </MultiDataTrigger.Conditions>
+                                                    <DataTrigger Binding="{Binding DataContext.AutoHotKeyInstalled, Source={x:Reference RootWindow}}" Value="True">
                                                         <Setter Property="Visibility" Value="Visible"/>
-                                                    </MultiDataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </MenuItem.Style>
-                                    </MenuItem>
-
-                                    <!-- Edit Script (only when script exists and AutoHotKey is installed) -->
-                                    <MenuItem Header="Edit AHK Script"
-                                          Command="{Binding DataContext.EditScriptCommand,
-                                                            Source={x:Reference RootWindow}}"
-                                          CommandParameter="{Binding PlacementTarget.DataContext,
-                                                            RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                        <MenuItem.Style>
-                                            <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <MultiDataTrigger>
-                                                        <MultiDataTrigger.Conditions>
-                                                            <Condition Binding="{Binding DataContext.AutoHotKeyInstalled, Source={x:Reference RootWindow}}" Value="True"/>
-                                                            <Condition Binding="{Binding PlacementTarget.DataContext.HasAutoHotKeyScript, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True"/>
-                                                        </MultiDataTrigger.Conditions>
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </MultiDataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </MenuItem.Style>
-                                    </MenuItem>
-
-                                    <!-- Delete Script (only when script exists and AutoHotKey is installed) -->
-                                    <MenuItem Header="Delete AHK Script"
-                                          Command="{Binding DataContext.DeleteScriptCommand,
-                                                            Source={x:Reference RootWindow}}"
-                                          CommandParameter="{Binding PlacementTarget.DataContext,
-                                                            RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                        <MenuItem.Style>
-                                            <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <MultiDataTrigger>
-                                                        <MultiDataTrigger.Conditions>
-                                                            <Condition Binding="{Binding DataContext.AutoHotKeyInstalled, Source={x:Reference RootWindow}}" Value="True"/>
-                                                            <Condition Binding="{Binding PlacementTarget.DataContext.HasAutoHotKeyScript, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True"/>
-                                                        </MultiDataTrigger.Conditions>
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </MultiDataTrigger>
+                                                    </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
                                         </MenuItem.Style>

@@ -1,4 +1,5 @@
 using System.Windows.Controls;
+using System.Windows.Navigation;
 
 namespace Moodex.Views.Settings
 {
@@ -7,6 +8,12 @@ namespace Moodex.Views.Settings
         public InputSettingsView()
         {
             InitializeComponent();
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+            e.Handled = true;
         }
     }
 }

@@ -32,6 +32,9 @@
                 <DataTemplate DataType="{x:Type vmSettings:GeneralSettingsViewModel}">
                     <views:GeneralSettingsView/>
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type vmSettings:InputSettingsViewModel}">
+                    <views:InputSettingsView/>
+                </DataTemplate>
                 <DataTemplate DataType="{x:Type vmSettings:InterfaceSettingsViewModel}">
                     <views:InterfaceSettingsView/>
                 </DataTemplate>
@@ -40,9 +43,6 @@
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vmSettings:StorageSettingsViewModel}">
                     <views:StorageSettingsView/>
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type vmSettings:InputSettingsViewModel}">
-                    <views:InputSettingsView/>
                 </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>

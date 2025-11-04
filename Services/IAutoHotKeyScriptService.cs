@@ -16,12 +16,14 @@ namespace Moodex.Services
         /// </summary>
         /// <param name="game">The game with the script to edit</param>
         void EditScript(GameInfo game);
+        void EditScript(GameInfo game, string scriptName);
 
         /// <summary>
         /// Deletes a script for a game
         /// </summary>
         /// <param name="game">The game to delete the script for</param>
         void DeleteScript(GameInfo game);
+        void DeleteScript(GameInfo game, string scriptName);
 
         /// <summary>
         /// Launches a script for a game if it exists
@@ -35,6 +37,11 @@ namespace Moodex.Services
         /// <param name="game">The game to check</param>
         /// <returns>True if the game has a script</returns>
         bool HasScript(GameInfo game);
+
+        /// <summary>
+        /// Enables or disables a named script for a game and persists to manifest
+        /// </summary>
+        void SetScriptEnabled(GameInfo game, string scriptName, bool enabled);
 
         /// <summary>
         /// Gets the .ahk script path for a game
