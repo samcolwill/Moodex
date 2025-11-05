@@ -79,24 +79,7 @@ namespace Moodex
             mainWin.DataContext = _provider.GetRequiredService<MainWindowViewModel>();
             mainWin.Show();
 
-            // ── launch DS4Windows if enabled ─────────────────────────────
-            if (settings.LaunchDs4WindowsOnStartup)
-            {
-                var exeDir = AppContext.BaseDirectory;
-                var ds4Path = Path.Combine(exeDir, "DS4Windows", "DS4Windows.exe");
-                if (File.Exists(ds4Path))
-                {
-                    Process.Start(new ProcessStartInfo(ds4Path)
-                    {
-                        UseShellExecute = true,
-                        // Arguments = "--minimized" // if you want CLI flags
-                    });
-                }
-                else
-                {
-                    // optional: log warning that DS4Windows.exe wasn't found
-                }
-            }
+            // removed DS4Windows auto-launch; controlled per game
         }
         protected override void OnExit(ExitEventArgs e)
         {

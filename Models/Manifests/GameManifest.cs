@@ -20,6 +20,10 @@ namespace Moodex.Models.Manifests
 
         // Input scripts section (can be null when no scripts configured)
         [JsonPropertyName("inputScripts")] public List<InputScriptEntry>? InputScripts { get; set; }
+
+        // Per-game controller settings
+        [JsonPropertyName("controllerEnabled")] public bool ControllerEnabled { get; set; } = false;
+        [JsonPropertyName("controllerProfileConfigured")] public bool ControllerProfileConfigured { get; set; } = false;
     }
 
     public class InputScriptEntry

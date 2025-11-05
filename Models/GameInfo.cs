@@ -18,6 +18,10 @@ namespace Moodex.Models
         public ObservableCollection<InputScriptInfo> InputScripts { get; } = new ObservableCollection<InputScriptInfo>();
         public bool HasScripts => InputScripts.Count > 0;
 
+        // Per-game controller settings
+        public bool ControllerEnabled { get; set; }
+        public bool ControllerProfileConfigured { get; set; }
+
         // Runtime-only helpers
         public string? ConsoleName => Utilities.ConsoleRegistry.GetDisplayName(ConsoleId);
         public string? GameCoverUri => GameCoverLocator.FindGameCover(this);

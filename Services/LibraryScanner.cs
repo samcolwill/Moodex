@@ -95,6 +95,10 @@ namespace Moodex.Services
                                 gi.HasAutoHotKeyScript = gi.InputScripts.Count > 0;
                             }
 
+                            // controller settings
+                            gi.ControllerEnabled = man.ControllerEnabled;
+                            gi.ControllerProfileConfigured = man.ControllerProfileConfigured;
+
                             games.Add(gi);
                         }
                         catch { /* skip malformed */ }

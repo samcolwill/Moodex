@@ -335,26 +335,33 @@
                                           CommandParameter="{Binding PlacementTarget.DataContext,
                                                             RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
 
-                                    <Separator>
-                                        <Separator.Style>
-                                            <Style TargetType="Separator">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding DataContext.AutoHotKeyInstalled, Source={x:Reference RootWindow}}" Value="True">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Separator.Style>
-                                    </Separator>
+                                    
                                     <!-- Scripts submenu -->
                                     <MenuItem Header="Scripts">
                                         <MenuItem.Style>
                                             <Style TargetType="MenuItem" BasedOn="{StaticResource ContextMenuItemStyle}">
                                                 <Setter Property="Visibility" Value="Collapsed"/>
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding DataContext.AutoHotKeyInstalled, Source={x:Reference RootWindow}}" Value="True">
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding DataContext.AutoHotKeyInstalled, Source={x:Reference RootWindow}}" Value="True"/>
+                                                            <Condition Binding="{Binding PlacementTarget.DataContext.IsInArchive, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="False"/>
+                                                        </MultiDataTrigger.Conditions>
                                                         <Setter Property="Visibility" Value="Visible"/>
+                                                    </MultiDataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </MenuItem.Style>
+                                    </MenuItem>
+
+                                    <!-- Controller submenu placeholder -->
+                                    <MenuItem Header="Controller">
+                                        <MenuItem.Style>
+                                            <Style TargetType="MenuItem" BasedOn="{StaticResource ContextMenuItemStyle}">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding PlacementTarget.DataContext.IsInArchive, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>

@@ -44,7 +44,6 @@ namespace Moodex.Configuration
             "Turn-Based Strategy"
         };
         public bool IsDs4Installed { get; set; } = false;
-        public bool LaunchDs4WindowsOnStartup { get; set; } = false;
         public bool IsAutoHotKeyInstalled { get; set; } = false;
         public bool CompressOnArchive { get; set; } = true;
     }

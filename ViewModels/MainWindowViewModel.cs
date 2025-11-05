@@ -115,6 +115,10 @@ namespace Moodex.ViewModels
         public IRelayCommand ToggleScriptEnabledByNameCommand { get; }
         public IRelayCommand EditScriptByNameCommand { get; }
         public IRelayCommand DeleteScriptByNameCommand { get; }
+        // Controller submenu
+        public IRelayCommand ToggleControllerCommand { get; }
+        public IRelayCommand ConfigureControllerProfileCommand { get; }
+        public IRelayCommand DeleteControllerProfileCommand { get; }
         // ──── Processing Banner ─────────────────────────────────────────────
         private string _processingBannerText = "";
         public string ProcessingBannerText
@@ -175,6 +179,9 @@ namespace Moodex.ViewModels
             ToggleScriptEnabledByNameCommand = new RelayCommand<string>(param => ExecuteToggleScriptByName(param));
             EditScriptByNameCommand = new RelayCommand<string>(param => ExecuteEditScriptByName(param));
             DeleteScriptByNameCommand = new RelayCommand<string>(param => ExecuteDeleteScriptByName(param));
+            ToggleControllerCommand = new RelayCommand<GameInfo>(ExecuteToggleController);
+            ConfigureControllerProfileCommand = new RelayCommand<GameInfo>(ExecuteConfigureControllerProfile);
+            DeleteControllerProfileCommand = new RelayCommand<GameInfo>(ExecuteDeleteControllerProfile, CanDeleteControllerProfile);
         }
 
         // ──── Actions ───────────────────────────────────────────────────────
@@ -194,6 +201,29 @@ namespace Moodex.ViewModels
                         MessageBoxButton.OK,
                         MessageBoxImage.Information);
                     return;
+                }
+
+                // Launch DS4Windows if enabled for this game
+                if (settings.IsDs4Installed && game.ControllerEnabled)
+                {
+                    // If a per-game DS4 profile exists, copy it into DS4Windows Default.xml before launch
+                    try
+                    {
+                        if (!string.IsNullOrEmpty(game.GameRootPath))
+                        {
+                            var perGame = Path.Combine(game.GameRootPath, "input", "ds4windows_controller_profile.xml");
+                            if (File.Exists(perGame))
+                            {
+                                var baseDir = Path.Combine(AppContext.BaseDirectory, "External Tools", "DS4Windows");
+                                var profilesDir = Path.Combine(baseDir, "Profiles");
+                                Directory.CreateDirectory(profilesDir);
+                                var defaultXml = Path.Combine(profilesDir, "Default.xml");
+                                File.Copy(perGame, defaultXml, overwrite: true);
+                            }
+                        }
+                    }
+                    catch { }
+                    TryLaunchDs4Windows();
                 }
 
                 ProcessStartInfo startInfo;
@@ -681,6 +711,13 @@ namespace Moodex.ViewModels
                 {
                     CleanupAutoHotKeyScripts(game);
                 }
+
+                // Close DS4Windows if it was enabled
+                var settings = _settings.Load();
+                if (settings.IsDs4Installed && game.ControllerEnabled)
+                {
+                    TryCloseDs4Windows();
+                }
             }
             catch (Exception ex)
             {
@@ -769,6 +806,112 @@ namespace Moodex.ViewModels
             var s = game.InputScripts.FirstOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
             if (s != null) game.InputScripts.Remove(s);
             game.HasAutoHotKeyScript = game.InputScripts.Count > 0;
+        }
+
+        private void ExecuteToggleController(GameInfo? game)
+        {
+            if (game == null) return;
+            game.ControllerEnabled = !game.ControllerEnabled;
+            UpdateGameManifest(game, man => man.ControllerEnabled = game.ControllerEnabled);
+        }
+
+        private void ExecuteConfigureControllerProfile(GameInfo? game)
+        {
+            if (game == null) return;
+            try
+            {
+                var win = new Moodex.Views.Utilities.ControllerProfileSetupWindow(game)
+                {
+                    Owner = Application.Current.MainWindow
+                };
+                win.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to open controller setup window:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private bool CanDeleteControllerProfile(GameInfo? game)
+        {
+            if (game == null) return false;
+            if (string.IsNullOrEmpty(game.GameRootPath)) return false;
+            var path = Path.Combine(game.GameRootPath, "input", "ds4windows_controller_profile.xml");
+            return File.Exists(path);
+        }
+
+        private void ExecuteDeleteControllerProfile(GameInfo? game)
+        {
+            if (game == null) return;
+            try
+            {
+                if (!string.IsNullOrEmpty(game.GameRootPath))
+                {
+                    var path = Path.Combine(game.GameRootPath, "input", "ds4windows_controller_profile.xml");
+                    if (File.Exists(path)) File.Delete(path);
+                }
+                game.ControllerProfileConfigured = false;
+                UpdateGameManifest(game, man => man.ControllerProfileConfigured = false);
+
+                // Reset DS4Windows default profile to seeded default
+                var baseDir = Path.Combine(AppContext.BaseDirectory, "External Tools", "DS4Windows");
+                var initializer = new Moodex.Utilities.DS4WindowsInitializer(baseDir);
+                initializer.Initialize();
+
+                DeleteControllerProfileCommand.NotifyCanExecuteChanged();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to delete controller profile:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void TryLaunchDs4Windows()
+        {
+            try
+            {
+                var baseDir = Path.Combine(AppContext.BaseDirectory, "External Tools", "DS4Windows");
+                if (!Directory.Exists(baseDir)) return;
+                var exe = Directory.GetFiles(baseDir, "DS4Windows.exe", SearchOption.AllDirectories).FirstOrDefault();
+                if (exe == null) return;
+                Process.Start(new ProcessStartInfo(exe) { UseShellExecute = true });
+            }
+            catch { }
+        }
+
+        private void TryCloseDs4Windows()
+        {
+            try
+            {
+                foreach (var p in Process.GetProcessesByName("DS4Windows"))
+                {
+                    try
+                    {
+                        p.CloseMainWindow();
+                        if (!p.WaitForExit(2000)) p.Kill();
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+        }
+
+        private void UpdateGameManifest(GameInfo game, Action<Moodex.Models.Manifests.GameManifest> update)
+        {
+            if (string.IsNullOrEmpty(game.GameRootPath)) return;
+            var path = Path.Combine(game.GameRootPath, ".moodex_game");
+            Moodex.Models.Manifests.GameManifest man;
+            if (File.Exists(path))
+            {
+                var json = File.ReadAllText(path);
+                man = System.Text.Json.JsonSerializer.Deserialize<Moodex.Models.Manifests.GameManifest>(json) ?? new Moodex.Models.Manifests.GameManifest();
+            }
+            else
+            {
+                man = new Moodex.Models.Manifests.GameManifest { Name = game.Name, Guid = game.GameGuid ?? Guid.NewGuid().ToString(), ConsoleId = game.ConsoleId };
+            }
+            update(man);
+            File.WriteAllText(path, System.Text.Json.JsonSerializer.Serialize(man, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
         }
 
         /// <summary>

@@ -26,7 +26,6 @@ namespace Moodex.ViewModels.Settings
             _model = _svc.Load();
             _dialog = dialog;
 
-            _launchDs4WindowsOnStartup = _model.LaunchDs4WindowsOnStartup;
             _isDs4Installed = _model.IsDs4Installed;
             _isAutoHotKeyInstalled = _model.IsAutoHotKeyInstalled;
 
@@ -41,12 +40,7 @@ namespace Moodex.ViewModels.Settings
             UninstallAutoHotKeyCommand = new AsyncRelayCommand(ConfirmAndUninstallAutoHotKeyAsync, () => IsAutoHotKeyInstalled);
         }
 
-        private bool _launchDs4WindowsOnStartup;
-        public bool LaunchDs4WindowsOnStartup
-        {
-            get => _launchDs4WindowsOnStartup;
-            set { if (_launchDs4WindowsOnStartup != value) { _launchDs4WindowsOnStartup = value; _model.LaunchDs4WindowsOnStartup = value; _svc.Save(_model); OnPropertyChanged(); } }
-        }
+        // removed startup launch option; per-game control instead
 
         private bool _isDs4Installed;
         public bool IsDs4Installed
@@ -129,12 +123,50 @@ namespace Moodex.ViewModels.Settings
             }
             ZipFile.ExtractToDirectory(tmpFile, targetDir);
             File.Delete(tmpFile);
+
+            // Some DS4Windows releases zip a root folder named "DS4Windows"; flatten if present
+            try
+            {
+                var nestedDir = Path.Combine(targetDir, "DS4Windows");
+                if (Directory.Exists(nestedDir) && Directory.GetFileSystemEntries(nestedDir).Length > 0)
+                {
+                    // Move files
+                    foreach (var file in Directory.GetFiles(nestedDir))
+                    {
+                        var dest = Path.Combine(targetDir, Path.GetFileName(file));
+                        File.Move(file, dest, overwrite: true);
+                    }
+                    // Move directories
+                    foreach (var dir in Directory.GetDirectories(nestedDir))
+                    {
+                        var dest = Path.Combine(targetDir, Path.GetFileName(dir));
+                        Directory.Move(dir, dest);
+                    }
+                    Directory.Delete(nestedDir, recursive: true);
+                }
+            }
+            catch { }
+
+            // Seed default DS4Windows configuration for DualSense (portable mode) in the actual exe directory
+            try
+            {
+                var exePath = Directory.GetFiles(targetDir, "DS4Windows.exe", SearchOption.AllDirectories).FirstOrDefault();
+                var ds4ExeDir = exePath != null ? Path.GetDirectoryName(exePath)! : targetDir;
+                var initializer = new DS4WindowsInitializer(ds4ExeDir);
+                initializer.Initialize();
+            }
+            catch
+            {
+                // Non-fatal: continue with installation even if seeding fails
+            }
             IsDs4Installed = true;
         }
 
         private void LaunchDs4Windows()
         {
-            var exe = Path.Combine(AppContext.BaseDirectory, "External Tools", "DS4Windows", "DS4Windows.exe");
+            var baseDir = Path.Combine(AppContext.BaseDirectory, "External Tools", "DS4Windows");
+            var exe = Directory.GetFiles(baseDir, "DS4Windows.exe", SearchOption.AllDirectories).FirstOrDefault();
+            if (exe == null) throw new FileNotFoundException("DS4Windows.exe not found in External Tools/DS4Windows.");
             var proc = Process.Start(new ProcessStartInfo(exe) { UseShellExecute = true });
             LastLaunchedProcess = proc;
         }
@@ -154,7 +186,7 @@ namespace Moodex.ViewModels.Settings
                 try { p.CloseMainWindow(); if (!p.WaitForExit(2000)) p.Kill(); } catch { }
             }
             if (Directory.Exists(dir)) { try { Directory.Delete(dir, recursive: true); } catch { System.Threading.Thread.Sleep(500); Directory.Delete(dir, recursive: true); } }
-            IsDs4Installed = false; LaunchDs4WindowsOnStartup = false;
+            IsDs4Installed = false;
         }
 
         private const string AutoHotKeyGitHubLatestReleaseUrl = "https://api.github.com/repos/AutoHotkey/AutoHotkey/releases/latest";
@@ -208,7 +240,14 @@ namespace Moodex.ViewModels.Settings
         }
 
         private void CheckDs4Installation()
-        { if (File.Exists(Path.Combine(AppContext.BaseDirectory, "External Tools", "DS4Windows", "DS4Windows.exe"))) IsDs4Installed = true; }
+        {
+            var baseDir = Path.Combine(AppContext.BaseDirectory, "External Tools", "DS4Windows");
+            if (Directory.Exists(baseDir))
+            {
+                var exe = Directory.GetFiles(baseDir, "DS4Windows.exe", SearchOption.AllDirectories).FirstOrDefault();
+                if (exe != null) IsDs4Installed = true;
+            }
+        }
         private void CheckAutoHotKeyInstallation()
         { if (File.Exists(Path.Combine(AppContext.BaseDirectory, "External Tools", "AutoHotKey", "AutoHotkey64.exe"))) IsAutoHotKeyInstalled = true; }
 
