@@ -89,6 +89,10 @@ namespace Moodex.ViewModels
         public IRelayCommand AddGenreCommand { get; }
         public IRelayCommand<string?> RemoveGenreCommand { get; }
         public IRelayCommand CancelCommand { get; }
+        public IRelayCommand OpenGameFilesCommand { get; }
+        public IRelayCommand AddGameCoverCommand { get; }
+        public IRelayCommand ConfirmGameCoverCommand { get; }
+        private string? _pendingCoverPath;
 
         // ───────────── ctor ─────────────
         [SupportedOSPlatform("windows")]
@@ -105,6 +109,9 @@ namespace Moodex.ViewModels
             BrowseCommand = new RelayCommand<Window?>(ExecuteBrowse);
             SaveCommand = new RelayCommand<Window?>(ExecuteSave, _ => CanSave());
             CancelCommand = new RelayCommand<Window?>(w => w?.Close());
+            OpenGameFilesCommand = new RelayCommand(ExecuteOpenGameFiles);
+            AddGameCoverCommand = new RelayCommand(ExecuteAddGameCover);
+            ConfirmGameCoverCommand = new RelayCommand(ExecuteConfirmGameCover, () => !string.IsNullOrWhiteSpace(_pendingCoverPath));
 
             // seed the form
             Name = gameToEdit.Name;
@@ -221,6 +228,53 @@ namespace Moodex.ViewModels
                 owner.DialogResult = true;
                 owner.Close();
             }
+        }
+
+        private void ExecuteOpenGameFiles()
+        {
+            try
+            {
+                var root = _originalGame.GameRootPath;
+                if (string.IsNullOrEmpty(root)) return;
+                var dataDir = System.IO.Path.Combine(root, "data");
+                System.IO.Directory.CreateDirectory(dataDir);
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("explorer.exe", $"\"{dataDir}\"") { UseShellExecute = true });
+            }
+            catch { }
+        }
+
+        private void ExecuteAddGameCover()
+        {
+            try
+            {
+                var root = _originalGame.GameRootPath;
+                if (string.IsNullOrEmpty(root)) return;
+                var dlg = new Microsoft.Win32.OpenFileDialog
+                {
+                    Filter = "Image Files (*.png;*.jpg;*.jpeg)|*.png;*.jpg;*.jpeg|All Files (*.*)|*.*"
+                };
+                dlg.InitialDirectory = root;
+                if (dlg.ShowDialog() == true)
+                {
+                    _pendingCoverPath = dlg.FileName;
+                    ConfirmGameCoverCommand.NotifyCanExecuteChanged();
+                }
+            }
+            catch { }
+        }
+
+        private void ExecuteConfirmGameCover()
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(_pendingCoverPath)) return;
+                var root = _originalGame.GameRootPath;
+                if (string.IsNullOrEmpty(root)) return;
+                var ext = System.IO.Path.GetExtension(_pendingCoverPath);
+                var dest = System.IO.Path.Combine(root, "cover" + ext);
+                System.IO.File.Copy(_pendingCoverPath, dest, overwrite: true);
+            }
+            catch { }
         }
     }
 }

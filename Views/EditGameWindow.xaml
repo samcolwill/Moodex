@@ -16,6 +16,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/><!-- Name -->
             <RowDefinition Height="30"/><!-- Console -->
+            <RowDefinition Height="30"/><!-- Open game files button -->
+            <RowDefinition Height="30"/><!-- Add game cover buttons -->
             <RowDefinition Height="30"/><!-- File path + Browse -->
             <RowDefinition Height="30"/><!-- Genre dropdown -->
             <RowDefinition Height="30"/><!-- Genre list -->
@@ -46,17 +48,25 @@
           DisplayMemberPath="Name"
           IsEnabled="{Binding IsConsoleEnabled}" />
 
-        <!-- File path + Browse button -->
-        <Label Grid.Row="2" Grid.Column="0" Content="Game File:" VerticalAlignment="Center"/>
-        <TextBox Grid.Row="2" Grid.Column="1" Margin="5,5,0,5"
+        <!-- Open game files helper -->
+        <Button Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Content="Open game files..." Margin="5"
+                Command="{Binding OpenGameFilesCommand}"/>
+
+        <!-- Add game cover helper -->
+        <Button Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Content="Select new game cover..." Margin="5"
+                Command="{Binding AddGameCoverCommand}"/>
+
+        <!-- Launch Target + Browse button -->
+        <Label Grid.Row="4" Grid.Column="0" Content="Launch Target:" VerticalAlignment="Center"/>
+        <TextBox Grid.Row="4" Grid.Column="1" Margin="5,5,0,5"
                  Text="{Binding FileSystemPath, UpdateSourceTrigger=PropertyChanged}"/>
-        <Button Grid.Row="2" Grid.Column="2" Margin="5" Content="Browse..."
+        <Button Grid.Row="4" Grid.Column="2" Margin="5" Content="Browse..."
                 Command="{Binding BrowseCommand}"
                 CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
 
         <!-- Genres (multi) -->
-        <Label Grid.Row="3" Grid.Column="0" Content="Genres:" VerticalAlignment="Center"/>
-        <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="5">
+        <Label Grid.Row="5" Grid.Column="0" Content="Genres:" VerticalAlignment="Center"/>
+        <Grid Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Margin="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
@@ -67,20 +77,20 @@
             <Button Grid.Column="1" Content="Add" Width="60" Margin="5,0,0,0"
                     Command="{Binding AddGenreCommand}"/>
         </Grid>
-        <ListBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="1" Margin="5,0,0,5"
+        <ListBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="1" Margin="5,0,0,5"
                  ItemsSource="{Binding SelectedGenres}"
                  SelectedItem="{Binding SelectedGenreInList}"/>
-        <Button Grid.Row="4" Grid.Column="2" Content="Remove" Margin="5,0,5,5"
+        <Button Grid.Row="6" Grid.Column="2" Content="Remove" Margin="5,0,5,5"
                 Command="{Binding RemoveGenreCommand}"
                 CommandParameter="{Binding SelectedGenreInList}"/>
 
         <!-- Release Date picker -->
-        <Label Grid.Row="5" Grid.Column="0" Content="Release Date:" VerticalAlignment="Center"/>
-        <DatePicker Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Height="25" Margin="5"
+        <Label Grid.Row="7" Grid.Column="0" Content="Release Date:" VerticalAlignment="Center"/>
+        <DatePicker Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2" Height="25" Margin="5"
                     SelectedDate="{Binding ReleaseDate}"/>
 
         <!-- Cancel / Save buttons -->
-        <StackPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3"
+        <StackPanel Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="3"
                     Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
             <Button Content="Cancel" Width="75" Margin="5,0,0,5"
                     Command="{Binding CancelCommand}"
