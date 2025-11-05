@@ -119,6 +119,7 @@ namespace Moodex.ViewModels
         public IRelayCommand ToggleControllerCommand { get; }
         public IRelayCommand ConfigureControllerProfileCommand { get; }
         public IRelayCommand DeleteControllerProfileCommand { get; }
+        public IRelayCommand OpenGameFolderCommand { get; }
         // ──── Processing Banner ─────────────────────────────────────────────
         private string _processingBannerText = "";
         public string ProcessingBannerText
@@ -182,6 +183,7 @@ namespace Moodex.ViewModels
             ToggleControllerCommand = new RelayCommand<GameInfo>(ExecuteToggleController);
             ConfigureControllerProfileCommand = new RelayCommand<GameInfo>(ExecuteConfigureControllerProfile);
             DeleteControllerProfileCommand = new RelayCommand<GameInfo>(ExecuteDeleteControllerProfile, CanDeleteControllerProfile);
+            OpenGameFolderCommand = new RelayCommand<GameInfo>(ExecuteOpenGameFolder, g => g != null);
         }
 
         // ──── Actions ───────────────────────────────────────────────────────
@@ -336,14 +338,82 @@ namespace Moodex.ViewModels
         private void ExecuteDeleteGame(GameInfo? game)
         {
             if (game == null) return;
-            // confirm deletion
-            if (System.Windows.MessageBox.Show($"Delete '{game.Name}'?", "Confirm Delete",
-                    MessageBoxButton.YesNo, MessageBoxImage.Question)
-                != MessageBoxResult.Yes) return;
+            // strong confirmation
+            var confirmText =
+                $"You are about to permanently delete this game and all related data.\n\n" +
+                $"Game: {game.Name}\n" +
+                $"Console: {game.ConsoleName}\n\n" +
+                "This will delete:\n" +
+                "- Game files and folders\n" +
+                "- AutoHotKey scripts\n" +
+                "- Controller configurations\n" +
+                "- Recorded Achievements\n" +
+                "- Archived game data (if archived)\n\n" +
+                "Are you sure you want to proceed?";
 
+            if (System.Windows.MessageBox.Show(confirmText, "Confirm Delete",
+                    MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
+
+            try
+            {
+                // delete active game folder if present
+                if (!string.IsNullOrEmpty(game.GameRootPath) && Directory.Exists(game.GameRootPath))
+                {
+                    try { Directory.Delete(game.GameRootPath, recursive: true); }
+                    catch
+                    {
+                        // try once more after a small delay
+                        System.Threading.Thread.Sleep(300);
+                        try { Directory.Delete(game.GameRootPath, recursive: true); } catch { }
+                    }
+                }
+
+                // delete archived zip/folder by GUID if present
+                var settings = _settings.Load();
+                if (!string.IsNullOrEmpty(game.GameGuid) && !string.IsNullOrEmpty(settings.ArchiveLibraryPath))
+                {
+                    var basePath = Path.Combine(settings.ArchiveLibraryPath, "Game Data");
+                    var zip = Path.Combine(basePath, game.GameGuid + ".zip");
+                    var folder = Path.Combine(basePath, game.GameGuid);
+                    try { if (File.Exists(zip)) File.Delete(zip); } catch { }
+                    if (Directory.Exists(folder))
+                    {
+                        try { Directory.Delete(folder, recursive: true); } catch { }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to delete game files:\n{ex.Message}", "Delete Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            // remove from list regardless (UI reflects best-effort delete)
             Games.Remove(game);
             SaveGames();
             GamesView.Refresh();
+        }
+
+        private void ExecuteOpenGameFolder(GameInfo? game)
+        {
+            if (game == null) return;
+            try
+            {
+                string? folder = null;
+                if (!string.IsNullOrEmpty(game.GameRootPath) && Directory.Exists(game.GameRootPath))
+                {
+                    folder = game.GameRootPath;
+                }
+                else if (!string.IsNullOrEmpty(game.FileSystemPath))
+                {
+                    var dir = Path.GetDirectoryName(game.FileSystemPath);
+                    if (!string.IsNullOrEmpty(dir) && Directory.Exists(dir)) folder = dir;
+                }
+                if (folder != null)
+                {
+                    Process.Start(new ProcessStartInfo("explorer.exe", $"\"{folder}\"") { UseShellExecute = true });
+                }
+            }
+            catch { }
         }
 
         private void ExecuteAddEmulator()

@@ -325,6 +325,13 @@
                                           CommandParameter="{Binding PlacementTarget.DataContext,
                                                             RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
 
+                                    <!-- Open file location -->
+                                    <MenuItem Header="Open File Location"
+                                              Command="{Binding DataContext.OpenGameFolderCommand,
+                                                             Source={x:Reference RootWindow}}"
+                                              CommandParameter="{Binding PlacementTarget.DataContext,
+                                                             RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+
                                     <!-- game archived → show Make Active -->
                                     <MenuItem Header="Make Active"
                                           Visibility="{Binding PlacementTarget.DataContext.IsInArchive,

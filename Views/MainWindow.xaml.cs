@@ -86,7 +86,13 @@ namespace Moodex.Views
                 }
                 controllerMenu.Items.Add(toggle);
 
-                var cfg = new MenuItem { Header = "Configure Profile" };
+                bool hasPerGameProfile = false;
+                if (!string.IsNullOrEmpty(game.GameRootPath))
+                {
+                    var perGameProfilePath = Path.Combine(game.GameRootPath, "input", "ds4windows_controller_profile.xml");
+                    hasPerGameProfile = File.Exists(perGameProfilePath);
+                }
+                var cfg = new MenuItem { Header = hasPerGameProfile ? "Modify Profile" : "Add Profile" };
                 if (DataContext is MainWindowViewModel vm3)
                 {
                     cfg.Command = vm3.ConfigureControllerProfileCommand;

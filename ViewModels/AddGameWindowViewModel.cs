@@ -254,6 +254,18 @@ namespace Moodex.ViewModels
         {
             _gameFilesConfirmed = true;
             RaisePropertyChanged(nameof(GameFilesConfirmed));
+            // Remove placeholder marker file once the user confirmed files were added
+            try
+            {
+                var settings = _settingsService.Load();
+                var libraryRoot = settings.ActiveLibraryPath ?? "C:\\Moodex Library";
+                var consoleDisplay = Utilities.ConsoleRegistry.GetDisplayName(ConsoleId) ?? ConsoleId;
+                var gameRoot = Path.Combine(libraryRoot, "Games", consoleDisplay, Name);
+                var dataDir = Path.Combine(gameRoot, "data");
+                var placeholder = Path.Combine(dataDir, "Add game files here");
+                if (File.Exists(placeholder)) File.Delete(placeholder);
+            }
+            catch { }
             UpdateInputsEnabled();
             AddGameCoverCommand?.NotifyCanExecuteChanged();
         }
