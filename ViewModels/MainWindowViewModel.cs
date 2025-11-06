@@ -107,6 +107,7 @@ namespace Moodex.ViewModels
         public IRelayCommand ShowAboutCommand { get; }
         public IAsyncRelayCommand ArchiveGameCommand { get; }
         public IAsyncRelayCommand ActivateGameCommand { get; }
+        public IRelayCommand ClearSearchCommand { get; }
 
         // AutoHotKey Script Commands
         public IRelayCommand CreateScriptCommand { get; }
@@ -172,6 +173,7 @@ namespace Moodex.ViewModels
             ShowAboutCommand = new RelayCommand(ExecuteShowAbout);
             ArchiveGameCommand = new AsyncRelayCommand<GameInfo>(g => MoveGameAsync(g, toArchive: true), CanArchiveGame);
             ActivateGameCommand = new AsyncRelayCommand<GameInfo>(g => MoveGameAsync(g, toArchive: false), CanActivateGame);
+            ClearSearchCommand = new RelayCommand(() => { SearchText = ""; });
 
             // AutoHotKey Script Commands
             CreateScriptCommand = new RelayCommand<GameInfo>(ExecuteCreateScript, CanCreateScript);

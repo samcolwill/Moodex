@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Linq;
 using System.IO;
 using Moodex.Models;
@@ -12,6 +13,17 @@ namespace Moodex.Views
         public MainWindow()
         {
             InitializeComponent();
+            // Bind Ctrl+F to focus the search box
+            CommandBindings.Add(new CommandBinding(ApplicationCommands.Find, (s, e) =>
+            {
+                var tb = this.FindName("SearchBox") as System.Windows.Controls.TextBox;
+                if (tb != null)
+                {
+                    tb.Focus();
+                    tb.SelectAll();
+                }
+            }));
+            InputBindings.Add(new KeyBinding(ApplicationCommands.Find, new KeyGesture(Key.F, ModifierKeys.Control)));
         }
 
         private void GameContextMenu_Opened(object sender, RoutedEventArgs e)
