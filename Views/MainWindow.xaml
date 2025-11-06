@@ -4,6 +4,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:conv="clr-namespace:Moodex.Converters"
         xmlns:models="clr-namespace:Moodex.Models"
+        xmlns:vm="clr-namespace:Moodex.ViewModels"
         Title="Moodex 1.0"
         Height="600" Width="800"
         WindowState="Maximized"
@@ -76,6 +77,182 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+        <!-- Game tile template applied implicitly to GameInfo items -->
+        <DataTemplate DataType="{x:Type models:GameInfo}">
+            <StackPanel Width="150" Margin="10" Cursor="Hand" RenderTransformOrigin="0.5,0.5">
+                <StackPanel.RenderTransform>
+                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                </StackPanel.RenderTransform>
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1.08" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1.08" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+                <StackPanel.InputBindings>
+                    <MouseBinding Gesture="LeftClick" Command="{Binding DataContext.RunCommand, Source={x:Reference RootWindow}}" CommandParameter="{Binding}"/>
+                </StackPanel.InputBindings>
+
+                <Grid>
+                    <Border x:Name="ImageBorder" Background="Black">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Width" Value="150"/>
+                                <Setter Property="Height" Value="200"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ConsoleId}" Value="playstation1">
+                                        <Setter Property="Width" Value="150"/>
+                                        <Setter Property="Height" Value="150"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ConsoleId}" Value="playstation3">
+                                        <Setter Property="Height" Value="180"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ConsoleId}" Value="gameboyadvance">
+                                        <Setter Property="Width" Value="150"/>
+                                        <Setter Property="Height" Value="150"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <Grid>
+                            <Image x:Name="TileImage" Source="{Binding GameCoverUri, Converter={StaticResource FreezingBitmap}}" Stretch="Fill" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                <Image.Style>
+                                    <Style TargetType="Image">
+                                        <Setter Property="Opacity" Value="1"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsInArchive}" Value="True">
+                                                <Setter Property="Opacity" Value="0.25"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsProcessing}" Value="True">
+                                                <Setter Property="Opacity" Value="0.4"/>
+                                                <DataTrigger.EnterActions>
+                                                    <BeginStoryboard x:Name="PulseOpacity">
+                                                        <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0.4" Duration="0:0:1.2"/>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </DataTrigger.EnterActions>
+                                                <DataTrigger.ExitActions>
+                                                    <StopStoryboard BeginStoryboardName="PulseOpacity"/>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.6"/>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </DataTrigger.ExitActions>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Image.Style>
+                            </Image>
+                            <Border Background="#AA000000" Visibility="Collapsed">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsProcessing}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <TextBlock Text="Processing..." Foreground="White" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding ProcessingPercent, StringFormat={}{0:F0}%}" Foreground="White" FontSize="12" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <TextBlock Text="{Binding Name}" Foreground="White" FontSize="12" Margin="5,5,5,0" TextAlignment="Center" TextWrapping="Wrap"/>
+
+                <StackPanel.ContextMenu>
+                    <ContextMenu Background="#2a2a2a" Foreground="White" Opened="GameContextMenu_Opened">
+                        <MenuItem Header="Run" Command="{Binding DataContext.RunCommand, Source={x:Reference RootWindow}}" CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                            <MenuItem.Style>
+                                <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding PlacementTarget.DataContext.IsInArchive, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </MenuItem.Style>
+                        </MenuItem>
+                        <MenuItem Header="Edit" Command="{Binding DataContext.EditGameCommand, Source={x:Reference RootWindow}}" CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                            <MenuItem.Style>
+                                <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding PlacementTarget.DataContext.IsInArchive, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </MenuItem.Style>
+                        </MenuItem>
+                        <MenuItem Header="Delete" Command="{Binding DataContext.DeleteGameCommand, Source={x:Reference RootWindow}}" CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Send to Archive" Visibility="{Binding PlacementTarget.DataContext.IsInArchive, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource BoolToVis}, ConverterParameter=Invert}" Command="{Binding DataContext.ArchiveGameCommand, Source={x:Reference RootWindow}}" CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Open File Location" Command="{Binding DataContext.OpenGameFolderCommand, Source={x:Reference RootWindow}}" CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Make Active" Visibility="{Binding PlacementTarget.DataContext.IsInArchive, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource BoolToVis}}" Command="{Binding DataContext.ActivateGameCommand, Source={x:Reference RootWindow}}" CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Scripts">
+                            <MenuItem.Style>
+                                <Style TargetType="MenuItem" BasedOn="{StaticResource ContextMenuItemStyle}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding DataContext.AutoHotKeyInstalled, Source={x:Reference RootWindow}}" Value="True"/>
+                                                <Condition Binding="{Binding PlacementTarget.DataContext.IsInArchive, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="False"/>
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </MultiDataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </MenuItem.Style>
+                        </MenuItem>
+                        <MenuItem Header="Controller">
+                            <MenuItem.Style>
+                                <Style TargetType="MenuItem" BasedOn="{StaticResource ContextMenuItemStyle}">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding PlacementTarget.DataContext.IsInArchive, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </MenuItem.Style>
+                        </MenuItem>
+                    </ContextMenu>
+                </StackPanel.ContextMenu>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- Bridge: when the item is GenreGameItem, render the inner Game using the implicit GameInfo template -->
+        <DataTemplate DataType="{x:Type vm:GenreGameItem}">
+            <ContentPresenter Content="{Binding Game}"/>
+        </DataTemplate>
     </Window.Resources>
 
     <DockPanel>
@@ -183,264 +360,21 @@
 
         <!-- ─── Game List ───────────────────────────────────────────────── -->
         <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <ItemsControl ItemsSource="{Binding GamesView}">
-                <!-- Group headers (Console/Genre/Year) -->
+            <ItemsControl ItemsSource="{Binding DisplayView}">
                 <ItemsControl.GroupStyle>
                     <GroupStyle>
                         <GroupStyle.HeaderTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Name}"
-                                           FontSize="16" FontWeight="Bold"
-                                           Foreground="White"
-                                           Margin="20,20,10,10"/>
+                                <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="Bold" Foreground="White" Margin="20,20,10,10"/>
                             </DataTemplate>
                         </GroupStyle.HeaderTemplate>
                     </GroupStyle>
                 </ItemsControl.GroupStyle>
-
-                <!-- Wrap items in rows -->
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
-
-                <!-- Each game tile -->
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Width="150"
-                                    Margin="10"
-                                    Cursor="Hand"
-                                    RenderTransformOrigin="0.5,0.5">
-                            <StackPanel.RenderTransform>
-                                <ScaleTransform ScaleX="1" ScaleY="1"/>
-                            </StackPanel.RenderTransform>
-                            <StackPanel.Style>
-                                <Style TargetType="StackPanel">
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Trigger.EnterActions>
-                                                <BeginStoryboard>
-                                                    <Storyboard>
-                                                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
-                                                                       To="1.08" Duration="0:0:0.2"/>
-                                                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
-                                                                       To="1.08" Duration="0:0:0.2"/>
-                                                    </Storyboard>
-                                                </BeginStoryboard>
-                                            </Trigger.EnterActions>
-                                            <Trigger.ExitActions>
-                                                <BeginStoryboard>
-                                                    <Storyboard>
-                                                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
-                                                                       To="1" Duration="0:0:0.2"/>
-                                                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
-                                                                       To="1" Duration="0:0:0.2"/>
-                                                    </Storyboard>
-                                                </BeginStoryboard>
-                                            </Trigger.ExitActions>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </StackPanel.Style>
-                            <!-- left-click runs the game -->
-                            <StackPanel.InputBindings>
-                                <MouseBinding Gesture="LeftClick"
-                                              Command="{Binding DataContext.RunCommand,
-                                                Source={x:Reference RootWindow}}"
-                                              CommandParameter="{Binding}"/>
-                            </StackPanel.InputBindings>
-
-                            <!-- cover art -->
-                            <Grid>
-                                <Border x:Name="ImageBorder" Background="Black">
-                                    <!-- default size -->
-                                    <Border.Style>
-                                        <Style TargetType="Border">
-                                            <Setter Property="Width"  Value="150"/>
-                                            <Setter Property="Height" Value="200"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ConsoleId}" Value="playstation1">
-                                                    <Setter Property="Width"  Value="150"/>
-                                                    <Setter Property="Height" Value="150"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding ConsoleId}" Value="playstation3">
-                                                    <Setter Property="Height" Value="180"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding ConsoleId}" Value="gameboyadvance">
-                                                    <Setter Property="Width"  Value="150"/>
-                                                    <Setter Property="Height" Value="150"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Border.Style>
-                                    <Grid>
-                                        <Image x:Name="TileImage" Source="{Binding GameCoverUri, Converter={StaticResource FreezingBitmap}}"
-                                               Stretch="Fill"
-                                               HorizontalAlignment="Stretch"
-                                               VerticalAlignment="Stretch">
-                                            <Image.Style>
-                                                <Style TargetType="Image">
-                                                    <Setter Property="Opacity" Value="1"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsInArchive}" Value="True">
-                                                            <Setter Property="Opacity" Value="0.25"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding IsProcessing}" Value="True">
-                                                            <Setter Property="Opacity" Value="0.4"/>
-                                                            <DataTrigger.EnterActions>
-                                                                <BeginStoryboard x:Name="PulseOpacity">
-                                                                    <Storyboard RepeatBehavior="Forever" AutoReverse="True">
-                                                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0.4" Duration="0:0:1.2"/>
-                                                                    </Storyboard>
-                                                                </BeginStoryboard>
-                                                            </DataTrigger.EnterActions>
-                                                            <DataTrigger.ExitActions>
-                                                                <StopStoryboard BeginStoryboardName="PulseOpacity"/>
-                                                                <BeginStoryboard>
-                                                                    <Storyboard>
-                                                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.6"/>
-                                                                    </Storyboard>
-                                                                </BeginStoryboard>
-                                                            </DataTrigger.ExitActions>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Image.Style>
-                                        </Image>
-                                        <!-- Processing overlay inside Border to guarantee sizing -->
-                                        <Border Background="#AA000000" Visibility="Collapsed">
-                                            <Border.Style>
-                                                <Style TargetType="Border">
-                                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsProcessing}" Value="True">
-                                                            <Setter Property="Visibility" Value="Visible"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Border.Style>
-                                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                                <TextBlock Text="Processing..." Foreground="White" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center"/>
-                                                <TextBlock Text="{Binding ProcessingPercent, StringFormat={}{0:F0}%}" Foreground="White" FontSize="12" HorizontalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Border>
-                                    </Grid>
-                                </Border>
-                            </Grid>
-
-                            <!-- game title -->
-                            <TextBlock Text="{Binding Name}"
-                                       Foreground="White"
-                                       FontSize="12"
-                                       Margin="5,5,5,0"
-                                       TextAlignment="Center"
-                                       TextWrapping="Wrap"/>
-
-                            <!-- right-click context menu -->
-                            <StackPanel.ContextMenu>
-                                <ContextMenu Background="#2a2a2a" Foreground="White" Opened="GameContextMenu_Opened">
-                                    <MenuItem Header="Run"
-                                              Command="{Binding DataContext.RunCommand,
-                                                Source={x:Reference RootWindow}}"
-                                              CommandParameter="{Binding PlacementTarget.DataContext,
-                                                RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                        <MenuItem.Style>
-                                            <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
-                                                <Setter Property="Visibility" Value="Visible"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding PlacementTarget.DataContext.IsInArchive, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True">
-                                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </MenuItem.Style>
-                                    </MenuItem>
-                                    <MenuItem Header="Edit"
-                                              Command="{Binding DataContext.EditGameCommand,
-                                                Source={x:Reference RootWindow}}"
-                                              CommandParameter="{Binding PlacementTarget.DataContext,
-                                                RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                        <MenuItem.Style>
-                                            <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
-                                                <Setter Property="Visibility" Value="Visible"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding PlacementTarget.DataContext.IsInArchive, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True">
-                                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </MenuItem.Style>
-                                    </MenuItem>
-                                    <MenuItem Header="Delete"
-                                              Command="{Binding DataContext.DeleteGameCommand,
-                                                Source={x:Reference RootWindow}}"
-                                              CommandParameter="{Binding PlacementTarget.DataContext,
-                                                RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                    <MenuItem Header="Send to Archive"
-                                              Visibility="{Binding PlacementTarget.DataContext.IsInArchive,
-                                                               RelativeSource={RelativeSource AncestorType=ContextMenu},
-                                                               Converter={StaticResource BoolToVis},
-                                                               ConverterParameter=Invert}"
-                                          Command="{Binding DataContext.ArchiveGameCommand,
-                                                            Source={x:Reference RootWindow}}"
-                                          CommandParameter="{Binding PlacementTarget.DataContext,
-                                                            RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-
-                                    <!-- Open file location -->
-                                    <MenuItem Header="Open File Location"
-                                              Command="{Binding DataContext.OpenGameFolderCommand,
-                                                             Source={x:Reference RootWindow}}"
-                                              CommandParameter="{Binding PlacementTarget.DataContext,
-                                                             RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-
-                                    <!-- game archived → show Make Active -->
-                                    <MenuItem Header="Make Active"
-                                          Visibility="{Binding PlacementTarget.DataContext.IsInArchive,
-                                                               RelativeSource={RelativeSource AncestorType=ContextMenu},
-                                                               Converter={StaticResource BoolToVis}}"
-                                          Command="{Binding DataContext.ActivateGameCommand,
-                                                            Source={x:Reference RootWindow}}"
-                                          CommandParameter="{Binding PlacementTarget.DataContext,
-                                                            RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-
-                                    
-                                    <!-- Scripts submenu -->
-                                    <MenuItem Header="Scripts">
-                                        <MenuItem.Style>
-                                            <Style TargetType="MenuItem" BasedOn="{StaticResource ContextMenuItemStyle}">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <MultiDataTrigger>
-                                                        <MultiDataTrigger.Conditions>
-                                                            <Condition Binding="{Binding DataContext.AutoHotKeyInstalled, Source={x:Reference RootWindow}}" Value="True"/>
-                                                            <Condition Binding="{Binding PlacementTarget.DataContext.IsInArchive, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="False"/>
-                                                        </MultiDataTrigger.Conditions>
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </MultiDataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </MenuItem.Style>
-                                    </MenuItem>
-
-                                    <!-- Controller submenu placeholder -->
-                                    <MenuItem Header="Controller">
-                                        <MenuItem.Style>
-                                            <Style TargetType="MenuItem" BasedOn="{StaticResource ContextMenuItemStyle}">
-                                                <Setter Property="Visibility" Value="Visible"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding PlacementTarget.DataContext.IsInArchive, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True">
-                                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </MenuItem.Style>
-                                    </MenuItem>
-                                </ContextMenu>
-                            </StackPanel.ContextMenu>
-                        </StackPanel>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
     </DockPanel>

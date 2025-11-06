@@ -46,6 +46,7 @@ namespace Moodex.Configuration
         public bool IsDs4Installed { get; set; } = false;
         public bool IsAutoHotKeyInstalled { get; set; } = false;
         public bool CompressOnArchive { get; set; } = true;
+        public string DefaultGroupBy { get; set; } = "Console";
     }
 }
 

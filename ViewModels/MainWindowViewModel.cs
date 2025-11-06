@@ -37,6 +37,7 @@ namespace Moodex.ViewModels
         public ObservableCollection<GameInfo> Games => _moodexState.Games;
         public ObservableCollection<EmulatorInfo> Emulators => _moodexState.Emulators;
         public ICollectionView GamesView { get; }
+        public ICollectionView? DisplayView { get; private set; }
 
         // ──── Selection ────────────────────────────────────────────────────
         private GameInfo? _selectedGame;
@@ -145,10 +146,23 @@ namespace Moodex.ViewModels
             // load model via DI scanner-initialized MoodexState
             _moodexState = moodexState;
 
+            // Initialize GroupBy from settings if available
+            try
+            {
+                var cfg = _settings.Load();
+                if (!string.IsNullOrWhiteSpace(cfg.DefaultGroupBy))
+                {
+                    _groupBy = cfg.DefaultGroupBy;
+                    RaisePropertyChanged(nameof(GroupBy));
+                }
+            }
+            catch { }
+
             // IsInArchive is already populated by the scanner from manifests
 
             // create view for grouping & filtering
             GamesView = CollectionViewSource.GetDefaultView(Games);
+            DisplayView = GamesView;
             ApplyGrouping();
             ApplyFilter();
 
@@ -460,6 +474,24 @@ namespace Moodex.ViewModels
                 return true;
             };
             GamesView.Refresh();
+            ApplyDisplayFilter();
+        }
+
+        private void ApplyDisplayFilter()
+        {
+            if (DisplayView == null || DisplayView == GamesView) return;
+            DisplayView.Filter = o =>
+            {
+                if (o is GenreGameItem gi)
+                {
+                    var g = gi.Game;
+                    if (!ShowArchived && g.IsInArchive) return false;
+                    if (!string.IsNullOrWhiteSpace(SearchText)
+                        && !g.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) return false;
+                }
+                return true;
+            };
+            DisplayView.Refresh();
         }
 
         private void ApplyGrouping()
@@ -471,26 +503,62 @@ namespace Moodex.ViewModels
 
             Debug.WriteLine("Unique consoles: " + string.Join(", ", consoles));
 
+            // Reset to the base view by default
+            DisplayView = GamesView;
+            RaisePropertyChanged(nameof(DisplayView));
+
             GamesView.GroupDescriptions.Clear();
             GamesView.SortDescriptions.Clear();
 
-            // set group description based on selected criteria
-            PropertyGroupDescription? pgd = GroupBy switch
+            if (string.Equals(GroupBy, "Genre", StringComparison.OrdinalIgnoreCase))
             {
-                "Console" => new PropertyGroupDescription(nameof(GameInfo.ConsoleName)),
-                "Genre" => new PropertyGroupDescription(nameof(GameInfo.Genre)),
-                "Year" => new PropertyGroupDescription(nameof(GameInfo.ReleaseYear)),
-                _ => null
-            };
+                var items = Games
+                    .SelectMany(g => SplitGenres(g.Genre)
+                        .Select(genre => new GenreGameItem { Game = g, Genre = genre }))
+                    .ToList();
 
-            if (pgd != null)
-            {
-                GamesView.GroupDescriptions.Add(pgd);
-                GamesView.SortDescriptions.Add(new SortDescription(pgd.PropertyName, ListSortDirection.Ascending));
-                GamesView.SortDescriptions.Add(new SortDescription(nameof(GameInfo.Name), ListSortDirection.Ascending));
+                var lv = new ListCollectionView(items);
+                lv.GroupDescriptions.Clear();
+                lv.SortDescriptions.Clear();
+                lv.GroupDescriptions.Add(new PropertyGroupDescription(nameof(GenreGameItem.Genre)));
+                lv.SortDescriptions.Add(new SortDescription(nameof(GenreGameItem.Genre), ListSortDirection.Ascending));
+                lv.SortDescriptions.Add(new SortDescription($"{nameof(GenreGameItem.Game)}.{nameof(GameInfo.Name)}", ListSortDirection.Ascending));
+                DisplayView = lv;
+                RaisePropertyChanged(nameof(DisplayView));
+                ApplyDisplayFilter();
+                DisplayView.Refresh();
             }
+            else
+            {
+                // set group description based on selected criteria for base view
+                PropertyGroupDescription? pgd = GroupBy switch
+                {
+                    "Console" => new PropertyGroupDescription(nameof(GameInfo.ConsoleName)),
+                    "Year" => new PropertyGroupDescription(nameof(GameInfo.ReleaseYear)),
+                    _ => null
+                };
 
-            GamesView.Refresh();
+                if (pgd != null)
+                {
+                    GamesView.GroupDescriptions.Add(pgd);
+                    GamesView.SortDescriptions.Add(new SortDescription(pgd.PropertyName, ListSortDirection.Ascending));
+                    GamesView.SortDescriptions.Add(new SortDescription(nameof(GameInfo.Name), ListSortDirection.Ascending));
+                }
+
+                GamesView.Refresh();
+                DisplayView = GamesView;
+                RaisePropertyChanged(nameof(DisplayView));
+            }
+        }
+
+        private static IEnumerable<string> SplitGenres(string? csv)
+        {
+            if (string.IsNullOrWhiteSpace(csv)) yield break;
+            foreach (var s in csv.Split(',', StringSplitOptions.RemoveEmptyEntries))
+            {
+                var t = s.Trim();
+                if (!string.IsNullOrEmpty(t)) yield return t;
+            }
         }
 
         public static string GetInstallRoot(GameInfo game,
@@ -717,19 +785,15 @@ namespace Moodex.ViewModels
             var root = game.GameRootPath;
             if (string.IsNullOrEmpty(root)) return false;
             var dataDir = Path.Combine(root, "data");
-            return Directory.Exists(dataDir) && Directory.GetFiles(dataDir, "*", SearchOption.AllDirectories).Any();
+            // Avoid expensive recursive file enumeration on the UI thread.
+            // Presence of the data directory is sufficient to enable archiving.
+            return Directory.Exists(dataDir);
         }
 
         private bool CanActivateGame(GameInfo? game)
         {
-            if (game == null) return false;
-            if (!game.IsInArchive) return false;
-            var s = _settings.Load();
-            if (string.IsNullOrEmpty(game.GameGuid)) return false;
-            var basePath = Path.Combine(s.ArchiveLibraryPath, "Game Data");
-            var zip = Path.Combine(basePath, game.GameGuid + ".zip");
-            var folder = Path.Combine(basePath, game.GameGuid);
-            return File.Exists(zip) || Directory.Exists(folder);
+            // Avoid touching archive storage on menu open; validate on click instead
+            return game != null && game.IsInArchive && !string.IsNullOrEmpty(game.GameGuid);
         }
 
         // Console-level AHK enablement removed; AHK applies to all consoles when installed
@@ -906,10 +970,8 @@ namespace Moodex.ViewModels
 
         private bool CanDeleteControllerProfile(GameInfo? game)
         {
-            if (game == null) return false;
-            if (string.IsNullOrEmpty(game.GameRootPath)) return false;
-            var path = Path.Combine(game.GameRootPath, "input", "ds4windows_controller_profile.xml");
-            return File.Exists(path);
+            // Use manifest-driven flag to avoid filesystem checks on menu open
+            return game != null && game.ControllerProfileConfigured;
         }
 
         private void ExecuteDeleteControllerProfile(GameInfo? game)

@@ -98,12 +98,8 @@ namespace Moodex.Views
                 }
                 controllerMenu.Items.Add(toggle);
 
-                bool hasPerGameProfile = false;
-                if (!string.IsNullOrEmpty(game.GameRootPath))
-                {
-                    var perGameProfilePath = Path.Combine(game.GameRootPath, "input", "ds4windows_controller_profile.xml");
-                    hasPerGameProfile = File.Exists(perGameProfilePath);
-                }
+                // Use cached manifest-driven flag instead of hitting the filesystem
+                bool hasPerGameProfile = game.ControllerProfileConfigured;
                 var cfg = new MenuItem { Header = hasPerGameProfile ? "Modify Profile" : "Add Profile" };
                 if (DataContext is MainWindowViewModel vm3)
                 {
@@ -115,8 +111,7 @@ namespace Moodex.Views
                 // Delete Profile (only if exists)
                 if (DataContext is MainWindowViewModel vm4)
                 {
-                    var perGamePath = string.IsNullOrEmpty(game.GameRootPath) ? null : Path.Combine(game.GameRootPath, "input", "ds4windows_controller_profile.xml");
-                    if (perGamePath != null && File.Exists(perGamePath))
+                    if (hasPerGameProfile)
                     {
                         var del = new MenuItem { Header = "Delete Profile" };
                         del.Command = vm4.DeleteControllerProfileCommand;
