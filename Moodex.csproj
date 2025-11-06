@@ -38,6 +38,9 @@
 	  <Resource Include="Assets\icon\icon.png">
 	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </Resource>
+	  <Resource Include="Assets\\highland_cow.png" />
+	  <Resource Include="Assets\\demon_cow.png" />
+	  <Resource Include="Assets\\golden_cow.png" />
 	</ItemGroup>
 
 	<PropertyGroup>

@@ -89,12 +89,15 @@
                             <Border Name="Border" Background="{TemplateBinding Background}">
                                 <Grid Margin="{TemplateBinding Padding}">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>   <!-- check glyph -->
+                                        <ColumnDefinition Width="*"/>      <!-- content -->
+                                        <ColumnDefinition Width="Auto"/>   <!-- submenu arrow -->
                                     </Grid.ColumnDefinitions>
-                                    <ContentPresenter ContentSource="Header" RecognizesAccessKey="True"/>
+                                    <!-- Checkmark glyph -->
+                                    <TextBlock x:Name="CheckGlyph" Grid.Column="0" Text="✔" Margin="0,0,8,0" VerticalAlignment="Center" Visibility="Collapsed"/>
+                                    <ContentPresenter Grid.Column="1" ContentSource="Header" RecognizesAccessKey="True"/>
                                     <!-- Submenu arrow on the right -->
-                                    <TextBlock x:Name="SubmenuGlyph" Grid.Column="1" Text=">" Margin="8,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/>
+                                    <TextBlock x:Name="SubmenuGlyph" Grid.Column="2" Text=">" Margin="8,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/>
                                 </Grid>
                             </Border>
                             <Popup Name="Popup"
@@ -121,6 +124,14 @@
                             <Trigger Property="HasItems" Value="False">
                                 <Setter TargetName="SubmenuGlyph" Property="Visibility" Value="Collapsed"/>
                             </Trigger>
+                            <!-- Show check glyph when item is checkable and checked -->
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsCheckable" Value="True"/>
+                                    <Condition Property="IsChecked" Value="True"/>
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="CheckGlyph" Property="Visibility" Value="Visible"/>
+                            </MultiTrigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>

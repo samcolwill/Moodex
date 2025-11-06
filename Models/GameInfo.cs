@@ -33,6 +33,26 @@ namespace Moodex.Models
         public string? GameGuid { get; set; }
         public string? LaunchTarget { get; set; }
 
+        // Completion flags
+        private bool _completedAnyPercent;
+        public bool CompletedAnyPercent
+        {
+            get => _completedAnyPercent;
+            set { if (_completedAnyPercent != value) { _completedAnyPercent = value; OnPropertyChanged(nameof(CompletedAnyPercent)); } }
+        }
+        private bool _completedMaxDifficulty;
+        public bool CompletedMaxDifficulty
+        {
+            get => _completedMaxDifficulty;
+            set { if (_completedMaxDifficulty != value) { _completedMaxDifficulty = value; OnPropertyChanged(nameof(CompletedMaxDifficulty)); } }
+        }
+        private bool _completedHundredPercent;
+        public bool CompletedHundredPercent
+        {
+            get => _completedHundredPercent;
+            set { if (_completedHundredPercent != value) { _completedHundredPercent = value; OnPropertyChanged(nameof(CompletedHundredPercent)); } }
+        }
+
         // Processing overlay support
         private bool _isProcessing;
         public bool IsProcessing

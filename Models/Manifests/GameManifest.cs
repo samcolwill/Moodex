@@ -17,6 +17,10 @@ namespace Moodex.Models.Manifests
         [JsonPropertyName("archived")] public bool Archived { get; set; }
         [JsonPropertyName("archivedDateTime")] public DateTime? ArchivedDateTime { get; set; }
         [JsonPropertyName("completed")] public bool Completed { get; set; }
+        // Completion levels
+        [JsonPropertyName("completionAnyPercent")] public bool CompletionAnyPercent { get; set; }
+        [JsonPropertyName("completionMaxDifficulty")] public bool CompletionMaxDifficulty { get; set; }
+        [JsonPropertyName("completionHundredPercent")] public bool CompletionHundredPercent { get; set; }
 
         // Input scripts section (can be null when no scripts configured)
         [JsonPropertyName("inputScripts")] public List<InputScriptEntry>? InputScripts { get; set; }

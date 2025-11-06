@@ -84,6 +84,10 @@ namespace Moodex.Services
                             gi.GameRootPath = gameDir;
                             gi.GameGuid = man.Guid;
                             gi.LaunchTarget = man.LaunchTarget;
+                            // completion flags
+                            gi.CompletedAnyPercent = man.CompletionAnyPercent;
+                            gi.CompletedMaxDifficulty = man.CompletionMaxDifficulty;
+                            gi.CompletedHundredPercent = man.CompletionHundredPercent;
 
                             // input scripts from manifest
                             if (man.InputScripts != null)

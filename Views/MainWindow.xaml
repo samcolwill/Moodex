@@ -113,12 +113,23 @@
                 </StackPanel.InputBindings>
 
                 <Grid>
-                    <Border x:Name="ImageBorder" Background="Black">
+                    <Border x:Name="ImageBorder" Background="Black" BorderThickness="2">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Setter Property="Width" Value="150"/>
                                 <Setter Property="Height" Value="200"/>
+                                <Setter Property="BorderBrush" Value="#333333"/>
                                 <Style.Triggers>
+                                    <!-- Completion border colors -->
+                                    <DataTrigger Binding="{Binding CompletedAnyPercent}" Value="True">
+                                        <Setter Property="BorderBrush" Value="#5c4324"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding CompletedMaxDifficulty}" Value="True">
+                                        <Setter Property="BorderBrush" Value="#AA0000"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding CompletedHundredPercent}" Value="True">
+                                        <Setter Property="BorderBrush" Value="#DAA520"/>
+                                    </DataTrigger>
                                     <DataTrigger Binding="{Binding ConsoleId}" Value="playstation1">
                                         <Setter Property="Width" Value="150"/>
                                         <Setter Property="Height" Value="150"/>
@@ -164,6 +175,19 @@
                                     </Style>
                                 </Image.Style>
                             </Image>
+                            <!-- Completion badges -->
+                            <Image Source="/Moodex;component/Assets/highland_cow.png"
+                                   Width="28" Height="28"
+                                   HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="4"
+                                   Visibility="{Binding CompletedAnyPercent, Converter={StaticResource BoolToVis}}"/>
+                            <Image Source="/Moodex;component/Assets/demon_cow.png"
+                                   Width="28" Height="28"
+                                   HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,4"
+                                   Visibility="{Binding CompletedMaxDifficulty, Converter={StaticResource BoolToVis}}"/>
+                            <Image Source="/Moodex;component/Assets/golden_cow.png"
+                                   Width="28" Height="28"
+                                   HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="4"
+                                   Visibility="{Binding CompletedHundredPercent, Converter={StaticResource BoolToVis}}"/>
                             <Border Background="#AA000000" Visibility="Collapsed">
                                 <Border.Style>
                                     <Style TargetType="Border">
@@ -243,6 +267,89 @@
                                     </Style.Triggers>
                                 </Style>
                             </MenuItem.Style>
+                        </MenuItem>
+                        <MenuItem Header="Complete">
+                            <MenuItem.Style>
+                                <Style TargetType="MenuItem" BasedOn="{StaticResource ContextMenuItemStyle}"/>
+                            </MenuItem.Style>
+                            <MenuItem Header="Any%" IsCheckable="True"
+                                      IsChecked="{Binding PlacementTarget.DataContext.CompletedAnyPercent, RelativeSource={RelativeSource AncestorType=ContextMenu}, Mode=TwoWay}"
+                                      Command="{Binding DataContext.ToggleCompletedAnyPercentCommand, Source={x:Reference RootWindow}}"
+                                      CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                <MenuItem.Style>
+                                    <Style TargetType="MenuItem" BasedOn="{StaticResource ContextMenuItemStyle}">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                        <Style.Triggers>
+                                            <!-- Enable at level 0 (enable Any%) and level 1 (disable Any%) -->
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding PlacementTarget.DataContext.CompletedAnyPercent, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="False"/>
+                                                    <Condition Binding="{Binding PlacementTarget.DataContext.CompletedMaxDifficulty, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="False"/>
+                                                    <Condition Binding="{Binding PlacementTarget.DataContext.CompletedHundredPercent, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="False"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="IsEnabled" Value="True"/>
+                                            </MultiDataTrigger>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding PlacementTarget.DataContext.CompletedAnyPercent, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True"/>
+                                                    <Condition Binding="{Binding PlacementTarget.DataContext.CompletedMaxDifficulty, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="False"/>
+                                                    <Condition Binding="{Binding PlacementTarget.DataContext.CompletedHundredPercent, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="False"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="IsEnabled" Value="True"/>
+                                            </MultiDataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </MenuItem.Style>
+                            </MenuItem>
+                            <MenuItem Header="Max Difficulty" IsCheckable="True"
+                                      IsChecked="{Binding PlacementTarget.DataContext.CompletedMaxDifficulty, RelativeSource={RelativeSource AncestorType=ContextMenu}, Mode=TwoWay}"
+                                      Command="{Binding DataContext.ToggleCompletedMaxDifficultyCommand, Source={x:Reference RootWindow}}"
+                                      CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                <MenuItem.Style>
+                                    <Style TargetType="MenuItem" BasedOn="{StaticResource ContextMenuItemStyle}">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                        <Style.Triggers>
+                                            <!-- Enable at level 1 (enable Max) and level 2 (disable Max) -->
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding PlacementTarget.DataContext.CompletedAnyPercent, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True"/>
+                                                    <Condition Binding="{Binding PlacementTarget.DataContext.CompletedMaxDifficulty, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="False"/>
+                                                    <Condition Binding="{Binding PlacementTarget.DataContext.CompletedHundredPercent, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="False"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="IsEnabled" Value="True"/>
+                                            </MultiDataTrigger>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding PlacementTarget.DataContext.CompletedAnyPercent, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True"/>
+                                                    <Condition Binding="{Binding PlacementTarget.DataContext.CompletedMaxDifficulty, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True"/>
+                                                    <Condition Binding="{Binding PlacementTarget.DataContext.CompletedHundredPercent, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="False"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="IsEnabled" Value="True"/>
+                                            </MultiDataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </MenuItem.Style>
+                            </MenuItem>
+                            <MenuItem Header="100%" IsCheckable="True"
+                                      IsChecked="{Binding PlacementTarget.DataContext.CompletedHundredPercent, RelativeSource={RelativeSource AncestorType=ContextMenu}, Mode=TwoWay}"
+                                      Command="{Binding DataContext.ToggleCompletedHundredPercentCommand, Source={x:Reference RootWindow}}"
+                                      CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                <MenuItem.Style>
+                                    <Style TargetType="MenuItem" BasedOn="{StaticResource ContextMenuItemStyle}">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                        <Style.Triggers>
+                                            <!-- Enable at level 2 (enable 100%) and level 3 (disable 100%) -->
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding PlacementTarget.DataContext.CompletedAnyPercent, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True"/>
+                                                    <Condition Binding="{Binding PlacementTarget.DataContext.CompletedMaxDifficulty, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="IsEnabled" Value="True"/>
+                                            </MultiDataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </MenuItem.Style>
+                            </MenuItem>
                         </MenuItem>
                     </ContextMenu>
                 </StackPanel.ContextMenu>

@@ -122,6 +122,10 @@ namespace Moodex.ViewModels
         public IRelayCommand ConfigureControllerProfileCommand { get; }
         public IRelayCommand DeleteControllerProfileCommand { get; }
         public IRelayCommand OpenGameFolderCommand { get; }
+        // Completion toggles
+        public IRelayCommand ToggleCompletedAnyPercentCommand { get; }
+        public IRelayCommand ToggleCompletedMaxDifficultyCommand { get; }
+        public IRelayCommand ToggleCompletedHundredPercentCommand { get; }
         // ──── Processing Banner ─────────────────────────────────────────────
         private string _processingBannerText = "";
         public string ProcessingBannerText
@@ -200,6 +204,10 @@ namespace Moodex.ViewModels
             ConfigureControllerProfileCommand = new RelayCommand<GameInfo>(ExecuteConfigureControllerProfile);
             DeleteControllerProfileCommand = new RelayCommand<GameInfo>(ExecuteDeleteControllerProfile, CanDeleteControllerProfile);
             OpenGameFolderCommand = new RelayCommand<GameInfo>(ExecuteOpenGameFolder, g => g != null);
+            // Completion
+            ToggleCompletedAnyPercentCommand = new RelayCommand<GameInfo>(g => ToggleCompletion(g, which: 1));
+            ToggleCompletedMaxDifficultyCommand = new RelayCommand<GameInfo>(g => ToggleCompletion(g, which: 2));
+            ToggleCompletedHundredPercentCommand = new RelayCommand<GameInfo>(g => ToggleCompletion(g, which: 3));
         }
 
         // ──── Actions ───────────────────────────────────────────────────────
@@ -330,6 +338,23 @@ namespace Moodex.ViewModels
             }
         }
 
+        private void ToggleCompletion(GameInfo? game, int which)
+        {
+            if (game == null) return;
+            switch (which)
+            {
+                case 1:
+                    UpdateGameManifest(game, m => m.CompletionAnyPercent = game.CompletedAnyPercent);
+                    break;
+                case 2:
+                    UpdateGameManifest(game, m => m.CompletionMaxDifficulty = game.CompletedMaxDifficulty);
+                    break;
+                case 3:
+                    UpdateGameManifest(game, m => m.CompletionHundredPercent = game.CompletedHundredPercent);
+                    break;
+            }
+            // No view refresh needed; bindings update via INPC on GameInfo properties
+        }
         private void ExecuteAddGame()
         {
             // show dialog and get new game
