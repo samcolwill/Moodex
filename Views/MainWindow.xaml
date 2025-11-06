@@ -423,6 +423,7 @@
                               SelectedValuePath="Content"
                               ItemContainerStyle="{StaticResource TopBarComboItemStyle}">
                         <ComboBoxItem Content="Console"/>
+                        <ComboBoxItem Content="Completion"/>
                         <ComboBoxItem Content="Genre"/>
                         <ComboBoxItem Content="Year"/>
                     </ComboBox>

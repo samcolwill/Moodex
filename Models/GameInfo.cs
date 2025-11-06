@@ -38,20 +38,57 @@ namespace Moodex.Models
         public bool CompletedAnyPercent
         {
             get => _completedAnyPercent;
-            set { if (_completedAnyPercent != value) { _completedAnyPercent = value; OnPropertyChanged(nameof(CompletedAnyPercent)); } }
+            set
+            {
+                if (_completedAnyPercent != value)
+                {
+                    _completedAnyPercent = value;
+                    OnPropertyChanged(nameof(CompletedAnyPercent));
+                    OnPropertyChanged(nameof(CompletionGroupName));
+                    OnPropertyChanged(nameof(CompletionGroupOrder));
+                }
+            }
         }
         private bool _completedMaxDifficulty;
         public bool CompletedMaxDifficulty
         {
             get => _completedMaxDifficulty;
-            set { if (_completedMaxDifficulty != value) { _completedMaxDifficulty = value; OnPropertyChanged(nameof(CompletedMaxDifficulty)); } }
+            set
+            {
+                if (_completedMaxDifficulty != value)
+                {
+                    _completedMaxDifficulty = value;
+                    OnPropertyChanged(nameof(CompletedMaxDifficulty));
+                    OnPropertyChanged(nameof(CompletionGroupName));
+                    OnPropertyChanged(nameof(CompletionGroupOrder));
+                }
+            }
         }
         private bool _completedHundredPercent;
         public bool CompletedHundredPercent
         {
             get => _completedHundredPercent;
-            set { if (_completedHundredPercent != value) { _completedHundredPercent = value; OnPropertyChanged(nameof(CompletedHundredPercent)); } }
+            set
+            {
+                if (_completedHundredPercent != value)
+                {
+                    _completedHundredPercent = value;
+                    OnPropertyChanged(nameof(CompletedHundredPercent));
+                    OnPropertyChanged(nameof(CompletionGroupName));
+                    OnPropertyChanged(nameof(CompletionGroupOrder));
+                }
+            }
         }
+        public string CompletionGroupName
+            => CompletedHundredPercent ? "100% Complete"
+             : CompletedMaxDifficulty ? "Max Difficulty"
+             : CompletedAnyPercent ? "Any%"
+             : "Not Completed";
+        public int CompletionGroupOrder
+            => CompletedHundredPercent ? 0
+             : CompletedMaxDifficulty ? 1
+             : CompletedAnyPercent ? 2
+             : 3;
 
         // Processing overlay support
         private bool _isProcessing;

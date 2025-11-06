@@ -400,9 +400,8 @@ namespace Moodex.ViewModels
                 ReleaseDateTime = ReleaseDate,
                 LastPlayed = null,
                 PlayTimeMinutes = 0,
-                Archived = false,
-                ArchivedDateTime = null,
-                Completed = false
+                    Archived = false,
+                    ArchivedDateTime = null
             };
             var manifestPath = Path.Combine(gameRoot, ".moodex_game");
             File.WriteAllText(manifestPath, JsonSerializer.Serialize(manifest, new JsonSerializerOptions { WriteIndented = true }));

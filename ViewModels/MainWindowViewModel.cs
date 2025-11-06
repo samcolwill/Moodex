@@ -353,7 +353,17 @@ namespace Moodex.ViewModels
                     UpdateGameManifest(game, m => m.CompletionHundredPercent = game.CompletedHundredPercent);
                     break;
             }
-            // No view refresh needed; bindings update via INPC on GameInfo properties
+            // If grouped by Completion, ensure group header order updates immediately.
+            // Prefer live-shaping; otherwise do a targeted refresh for Any% changes (which introduce a new group).
+            if (string.Equals(GroupBy, "Completion", StringComparison.OrdinalIgnoreCase))
+            {
+                var live = GamesView as System.ComponentModel.ICollectionViewLiveShaping;
+                bool hasLive = (live?.IsLiveGrouping ?? false) && (live?.IsLiveSorting ?? false);
+                if (!hasLive || which == 1)
+                {
+                    GamesView.Refresh();
+                }
+            }
         }
         private void ExecuteAddGame()
         {
@@ -534,6 +544,18 @@ namespace Moodex.ViewModels
 
             GamesView.GroupDescriptions.Clear();
             GamesView.SortDescriptions.Clear();
+            // Reset live shaping defaults
+            if (GamesView is System.ComponentModel.ICollectionViewLiveShaping liveReset)
+            {
+                try
+                {
+                    liveReset.IsLiveGrouping = false;
+                    liveReset.IsLiveSorting = false;
+                    liveReset.LiveGroupingProperties?.Clear();
+                    liveReset.LiveSortingProperties?.Clear();
+                }
+                catch { }
+            }
 
             if (string.Equals(GroupBy, "Genre", StringComparison.OrdinalIgnoreCase))
             {
@@ -559,6 +581,7 @@ namespace Moodex.ViewModels
                 PropertyGroupDescription? pgd = GroupBy switch
                 {
                     "Console" => new PropertyGroupDescription(nameof(GameInfo.ConsoleName)),
+                    "Completion" => new PropertyGroupDescription(nameof(GameInfo.CompletionGroupName)),
                     "Year" => new PropertyGroupDescription(nameof(GameInfo.ReleaseYear)),
                     _ => null
                 };
@@ -566,7 +589,28 @@ namespace Moodex.ViewModels
                 if (pgd != null)
                 {
                     GamesView.GroupDescriptions.Add(pgd);
-                    GamesView.SortDescriptions.Add(new SortDescription(pgd.PropertyName, ListSortDirection.Ascending));
+                    // If grouping by Completion, sort by our explicit order first
+                    if (string.Equals(GroupBy, "Completion", StringComparison.OrdinalIgnoreCase))
+                    {
+                        GamesView.SortDescriptions.Add(new SortDescription(nameof(GameInfo.CompletionGroupOrder), ListSortDirection.Ascending));
+                        // Enable live grouping/sorting so changes move items between groups without full refresh
+                        if (GamesView is System.ComponentModel.ICollectionViewLiveShaping live)
+                        {
+                            try
+                            {
+                                live.LiveGroupingProperties?.Add(nameof(GameInfo.CompletionGroupName));
+                                live.IsLiveGrouping = true;
+                                live.LiveSortingProperties?.Add(nameof(GameInfo.CompletionGroupOrder));
+                                live.LiveSortingProperties?.Add(nameof(GameInfo.Name));
+                                live.IsLiveSorting = true;
+                            }
+                            catch { }
+                        }
+                    }
+                    else
+                    {
+                        GamesView.SortDescriptions.Add(new SortDescription(pgd.PropertyName, ListSortDirection.Ascending));
+                    }
                     GamesView.SortDescriptions.Add(new SortDescription(nameof(GameInfo.Name), ListSortDirection.Ascending));
                 }
 

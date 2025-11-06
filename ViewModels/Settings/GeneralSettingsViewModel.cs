@@ -14,7 +14,7 @@ namespace Moodex.ViewModels.Settings
 
         public ObservableCollection<string> GroupByOptions { get; } = new ObservableCollection<string>
         {
-            "Console", "Genre", "Year"
+            "Console", "Completion", "Genre", "Year"
         };
 
         private string _selectedDefaultGroupBy = "Console";

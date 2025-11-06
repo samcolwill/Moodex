@@ -16,7 +16,6 @@ namespace Moodex.Models.Manifests
         [JsonPropertyName("playTimeMinutes")] public int PlayTimeMinutes { get; set; }
         [JsonPropertyName("archived")] public bool Archived { get; set; }
         [JsonPropertyName("archivedDateTime")] public DateTime? ArchivedDateTime { get; set; }
-        [JsonPropertyName("completed")] public bool Completed { get; set; }
         // Completion levels
         [JsonPropertyName("completionAnyPercent")] public bool CompletionAnyPercent { get; set; }
         [JsonPropertyName("completionMaxDifficulty")] public bool CompletionMaxDifficulty { get; set; }
