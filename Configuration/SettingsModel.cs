@@ -30,6 +30,7 @@ namespace Moodex.Configuration
             "Co-op",
             "Fighting",
             "First-Person Shooter",
+            "Hack and Slash",
             "Horror",
             "Platform",
             "Puzzle",

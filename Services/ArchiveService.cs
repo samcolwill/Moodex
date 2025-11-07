@@ -181,7 +181,8 @@ namespace Moodex.Services
                     foreach (var entry in entries)
                     {
                         token.ThrowIfCancellationRequested();
-                        var outPath = Path.Combine(dataPath, entry.Key.Replace('/', Path.DirectorySeparatorChar));
+                        var key = entry.Key ?? string.Empty;
+                        var outPath = Path.Combine(dataPath, key.Replace('/', Path.DirectorySeparatorChar));
                         var outDir = Path.GetDirectoryName(outPath);
                         if (!string.IsNullOrEmpty(outDir)) Directory.CreateDirectory(outDir);
 
@@ -216,7 +217,8 @@ namespace Moodex.Services
                         token.ThrowIfCancellationRequested();
                         var rel = Path.GetRelativePath(folderPath, f);
                         var dest = Path.Combine(dataPath, rel);
-                        Directory.CreateDirectory(Path.GetDirectoryName(dest)!);
+                        var destDir = Path.GetDirectoryName(dest);
+                        if (!string.IsNullOrEmpty(destDir)) Directory.CreateDirectory(destDir);
                         using var src = new FileStream(f, FileMode.Open, FileAccess.Read, FileShare.Read, 1024 * 1024, FileOptions.SequentialScan);
                         using var dst = new FileStream(dest, FileMode.Create, FileAccess.Write, FileShare.None, 1024 * 1024, FileOptions.SequentialScan);
                         var buffer = new byte[1024 * 1024];
