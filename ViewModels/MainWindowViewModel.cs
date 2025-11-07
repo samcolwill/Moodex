@@ -126,6 +126,10 @@ namespace Moodex.ViewModels
         public IRelayCommand ToggleCompletedAnyPercentCommand { get; }
         public IRelayCommand ToggleCompletedMaxDifficultyCommand { get; }
         public IRelayCommand ToggleCompletedHundredPercentCommand { get; }
+        // Achievements
+        public IRelayCommand ShowAchievementsCommand { get; }
+        public IRelayCommand AddAchievementCommand { get; }
+        public IRelayCommand ManageAchievementsCommand { get; }
         // ──── Processing Banner ─────────────────────────────────────────────
         private string _processingBannerText = "";
         public string ProcessingBannerText
@@ -208,6 +212,10 @@ namespace Moodex.ViewModels
             ToggleCompletedAnyPercentCommand = new RelayCommand<GameInfo>(g => ToggleCompletion(g, which: 1));
             ToggleCompletedMaxDifficultyCommand = new RelayCommand<GameInfo>(g => ToggleCompletion(g, which: 2));
             ToggleCompletedHundredPercentCommand = new RelayCommand<GameInfo>(g => ToggleCompletion(g, which: 3));
+            // Achievements
+            ShowAchievementsCommand = new RelayCommand<GameInfo>(g => _dialogs.ShowAchievements(g!), g => g != null && (g!.HasAchievements));
+            AddAchievementCommand = new RelayCommand<GameInfo>(g => _dialogs.ShowAddAchievement(g!), g => g != null);
+            ManageAchievementsCommand = new RelayCommand<GameInfo>(g => _dialogs.ShowManageAchievements(g!), g => g != null);
         }
 
         // ──── Actions ───────────────────────────────────────────────────────

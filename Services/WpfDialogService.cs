@@ -111,6 +111,33 @@ namespace Moodex.Services
                 MessageBoxImage.Warning);
             return Task.FromResult(result == MessageBoxResult.Yes);
         }
+
+        public void ShowAchievements(GameInfo game)
+        {
+            var win = new Moodex.Views.Utilities.AchievementsViewerWindow(game)
+            {
+                Owner = System.Windows.Application.Current.MainWindow
+            };
+            win.ShowDialog();
+        }
+
+        public void ShowAddAchievement(GameInfo game)
+        {
+            var win = new Moodex.Views.Utilities.AddAchievementWindow(game)
+            {
+                Owner = System.Windows.Application.Current.MainWindow
+            };
+            win.ShowDialog();
+        }
+
+        public void ShowManageAchievements(GameInfo game)
+        {
+            var win = new Moodex.Views.Utilities.ManageAchievementsWindow(game)
+            {
+                Owner = System.Windows.Application.Current.MainWindow
+            };
+            win.ShowDialog();
+        }
     }
 }
 

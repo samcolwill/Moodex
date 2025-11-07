@@ -20,6 +20,8 @@ namespace Moodex.Models.Manifests
         [JsonPropertyName("completionAnyPercent")] public bool CompletionAnyPercent { get; set; }
         [JsonPropertyName("completionMaxDifficulty")] public bool CompletionMaxDifficulty { get; set; }
         [JsonPropertyName("completionHundredPercent")] public bool CompletionHundredPercent { get; set; }
+        // User-managed achievements presence flag
+        [JsonPropertyName("hasAchievements")] public bool HasAchievements { get; set; }
 
         // Input scripts section (can be null when no scripts configured)
         [JsonPropertyName("inputScripts")] public List<InputScriptEntry>? InputScripts { get; set; }

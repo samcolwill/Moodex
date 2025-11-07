@@ -24,5 +24,10 @@ namespace Moodex.Services
         void ShowAbout();
         // Shows confirmation dialog.
         Task<bool> ShowConfirmationAsync(string title, string message);
+
+        // Achievements
+        void ShowAchievements(GameInfo game);
+        void ShowAddAchievement(GameInfo game);
+        void ShowManageAchievements(GameInfo game);
     }
 }

@@ -90,6 +90,14 @@ namespace Moodex.Models
              : CompletedAnyPercent ? 2
              : 3;
 
+        // Achievements presence
+        private bool _hasAchievements;
+        public bool HasAchievements
+        {
+            get => _hasAchievements;
+            set { if (_hasAchievements != value) { _hasAchievements = value; OnPropertyChanged(nameof(HasAchievements)); } }
+        }
+
         // Processing overlay support
         private bool _isProcessing;
         public bool IsProcessing

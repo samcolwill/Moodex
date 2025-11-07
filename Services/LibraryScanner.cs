@@ -88,6 +88,7 @@ namespace Moodex.Services
                             gi.CompletedAnyPercent = man.CompletionAnyPercent;
                             gi.CompletedMaxDifficulty = man.CompletionMaxDifficulty;
                             gi.CompletedHundredPercent = man.CompletionHundredPercent;
+                            gi.HasAchievements = man.HasAchievements;
 
                             // input scripts from manifest
                             if (man.InputScripts != null)
