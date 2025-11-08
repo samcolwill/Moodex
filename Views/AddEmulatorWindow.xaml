@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:Moodex.ViewModels"
         xmlns:conv="clr-namespace:Moodex.Converters"
-        Title="Add Emulator" Height="235" Width="400"
+        Title="Add Emulator" Height="303" Width="400"
         Icon="/Moodex;component/Assets/icon/icon.ico"
         WindowStartupLocation="CenterOwner">
 
@@ -32,16 +32,19 @@
         <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="5"
              Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
 
-        <!-- Console Emulated -->
+        <!-- Consoles (multi-select) -->
         <Label Grid.Row="2" Grid.Column="0"
-               Content="Target Console:"
-               VerticalAlignment="Center"/>
-        <ComboBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="5"
-                  ItemsSource="{Binding Consoles}"
-                  SelectedValue="{Binding EmulatedConsoleId, Mode=TwoWay}" 
-                  SelectedValuePath="Id"
-                  DisplayMemberPath="Name"
-                  IsSynchronizedWithCurrentItem="False"/>
+               Content="Consoles:"
+               VerticalAlignment="Top"/>
+        <ListBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="5"
+                 ItemsSource="{Binding ConsoleChoices}" Height="90">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <CheckBox Content="{Binding Console.Name}"
+                              IsChecked="{Binding IsSelected, Mode=TwoWay}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
 
         <!-- Executable Path -->
         <Label Grid.Row="3" Grid.Column="0" Content="Executable:" VerticalAlignment="Center"/>

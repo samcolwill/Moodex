@@ -63,7 +63,36 @@ namespace Moodex.Services
             var win = new EditEmulatorWindow(vm);
             win.Owner = System.Windows.Application.Current.MainWindow;
             var result = win.ShowDialog();
-            return result == true ? toEdit : null;
+            if (result == true)
+            {
+                // persist emulator manifest
+                try
+                {
+                    var settings = settingsService.Load();
+                    var root = System.IO.Path.Combine(settings.ActiveLibraryPath, "Emulators");
+                    System.IO.Directory.CreateDirectory(root);
+                    var dir = System.IO.Path.Combine(root, toEdit.Id);
+                    System.IO.Directory.CreateDirectory(dir);
+                    if (string.IsNullOrWhiteSpace(toEdit.Guid))
+                    {
+                        toEdit.Guid = System.Guid.NewGuid().ToString();
+                    }
+                    var man = new Moodex.Models.Manifests.EmulatorManifest
+                    {
+                        Name = toEdit.Name,
+                        Id = toEdit.Id,
+                        Guid = toEdit.Guid,
+                        EmulatedConsoleIds = toEdit.EmulatedConsoleIds ?? new System.Collections.Generic.List<string>(),
+                        ExecutablePath = toEdit.ExecutablePath,
+                        DefaultArguments = toEdit.DefaultArguments
+                    };
+                    var json = System.Text.Json.JsonSerializer.Serialize(man, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+                    System.IO.File.WriteAllText(System.IO.Path.Combine(dir, ".moodex_emulator"), json);
+                }
+                catch { }
+                return toEdit;
+            }
+            return null;
         }
 
         public void ShowManageEmulators()

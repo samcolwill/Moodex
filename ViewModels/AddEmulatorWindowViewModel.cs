@@ -3,6 +3,9 @@ using Moodex.Models;
 using Moodex.Services;
 using System.Windows;
 using System.Windows.Input;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Moodex.ViewModels
 {
@@ -14,7 +17,6 @@ namespace Moodex.ViewModels
         // backing fields for input fields
         private string _id = "";
         private string _name = "";
-        private string _emulatedConsoleId = "";
         private string _executablePath = "";
         private string _defaultArguments = "";
 
@@ -40,15 +42,15 @@ namespace Moodex.ViewModels
             }
         }
 
-        public string EmulatedConsoleId
+        // Multi-console selection
+        public class SelectableConsole : BaseViewModel
         {
-            get => _emulatedConsoleId;
-            set
+            public ConsoleInfo Console { get; set; } = new ConsoleInfo();
+            private bool _isSelected;
+            public bool IsSelected
             {
-                if (_emulatedConsoleId == value) return;
-                _emulatedConsoleId = value;
-                RaisePropertyChanged();
-                SaveCommand.NotifyCanExecuteChanged();
+                get => _isSelected;
+                set { if (_isSelected != value) { _isSelected = value; RaisePropertyChanged(); } }
             }
         }
 
@@ -73,7 +75,7 @@ namespace Moodex.ViewModels
             }
         }
 
-        public IReadOnlyList<ConsoleInfo> Consoles { get; }
+        public ObservableCollection<SelectableConsole> ConsoleChoices { get; } = new();
 
         public EmulatorInfo? NewEmulator { get; private set; }
 
@@ -85,7 +87,10 @@ namespace Moodex.ViewModels
         public AddEmulatorWindowViewModel(ISettingsService settingsService)
         {
             _settingsService = settingsService;
-            Consoles = _settingsService.Load().Consoles.ToArray();
+            foreach (var c in _settingsService.Load().Consoles)
+            {
+                ConsoleChoices.Add(new SelectableConsole { Console = c, IsSelected = false });
+            }
 
             BrowseCommand = new RelayCommand<Window?>(ExecuteBrowse);
             SaveCommand = new RelayCommand<Window?>(ExecuteSave, _ => CanSave());
@@ -120,7 +125,8 @@ namespace Moodex.ViewModels
             {
                 Id = Id,
                 Name = Name,
-                EmulatedConsoleId = EmulatedConsoleId,
+                Guid = System.Guid.NewGuid().ToString(),
+                    EmulatedConsoleIds = ConsoleChoices.Where(x => x.IsSelected).Select(x => x.Console.Id).ToList(),
                 ExecutablePath = ExecutablePath,
                 DefaultArguments = DefaultArguments
             };

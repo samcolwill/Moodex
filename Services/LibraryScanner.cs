@@ -36,7 +36,8 @@ namespace Moodex.Services
                         {
                             Id = man.Id,
                             Name = man.Name,
-                            EmulatedConsoleId = man.EmulatedConsoleId,
+                            Guid = man.Guid,
+                            EmulatedConsoleIds = man.EmulatedConsoleIds ?? new List<string>(),
                             ExecutablePath = Path.IsPathRooted(man.ExecutablePath)
                                 ? man.ExecutablePath
                                 : Path.Combine(emuDir, man.ExecutablePath),

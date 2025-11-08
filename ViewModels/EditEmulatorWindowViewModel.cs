@@ -3,6 +3,8 @@ using Moodex.Models;
 using Moodex.Services;
 using System;
 using System.Windows;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Moodex.ViewModels
 {
@@ -16,10 +18,19 @@ namespace Moodex.ViewModels
         private string _name = "";
         private string _executablePath = "";
         private string _defaultArguments = "";
-        private string _emulatedConsoleId = "";
+        // multi-console selection
+        public class SelectableConsole : BaseViewModel
+        {
+            public ConsoleInfo Console { get; set; } = new ConsoleInfo();
+            private bool _isSelected;
+            public bool IsSelected
+            {
+                get => _isSelected;
+                set { if (_isSelected != value) { _isSelected = value; RaisePropertyChanged(); } }
+            }
+        }
 
-        // ───────────── dropdown source ─────────────
-        public IReadOnlyList<ConsoleInfo> Consoles { get; }
+        public ObservableCollection<SelectableConsole> ConsoleChoices { get; } = new();
 
         // ───────────── bindable props ─────────────
         public string Id
@@ -63,17 +74,7 @@ namespace Moodex.ViewModels
             }
         }
 
-        public string EmulatedConsoleId
-        {
-            get => _emulatedConsoleId;
-            set
-            {
-                if (_emulatedConsoleId == value) return;
-                _emulatedConsoleId = value;
-                RaisePropertyChanged();
-                SaveCommand.NotifyCanExecuteChanged();
-            }
-        }
+        // no single-console property anymore
 
         // ───────────── commands ─────────────
         public IRelayCommand<Window?> BrowseCommand { get; }
@@ -89,16 +90,24 @@ namespace Moodex.ViewModels
             _originalEmulator = emulator
                 ?? throw new ArgumentNullException(nameof(emulator));
 
-            // Load the console definitions once:
+            // Load the console definitions and mark selections
             var cfg = _settingsService.Load();
-            Consoles = cfg.Consoles;
+            var selectedIds = _originalEmulator.EmulatedConsoleIds ?? new System.Collections.Generic.List<string>();
+            foreach (var c in cfg.Consoles)
+            {
+                ConsoleChoices.Add(new SelectableConsole
+                {
+                    Console = c,
+                    IsSelected = selectedIds.Contains(c.Id, StringComparer.OrdinalIgnoreCase)
+                });
+            }
 
             // initialize backing fields from the original model
             _id = emulator.Id;
             _name = emulator.Name;
             _executablePath = emulator.ExecutablePath;
             _defaultArguments = emulator.DefaultArguments;
-            _emulatedConsoleId = emulator.EmulatedConsoleId;
+            // consoles handled externally
 
             // wire up commands
             BrowseCommand = new RelayCommand<Window?>(ExecuteBrowse);
@@ -130,7 +139,8 @@ namespace Moodex.ViewModels
             _originalEmulator.Name = Name;
             _originalEmulator.ExecutablePath = ExecutablePath;
             _originalEmulator.DefaultArguments = DefaultArguments;
-            _originalEmulator.EmulatedConsoleId = EmulatedConsoleId;
+            // consoles from selection
+            _originalEmulator.EmulatedConsoleIds = ConsoleChoices.Where(x => x.IsSelected).Select(x => x.Console.Id).ToList();
 
             if (owner != null)
             {

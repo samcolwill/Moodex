@@ -277,7 +277,8 @@ namespace Moodex.ViewModels
                 {
                     // Otherwise, find the one emulator configured for that console
                     var emulator = Emulators
-                        .FirstOrDefault(e => e.EmulatedConsoleId == game.ConsoleId);
+                        .FirstOrDefault(e => e.EmulatedConsoleIds != null
+                                          && e.EmulatedConsoleIds.Contains(game.ConsoleId, StringComparer.OrdinalIgnoreCase));
 
                     if (emulator == null)
                     {
@@ -493,7 +494,38 @@ namespace Moodex.ViewModels
 
         // ──── Persistence (legacy JSON disabled) ────────────────────────────
         private void SaveGames() { /* manifest-driven; no JSON save */ }
-        private void SaveEmulators() { /* manifest-driven; no JSON save */ }
+        private void SaveEmulators()
+        {
+            try
+            {
+                var settings = _settings.Load();
+                if (string.IsNullOrWhiteSpace(settings.ActiveLibraryPath)) return;
+                var root = Path.Combine(settings.ActiveLibraryPath, "Emulators");
+                Directory.CreateDirectory(root);
+                foreach (var emu in Emulators)
+                {
+                    var dir = Path.Combine(root, emu.Id);
+                    Directory.CreateDirectory(dir);
+                    // Ensure a stable GUID per emulator; generate if missing
+                    if (string.IsNullOrWhiteSpace(emu.Guid))
+                    {
+                        emu.Guid = Guid.NewGuid().ToString();
+                    }
+                    var man = new Moodex.Models.Manifests.EmulatorManifest
+                    {
+                        Name = emu.Name,
+                        Id = emu.Id,
+                        Guid = emu.Guid!,
+                        EmulatedConsoleIds = emu.EmulatedConsoleIds ?? new List<string>(),
+                        ExecutablePath = emu.ExecutablePath,
+                        DefaultArguments = emu.DefaultArguments
+                    };
+                    var json = System.Text.Json.JsonSerializer.Serialize(man, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+                    File.WriteAllText(Path.Combine(dir, ".moodex_emulator"), json);
+                }
+            }
+            catch { }
+        }
 
         // ──── Filter & Group ───────────────────────────────────────────────
         private void ApplyFilter()

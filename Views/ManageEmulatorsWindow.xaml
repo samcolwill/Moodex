@@ -71,7 +71,7 @@
                                        FontStyle="Italic"
                                        FontSize="12"
                                        Foreground="Gray"/>
-                            <TextBlock Text="{Binding EmulatedConsoleName}"
+                            <TextBlock Text="{Binding EmulatedConsoleNames}"
                                        FontSize="12"/>
                         </StackPanel>
 
