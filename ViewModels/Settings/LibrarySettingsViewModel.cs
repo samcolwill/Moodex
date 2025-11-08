@@ -57,13 +57,15 @@ namespace Moodex.ViewModels.Settings
             var cfg = _settingsService.Load();
 
             // Consoles setup
-            Consoles = new ObservableCollection<ConsoleInfo>(cfg.Consoles);
+            Consoles = new ObservableCollection<ConsoleInfo>(cfg.Consoles
+                .OrderBy(c => c.Name, StringComparer.OrdinalIgnoreCase));
             AddConsoleCommand = new RelayCommand(OnAddConsole);
             EditConsoleCommand = new RelayCommand(OnEditConsole, () => SelectedConsole != null);
             RemoveConsoleCommand = new RelayCommand(OnRemoveConsole, () => SelectedConsole != null);
 
             // Genres setup (mirror consoles)
-            Genres = new ObservableCollection<string>(cfg.Genres);
+            Genres = new ObservableCollection<string>(cfg.Genres
+                .OrderBy(g => g, StringComparer.OrdinalIgnoreCase));
             AddGenreCommand = new RelayCommand(OnAddGenre);
             EditGenreCommand = new RelayCommand(OnEditGenre, () => SelectedGenre != null);
             RemoveGenreCommand = new RelayCommand(OnRemoveGenre, () => SelectedGenre != null);
@@ -83,6 +85,7 @@ namespace Moodex.ViewModels.Settings
                 Name = dlg.Field2Text.Trim()
             };
             Consoles.Add(newInfo);
+            SortCollections();
             SaveSettings();
         }
 
@@ -100,6 +103,7 @@ namespace Moodex.ViewModels.Settings
             ci.Name = dlg.Field2Text.Trim();
             var idx = Consoles.IndexOf(ci);
             Consoles[idx] = ci;
+            SortCollections();
             SaveSettings();
         }
 
@@ -125,6 +129,7 @@ namespace Moodex.ViewModels.Settings
                 return;
 
             Genres.Add(genre);
+            SortCollections();
             SaveSettings();
         }
 
@@ -143,6 +148,7 @@ namespace Moodex.ViewModels.Settings
             var idx = Genres.IndexOf(SelectedGenre);
             Genres[idx] = newValue;
             SelectedGenre = newValue;
+            SortCollections();
             SaveSettings();
         }
 
@@ -158,9 +164,27 @@ namespace Moodex.ViewModels.Settings
         private void SaveSettings()
         {
             var cfg = _settingsService.Load();
-            cfg.Consoles = Consoles.ToList();
-            cfg.Genres = Genres.ToList();
+            cfg.Consoles = Consoles.OrderBy(c => c.Name, StringComparer.OrdinalIgnoreCase).ToList();
+            cfg.Genres = Genres.OrderBy(g => g, StringComparer.OrdinalIgnoreCase).ToList();
             _settingsService.Save(cfg);
+        }
+
+        private void SortCollections()
+        {
+            // Consoles
+            var sortedConsoles = Consoles.OrderBy(c => c.Name, StringComparer.OrdinalIgnoreCase).ToList();
+            if (!Consoles.SequenceEqual(sortedConsoles))
+            {
+                Consoles.Clear();
+                foreach (var c in sortedConsoles) Consoles.Add(c);
+            }
+            // Genres
+            var sortedGenres = Genres.OrderBy(g => g, StringComparer.OrdinalIgnoreCase).ToList();
+            if (!Genres.SequenceEqual(sortedGenres))
+            {
+                Genres.Clear();
+                foreach (var g in sortedGenres) Genres.Add(g);
+            }
         }
 
         // ─── INotifyPropertyChanged ─────────────────────────────────────
