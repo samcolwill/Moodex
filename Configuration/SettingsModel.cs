@@ -13,11 +13,11 @@ namespace Moodex.Configuration
         public string ArchiveLibraryPath { get; set; } = @"M:\Moodex Archive";
         public List<ConsoleInfo> Consoles { get; set; } = new List<ConsoleInfo>
         {
-            new ConsoleInfo { Id="gameboy", Name="Game Boy" },
-            new ConsoleInfo { Id="pc", Name="PC" },
-            new ConsoleInfo { Id="playstation1", Name="Playstation 1" },
-            new ConsoleInfo { Id="playstation2", Name="Playstation 2" },
-            new ConsoleInfo { Id="xbox", Name="Xbox"}
+            new ConsoleInfo { Id="gameboy",       Name="Game Boy",       CoverAspectW=1.0, CoverAspectH=1.0 },
+            new ConsoleInfo { Id="pc",            Name="PC",             CoverAspectW=1.0, CoverAspectH=1.4 },
+            new ConsoleInfo { Id="playstation1",  Name="Playstation 1",  CoverAspectW=1.0, CoverAspectH=1.0 },
+            new ConsoleInfo { Id="playstation2",  Name="Playstation 2",  CoverAspectW=1.0, CoverAspectH=1.4 },
+            new ConsoleInfo { Id="xbox",          Name="Xbox",           CoverAspectW=1.0, CoverAspectH=1.4 }
         };
         public List<string> Genres { get; set; } = new List<string>
         {
