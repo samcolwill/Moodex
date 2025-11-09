@@ -28,6 +28,19 @@ namespace Moodex.Models
         public int ReleaseYear => ReleaseDate.Year;
         public bool IsInArchive { get; set; }
 
+        // Cover sizing derived from console aspect ratio
+        public int CoverWidth => 150;
+        public int CoverHeight
+        {
+            get
+            {
+                var aspect = Utilities.ConsoleRegistry.GetCoverAspect(ConsoleId);
+                if (aspect is null || aspect.Value.w <= 0 || aspect.Value.h <= 0) return CoverWidth; // default 1:1
+                var (w, h) = aspect.Value;
+                return (int)Math.Round(CoverWidth * h / w);
+            }
+        }
+
         // New runtime fields for manifest-driven layout
         public string? GameRootPath { get; set; }
         public string? GameGuid { get; set; }
@@ -115,5 +128,12 @@ namespace Moodex.Models
 
         public event PropertyChangedEventHandler? PropertyChanged;
         private void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+        // Allows external callers to force the UI to recompute cover size when console aspect ratios change
+        public void NotifyCoverSizingChanged()
+        {
+            OnPropertyChanged(nameof(CoverWidth));
+            OnPropertyChanged(nameof(CoverHeight));
+        }
     }
 }

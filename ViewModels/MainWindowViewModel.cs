@@ -188,6 +188,17 @@ namespace Moodex.ViewModels
                 if (!string.IsNullOrWhiteSpace(section))
                 {
                     _dialogs.ShowSettings(section);
+                    // Refresh ConsoleRegistry & game tiles after settings dialog closes
+                    try
+                    {
+                        Utilities.ConsoleRegistry.Refresh(_settings);
+                        foreach (var g in Games)
+                        {
+                            g.NotifyCoverSizingChanged();
+                        }
+                        GamesView.Refresh();
+                    }
+                    catch { }
                     // Refresh script commands after settings dialog closes
                     RefreshScriptCommands();
                 }

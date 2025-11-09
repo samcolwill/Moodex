@@ -116,8 +116,8 @@
                     <Border x:Name="ImageBorder" Background="Black" BorderThickness="2">
                         <Border.Style>
                             <Style TargetType="Border">
-                                <Setter Property="Width" Value="150"/>
-                                <Setter Property="Height" Value="200"/>
+                                <Setter Property="Width" Value="{Binding CoverWidth}"/>
+                                <Setter Property="Height" Value="{Binding CoverHeight}"/>
                                 <Setter Property="BorderBrush" Value="#333333"/>
                                 <Style.Triggers>
                                     <!-- Completion border colors -->
@@ -129,17 +129,6 @@
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding CompletedHundredPercent}" Value="True">
                                         <Setter Property="BorderBrush" Value="#DAA520"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding ConsoleId}" Value="playstation1">
-                                        <Setter Property="Width" Value="150"/>
-                                        <Setter Property="Height" Value="150"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding ConsoleId}" Value="playstation3">
-                                        <Setter Property="Height" Value="180"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding ConsoleId}" Value="gameboyadvance">
-                                        <Setter Property="Width" Value="150"/>
-                                        <Setter Property="Height" Value="150"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>

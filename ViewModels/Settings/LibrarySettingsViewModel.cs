@@ -74,15 +74,15 @@ namespace Moodex.ViewModels.Settings
         // ─── Consoles handlers (unchanged) ───────────────────────────────
         private void OnAddConsole()
         {
-            var dlg = new InputTwoFieldDialog(
-                "Add Console",
-                "Console ID:", "Console Name:");
+            var dlg = new Moodex.Views.Utilities.ConsoleEditDialog();
             if (dlg.ShowDialog() != true) return;
 
             var newInfo = new ConsoleInfo
             {
-                Id = dlg.Field1Text.Trim(),
-                Name = dlg.Field2Text.Trim()
+                Id = dlg.ConsoleId,
+                Name = dlg.ConsoleName,
+                CoverAspectW = dlg.AspectW,
+                CoverAspectH = dlg.AspectH
             };
             Consoles.Add(newInfo);
             SortCollections();
@@ -93,14 +93,19 @@ namespace Moodex.ViewModels.Settings
         {
             if (SelectedConsole == null) return;
             var ci = SelectedConsole;
-            var dlg = new InputTwoFieldDialog(
-                "Edit Console",
-                "Console ID:", "Console Name:",
-                ci.Id, ci.Name);
+            var dlg = new Moodex.Views.Utilities.ConsoleEditDialog
+            {
+                ConsoleId = ci.Id,
+                ConsoleName = ci.Name,
+                AspectW = ci.CoverAspectW,
+                AspectH = ci.CoverAspectH
+            };
             if (dlg.ShowDialog() != true) return;
 
-            ci.Id = dlg.Field1Text.Trim();
-            ci.Name = dlg.Field2Text.Trim();
+            ci.Id = dlg.ConsoleId;
+            ci.Name = dlg.ConsoleName;
+            ci.CoverAspectW = dlg.AspectW;
+            ci.CoverAspectH = dlg.AspectH;
             var idx = Consoles.IndexOf(ci);
             Consoles[idx] = ci;
             SortCollections();
