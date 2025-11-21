@@ -320,7 +320,9 @@ namespace Moodex.ViewModels
                     {
                         FileName = emulator.ExecutablePath,
                         Arguments = args,
-                        UseShellExecute = true
+                        UseShellExecute = true,
+                        WorkingDirectory = Path.GetDirectoryName(emulator.ExecutablePath)
+                                            ?? AppContext.BaseDirectory
                     };
                 }
 

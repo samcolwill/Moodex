@@ -45,7 +45,9 @@ namespace Moodex.ViewModels
                 var psi = new ProcessStartInfo(emulator.ExecutablePath)
                 {
                     UseShellExecute = true,
-                    Arguments = emulator.DefaultArguments
+                    Arguments = emulator.DefaultArguments,
+                    WorkingDirectory = System.IO.Path.GetDirectoryName(emulator.ExecutablePath)
+                                        ?? AppContext.BaseDirectory
                 };
                 Process.Start(psi);
             }
