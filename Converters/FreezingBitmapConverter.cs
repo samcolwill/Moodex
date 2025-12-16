@@ -15,6 +15,8 @@ namespace Moodex.Converters
         // thread-safe cache in case you ever load in parallel
         private static readonly ConcurrentDictionary<string, ImageSource> _cache
             = new();
+        // Decode covers to this width (in device pixels) to reduce memory and improve quality
+        private const int DecodeWidthPx = 150;
 
         public static void Invalidate(string path)
         {
@@ -42,16 +44,16 @@ namespace Moodex.Converters
             if (!File.Exists(path))
                 return DependencyProperty.UnsetValue;
 
-            // Use last write time in cache key so updates bust the cache automatically
+            // Use last write time and decode width in cache key so updates bust the cache automatically
             string key;
             try
             {
                 var lastWrite = File.GetLastWriteTimeUtc(path).Ticks;
-                key = $"{path}|{lastWrite}";
+                key = $"{path}|w{DecodeWidthPx}|{lastWrite}";
             }
             catch
             {
-                key = $"{path}|0";
+                key = $"{path}|w{DecodeWidthPx}|0";
             }
 
             if (_cache.TryGetValue(key, out var cached))
@@ -64,6 +66,8 @@ namespace Moodex.Converters
                 bmp.BeginInit();
                 bmp.UriSource = new Uri(path, UriKind.Absolute);
                 bmp.CacheOption = BitmapCacheOption.OnLoad;
+                // Downscale at decode time to reduce memory usage
+                bmp.DecodePixelWidth = Math.Max(1, DecodeWidthPx);
                 bmp.CreateOptions = BitmapCreateOptions.IgnoreColorProfile | BitmapCreateOptions.IgnoreImageCache;
                 bmp.EndInit();
                 bmp.Freeze();  // allow cross-thread and reuse
