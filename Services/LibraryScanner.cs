@@ -65,9 +65,16 @@ namespace Moodex.Services
                             if (man == null) continue;
 
                             var dataDir = Path.Combine(gameDir, "data");
-                            var launchPath = man.LaunchType.Equals("file", StringComparison.OrdinalIgnoreCase)
-                                ? Path.Combine(dataDir, man.LaunchTarget)
-                                : Path.Combine(dataDir, man.LaunchTarget);
+                            string launchPath;
+                            // Support absolute or relative launch targets. If absolute, use as-is; otherwise, resolve under data/.
+                            if (!string.IsNullOrWhiteSpace(man.LaunchTarget) && Path.IsPathRooted(man.LaunchTarget))
+                            {
+                                launchPath = man.LaunchTarget;
+                            }
+                            else
+                            {
+                                launchPath = Path.Combine(dataDir, man.LaunchTarget);
+                            }
 
                             var hasGenres = (man.Genres?.Count ?? 0) > 0;
                             var genre = hasGenres ? string.Join(", ", man.Genres!) : string.Empty;

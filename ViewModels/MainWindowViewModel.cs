@@ -202,6 +202,8 @@ namespace Moodex.ViewModels
                     catch { }
                     // Refresh script commands after settings dialog closes
                     RefreshScriptCommands();
+                    // Ensure DS4 installed flag updates for bindings
+                    RaisePropertyChanged(nameof(Ds4Installed));
                 }
             });
             ShowGettingStartedCommand = new RelayCommand(ExecuteShowGettingStarted);
@@ -839,7 +841,9 @@ namespace Moodex.ViewModels
             if (!toArchive && !string.IsNullOrEmpty(game.GameRootPath) && !string.IsNullOrEmpty(game.LaunchTarget))
             {
                 var dataDir = Path.Combine(game.GameRootPath, "data");
-                game.FileSystemPath = Path.Combine(dataDir, game.LaunchTarget);
+                game.FileSystemPath = Path.IsPathRooted(game.LaunchTarget)
+                    ? game.LaunchTarget
+                    : Path.Combine(dataDir, game.LaunchTarget);
             }
             game.IsProcessing = false;
             game.ProcessingPercent = 0;
@@ -952,6 +956,20 @@ namespace Moodex.ViewModels
         /// Public property to expose AutoHotKey installation status for XAML binding
         /// </summary>
         public bool AutoHotKeyInstalled => IsAutoHotKeyInstalled();
+        /// <summary>
+        /// Exposes DS4Windows installation status for XAML binding
+        /// </summary>
+        public bool Ds4Installed
+        {
+            get
+            {
+                try
+                {
+                    return _settings.Load().IsDs4Installed;
+                }
+                catch { return false; }
+            }
+        }
 
         /// <summary>
         /// Refreshes the AutoHotKey script command states
