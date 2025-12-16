@@ -1,0 +1,30 @@
+<UserControl x:Class="Moodex.Views.Help.GettingStarted.Step2View"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="10">
+            <TextBlock Text="2. Adding an emulator" FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>
+            <TextBlock TextWrapping="Wrap" Margin="0,0,0,8">
+                To play console games, you’ll first need to add at least one emulator that supports your console.
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">Steps:</TextBlock>
+            <StackPanel Margin="12,4,0,0">
+                <TextBlock TextWrapping="Wrap" Margin="0,4,0,0">1) Open Emulators → Add</TextBlock>
+                <TextBlock TextWrapping="Wrap" Margin="0,4,0,0">2) Enter a unique ID and Name</TextBlock>
+                <TextBlock TextWrapping="Wrap" Margin="0,4,0,0">3) Browse to the emulator executable</TextBlock>
+                <TextBlock TextWrapping="Wrap" Margin="0,4,0,0">4) Select which consoles the emulator supports</TextBlock>
+                <TextBlock TextWrapping="Wrap" Margin="0,4,0,0">5) (Optional) Set default launch arguments — you can use {RomPath} or {FolderPath}</TextBlock>
+            </StackPanel>
+            <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
+                Once added, the emulator will be available for any games that use its supported consoles.
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                You can edit or manage existing emulators at any time via Emulators → Manage.
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap" Margin="0,12,0,0" Opacity="0.85">Next: Adding games</TextBlock>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
+
+

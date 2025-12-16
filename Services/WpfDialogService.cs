@@ -120,6 +120,15 @@ namespace Moodex.Services
             win.ShowDialog();
         }
 
+        public void ShowGettingStarted()
+        {
+            var vm = _provider.GetRequiredService<Moodex.ViewModels.Help.GettingStartedWindowViewModel>();
+            var win = _provider.GetRequiredService<Moodex.Views.Help.GettingStartedWindow>();
+            win.DataContext = vm;
+            win.Owner = System.Windows.Application.Current.MainWindow;
+            win.ShowDialog();
+        }
+
         public void ShowAbout()
         {
             var vm = new AboutViewModel();

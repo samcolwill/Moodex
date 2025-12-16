@@ -105,6 +105,7 @@ namespace Moodex.ViewModels
         public IRelayCommand AddEmulatorCommand { get; }
         public IRelayCommand ShowManageEmulatorsCommand { get; }
         public IRelayCommand ShowSettingsCommand { get; }
+        public IRelayCommand ShowGettingStartedCommand { get; }
         public IRelayCommand ShowAboutCommand { get; }
         public IAsyncRelayCommand ArchiveGameCommand { get; }
         public IAsyncRelayCommand ActivateGameCommand { get; }
@@ -203,6 +204,7 @@ namespace Moodex.ViewModels
                     RefreshScriptCommands();
                 }
             });
+            ShowGettingStartedCommand = new RelayCommand(ExecuteShowGettingStarted);
             ShowAboutCommand = new RelayCommand(ExecuteShowAbout);
             ArchiveGameCommand = new AsyncRelayCommand<GameInfo>(g => MoveGameAsync(g, toArchive: true), CanArchiveGame);
             ActivateGameCommand = new AsyncRelayCommand<GameInfo>(g => MoveGameAsync(g, toArchive: false), CanActivateGame);
@@ -497,6 +499,11 @@ namespace Moodex.ViewModels
 
             Emulators.Add(newEmu);
             SaveEmulators();
+        }
+
+        private void ExecuteShowGettingStarted()
+        {
+            _dialogs.ShowGettingStarted();
         }
 
         private void ExecuteShowAbout()

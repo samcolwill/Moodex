@@ -42,6 +42,8 @@ namespace Moodex
             services.AddTransient<AddEmulatorWindow>();
             services.AddTransient<EditEmulatorWindowViewModel>();
             services.AddTransient<EditEmulatorWindow>();
+            services.AddTransient<Moodex.ViewModels.Help.GettingStartedWindowViewModel>();
+            services.AddTransient<Moodex.Views.Help.GettingStartedWindow>();
 
             services.AddSingleton<ILibraryScanner, LibraryScanner>();
             services.AddSingleton<IArchiveService, ArchiveService>();

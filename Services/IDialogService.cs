@@ -20,6 +20,8 @@ namespace Moodex.Services
 
         // Shows the Settings Menu.
         void ShowSettings(string sectionName);
+        // Shows the Getting Started guide.
+        void ShowGettingStarted();
         // Shows the About Menu.
         void ShowAbout();
         // Shows confirmation dialog.
