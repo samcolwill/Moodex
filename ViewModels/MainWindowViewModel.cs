@@ -105,6 +105,7 @@ namespace Moodex.ViewModels
         public IRelayCommand AddEmulatorCommand { get; }
         public IRelayCommand ShowManageEmulatorsCommand { get; }
         public IRelayCommand ShowSettingsCommand { get; }
+        public IRelayCommand ShowGettingStartedCommand { get; }
         public IRelayCommand ShowAboutCommand { get; }
         public IAsyncRelayCommand ArchiveGameCommand { get; }
         public IAsyncRelayCommand ActivateGameCommand { get; }
@@ -201,8 +202,11 @@ namespace Moodex.ViewModels
                     catch { }
                     // Refresh script commands after settings dialog closes
                     RefreshScriptCommands();
+                    // Ensure DS4 installed flag updates for bindings
+                    RaisePropertyChanged(nameof(Ds4Installed));
                 }
             });
+            ShowGettingStartedCommand = new RelayCommand(ExecuteShowGettingStarted);
             ShowAboutCommand = new RelayCommand(ExecuteShowAbout);
             ArchiveGameCommand = new AsyncRelayCommand<GameInfo>(g => MoveGameAsync(g, toArchive: true), CanArchiveGame);
             ActivateGameCommand = new AsyncRelayCommand<GameInfo>(g => MoveGameAsync(g, toArchive: false), CanActivateGame);
@@ -235,16 +239,37 @@ namespace Moodex.ViewModels
             if (game == null) return;
             try
             {
+                // If the game is archived, prompt to make it active instead of launching
+                if (game.IsInArchive)
+                {
+                    System.Media.SystemSounds.Exclamation.Play();
+                    var result = MessageBox.Show(
+                        "This game is archived and cannot be launched.\n\nWould you like to make it Active now?",
+                        "Game Archived",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Question);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        ActivateGameCommand.Execute(game);
+                    }
+                    return;
+                }
+
                 // Check if the game is archived as a zip file
                 var settings = _settings.Load();
                 var installRoot = GetInstallRoot(game, settings.ActiveLibraryPath, settings.ArchiveLibraryPath);
                 if (installRoot.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
                 {
-                    MessageBox.Show(
-                        "This game is archived and compressed. Please move it to Active storage before launching.",
+                    System.Media.SystemSounds.Exclamation.Play();
+                    var result = MessageBox.Show(
+                        "This game is archived and cannot be launched.\n\nWould you like to make it Active now?",
                         "Game Archived",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Information);
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Question);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        ActivateGameCommand.Execute(game);
+                    }
                     return;
                 }
 
@@ -286,12 +311,13 @@ namespace Moodex.ViewModels
                 }
                 else
                 {
-                    // Otherwise, find the one emulator configured for that console
-                    var emulator = Emulators
-                        .FirstOrDefault(e => e.EmulatedConsoleIds != null
-                                          && e.EmulatedConsoleIds.Contains(game.ConsoleId, StringComparer.OrdinalIgnoreCase));
+                    // Otherwise, find emulators configured for that console
+                    var candidates = Emulators
+                        .Where(e => e.EmulatedConsoleIds != null
+                                 && e.EmulatedConsoleIds.Contains(game.ConsoleId, StringComparer.OrdinalIgnoreCase))
+                        .ToList();
 
-                    if (emulator == null)
+                    if (candidates.Count == 0)
                     {
                         MessageBox.Show(
                             $"No emulator configured for {game.ConsoleName}.",
@@ -299,6 +325,18 @@ namespace Moodex.ViewModels
                             MessageBoxButton.OK,
                             MessageBoxImage.Warning);
                         return;
+                    }
+
+                    EmulatorInfo? emulator;
+                    if (candidates.Count == 1)
+                    {
+                        emulator = candidates[0];
+                    }
+                    else
+                    {
+                        // Two or more: ask the user (for 3+ the service shows a list and returns null)
+                        emulator = _dialogs.ChooseEmulatorForConsole(game.ConsoleId ?? "", candidates);
+                        if (emulator == null) return;
                     }
 
                     // Pass the single FileSystemPath to the emulator, substituting any placeholder
@@ -497,6 +535,11 @@ namespace Moodex.ViewModels
 
             Emulators.Add(newEmu);
             SaveEmulators();
+        }
+
+        private void ExecuteShowGettingStarted()
+        {
+            _dialogs.ShowGettingStarted();
         }
 
         private void ExecuteShowAbout()
@@ -811,7 +854,9 @@ namespace Moodex.ViewModels
             if (!toArchive && !string.IsNullOrEmpty(game.GameRootPath) && !string.IsNullOrEmpty(game.LaunchTarget))
             {
                 var dataDir = Path.Combine(game.GameRootPath, "data");
-                game.FileSystemPath = Path.Combine(dataDir, game.LaunchTarget);
+                game.FileSystemPath = Path.IsPathRooted(game.LaunchTarget)
+                    ? game.LaunchTarget
+                    : Path.Combine(dataDir, game.LaunchTarget);
             }
             game.IsProcessing = false;
             game.ProcessingPercent = 0;
@@ -924,6 +969,20 @@ namespace Moodex.ViewModels
         /// Public property to expose AutoHotKey installation status for XAML binding
         /// </summary>
         public bool AutoHotKeyInstalled => IsAutoHotKeyInstalled();
+        /// <summary>
+        /// Exposes DS4Windows installation status for XAML binding
+        /// </summary>
+        public bool Ds4Installed
+        {
+            get
+            {
+                try
+                {
+                    return _settings.Load().IsDs4Installed;
+                }
+                catch { return false; }
+            }
+        }
 
         /// <summary>
         /// Refreshes the AutoHotKey script command states

@@ -40,7 +40,31 @@ namespace Moodex.Views.Utilities
                         var ext = System.IO.Path.GetExtension(ImagePath);
                         var safeName = string.IsNullOrWhiteSpace(Name) ? System.IO.Path.GetFileNameWithoutExtension(ImagePath) : Name;
                         foreach (var c in Path.GetInvalidFileNameChars()) safeName = safeName.Replace(c, '_');
-                        var dest = System.IO.Path.Combine(folder, $"{safeName}{ext}");
+
+                        // Determine next order prefix
+                        int NextIndex()
+                        {
+                            var exts = new HashSet<string>(new[] { ".png", ".jpg", ".jpeg", ".bmp", ".gif", ".webp" }, StringComparer.OrdinalIgnoreCase);
+                            var files = Directory.GetFiles(folder)
+                                .Where(f => exts.Contains(System.IO.Path.GetExtension(f)))
+                                .Select(f => System.IO.Path.GetFileNameWithoutExtension(f))
+                                .ToList();
+                            static int ParseOrder(string name)
+                            {
+                                if (name.Length >= 4 && char.IsDigit(name[0]) && char.IsDigit(name[1]) && char.IsDigit(name[2]) && name[3] == '_')
+                                {
+                                    if (int.TryParse(name.Substring(0, 3), out var n)) return n;
+                                }
+                                return 0;
+                            }
+                            var maxNumbered = files.Select(ParseOrder).DefaultIfEmpty(0).Max();
+                            if (maxNumbered > 0) return maxNumbered + 1;
+                            return files.Count + 1;
+                        }
+                        var idx = Math.Max(1, NextIndex());
+                        var prefix = idx.ToString().PadLeft(3, '0') + "_";
+
+                        var dest = System.IO.Path.Combine(folder, $"{prefix}{safeName}{ext}");
                         File.Copy(ImagePath, dest, overwrite: true);
                         // update manifest flag
                         var manPath = System.IO.Path.Combine(_game.GameRootPath, ".moodex_game");

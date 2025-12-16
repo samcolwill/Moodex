@@ -20,6 +20,8 @@ namespace Moodex.Services
 
         // Shows the Settings Menu.
         void ShowSettings(string sectionName);
+        // Shows the Getting Started guide.
+        void ShowGettingStarted();
         // Shows the About Menu.
         void ShowAbout();
         // Shows confirmation dialog.
@@ -29,5 +31,8 @@ namespace Moodex.Services
         void ShowAchievements(GameInfo game);
         void ShowAddAchievement(GameInfo game);
         void ShowManageAchievements(GameInfo game);
+
+        // Emulator selection when multiple candidates exist for a console
+        EmulatorInfo? ChooseEmulatorForConsole(string consoleId, IReadOnlyList<EmulatorInfo> candidates);
     }
 }

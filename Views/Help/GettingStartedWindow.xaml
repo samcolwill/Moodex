@@ -1,0 +1,52 @@
+<Window x:Class="Moodex.Views.Help.GettingStartedWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vmHelp="clr-namespace:Moodex.ViewModels.Help"
+        xmlns:vmGS="clr-namespace:Moodex.ViewModels.Help.GettingStarted"
+        xmlns:viewsGS="clr-namespace:Moodex.Views.Help.GettingStarted"
+        Title="Getting Started"
+        Icon="/Moodex;component/Assets/icon/icon.ico"
+        Height="400" Width="800"
+        WindowStartupLocation="CenterOwner"
+        Background="White"
+        Foreground="Black">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="8*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- LEFT: steps list -->
+        <ListBox Grid.Column="0"
+                 ItemsSource="{Binding Sections}"
+                 SelectedItem="{Binding SelectedSection}"
+                 DisplayMemberPath="Name"
+                 Margin="5"/>
+
+        <!-- RIGHT: selected step content -->
+        <ContentControl Grid.Column="1"
+                        Content="{Binding SelectedSection.ViewModel}"
+                        Margin="10">
+            <ContentControl.Resources>
+                <DataTemplate DataType="{x:Type vmGS:Step1ViewModel}">
+                    <viewsGS:Step1View/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vmGS:Step2ViewModel}">
+                    <viewsGS:Step2View/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vmGS:Step3ViewModel}">
+                    <viewsGS:Step3View/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vmGS:Step4ViewModel}">
+                    <viewsGS:Step4View/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vmGS:Step5ViewModel}">
+                    <viewsGS:Step5View/>
+                </DataTemplate>
+            </ContentControl.Resources>
+        </ContentControl>
+    </Grid>
+</Window>
+
+

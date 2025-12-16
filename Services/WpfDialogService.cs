@@ -120,6 +120,15 @@ namespace Moodex.Services
             win.ShowDialog();
         }
 
+        public void ShowGettingStarted()
+        {
+            var vm = _provider.GetRequiredService<Moodex.ViewModels.Help.GettingStartedWindowViewModel>();
+            var win = _provider.GetRequiredService<Moodex.Views.Help.GettingStartedWindow>();
+            win.DataContext = vm;
+            win.Owner = System.Windows.Application.Current.MainWindow;
+            win.ShowDialog();
+        }
+
         public void ShowAbout()
         {
             var vm = new AboutViewModel();
@@ -166,6 +175,38 @@ namespace Moodex.Services
                 Owner = System.Windows.Application.Current.MainWindow
             };
             win.ShowDialog();
+        }
+
+        public EmulatorInfo? ChooseEmulatorForConsole(string consoleId, IReadOnlyList<EmulatorInfo> candidates)
+        {
+            if (candidates == null || candidates.Count == 0) return null;
+            var consoleName = Moodex.Utilities.ConsoleRegistry.GetDisplayName(consoleId) ?? consoleId;
+
+            // Three or more: show error with bullet list
+            if (candidates.Count >= 3)
+            {
+                var list = string.Join("\n - ", candidates.Select(c => $"{c.Name} ({System.IO.Path.GetFileName(c.ExecutablePath)})"));
+                System.Windows.MessageBox.Show(
+                    $"Too many emulators are configured for {consoleName}. Please keep only two or fewer.\n\nConfigured emulators:\n - {list}",
+                    "Multiple Emulators",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return null;
+            }
+
+            if (candidates.Count == 1) return candidates[0];
+
+            // Exactly two: show chooser with icons
+            var chooser = new Moodex.Views.Utilities.ChooseEmulatorWindow(candidates[0], candidates[1], consoleName)
+            {
+                Owner = System.Windows.Application.Current.MainWindow
+            };
+            var result = chooser.ShowDialog();
+            if (result == true)
+            {
+                return chooser.SelectedEmulator;
+            }
+            return null;
         }
     }
 }

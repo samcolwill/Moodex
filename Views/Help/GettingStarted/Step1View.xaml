@@ -1,0 +1,29 @@
+<UserControl x:Class="Moodex.Views.Help.GettingStarted.Step1View"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="10">
+            <TextBlock Text="1. Welcome" FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>
+            <TextBlock TextWrapping="Wrap" Margin="0,0,0,8">
+                Moodex is a lightweight game launcher that gives you a simple, unified place to manage your emulators and launch the games you love.
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                When you add emulators and games, Moodex organizes everything into your Moodex Game Library. You stay in control of where this library is stored on disk and can change its location at any time via Settings → Storage.
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                This guide will walk you through the setup process step by step:
+            </TextBlock>
+            <StackPanel Margin="12,6,0,0">
+                <TextBlock TextWrapping="Wrap" Margin="0,2,0,0">• Add an emulator</TextBlock>
+                <TextBlock TextWrapping="Wrap" Margin="0,2,0,0">• Add your games</TextBlock>
+                <TextBlock TextWrapping="Wrap" Margin="0,2,0,0">• Learn the right‑click menu</TextBlock>
+                <TextBlock TextWrapping="Wrap" Margin="0,2,0,0">• Track your progress</TextBlock>
+                <TextBlock TextWrapping="Wrap" Margin="0,2,0,0">• Start playing</TextBlock>
+            </StackPanel>
+            <TextBlock TextWrapping="Wrap" Margin="0,12,0,0" Opacity="0.85">Next: Adding an emulator</TextBlock>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
+
+

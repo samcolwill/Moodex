@@ -15,6 +15,24 @@ namespace Moodex.Converters
         // thread-safe cache in case you ever load in parallel
         private static readonly ConcurrentDictionary<string, ImageSource> _cache
             = new();
+        // Decode covers to this width (in device pixels) to reduce memory and improve quality
+        private const int DecodeWidthPx = 300;
+
+        public static void Invalidate(string path)
+        {
+            try
+            {
+                // remove any entries matching this path (with any timestamp suffix)
+                foreach (var key in _cache.Keys)
+                {
+                    if (key.StartsWith(path + "|", StringComparison.OrdinalIgnoreCase))
+                    {
+                        _cache.TryRemove(key, out _);
+                    }
+                }
+            }
+            catch { }
+        }
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -26,8 +44,19 @@ namespace Moodex.Converters
             if (!File.Exists(path))
                 return DependencyProperty.UnsetValue;
 
-            // return cached instance if we already did this one
-            if (_cache.TryGetValue(path, out var cached))
+            // Use last write time and decode width in cache key so updates bust the cache automatically
+            string key;
+            try
+            {
+                var lastWrite = File.GetLastWriteTimeUtc(path).Ticks;
+                key = $"{path}|w{DecodeWidthPx}|{lastWrite}";
+            }
+            catch
+            {
+                key = $"{path}|w{DecodeWidthPx}|0";
+            }
+
+            if (_cache.TryGetValue(key, out var cached))
                 return cached;
 
             try
@@ -37,11 +66,13 @@ namespace Moodex.Converters
                 bmp.BeginInit();
                 bmp.UriSource = new Uri(path, UriKind.Absolute);
                 bmp.CacheOption = BitmapCacheOption.OnLoad;
-                bmp.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
+                // Downscale at decode time to reduce memory usage
+                bmp.DecodePixelWidth = Math.Max(1, DecodeWidthPx);
+                bmp.CreateOptions = BitmapCreateOptions.IgnoreColorProfile | BitmapCreateOptions.IgnoreImageCache;
                 bmp.EndInit();
                 bmp.Freeze();  // allow cross-thread and reuse
 
-                _cache[path] = bmp;
+                _cache[key] = bmp;
                 return bmp;
             }
             catch (Exception ex)

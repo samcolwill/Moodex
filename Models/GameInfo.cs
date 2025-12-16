@@ -135,5 +135,10 @@ namespace Moodex.Models
             OnPropertyChanged(nameof(CoverWidth));
             OnPropertyChanged(nameof(CoverHeight));
         }
+
+        public void NotifyCoverChanged()
+        {
+            OnPropertyChanged(nameof(GameCoverUri));
+        }
     }
 }

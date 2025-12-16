@@ -388,13 +388,34 @@ namespace Moodex.ViewModels
             Directory.CreateDirectory(dataDir);
 
             var guid = System.Guid.NewGuid().ToString();
+            // Determine launch target: prefer a relative path under data/, else store absolute path (to keep launching working after restart)
+            string launchTarget;
+            try
+            {
+                var dataDirLower = dataDir.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).ToLowerInvariant();
+                var fileLower = (FileSystemPath ?? "").Trim().ToLowerInvariant();
+                if (!string.IsNullOrWhiteSpace(FileSystemPath)
+                    && fileLower.StartsWith(dataDirLower))
+                {
+                    launchTarget = Path.GetRelativePath(dataDir, FileSystemPath);
+                }
+                else
+                {
+                    launchTarget = FileSystemPath;
+                }
+            }
+            catch
+            {
+                launchTarget = FileSystemPath;
+            }
+
             var manifest = new GameManifest
             {
                 Name = Name,
                 Guid = guid,
                 AddedDateTime = DateTime.UtcNow,
                 ConsoleId = ConsoleId,
-                LaunchTarget = string.IsNullOrWhiteSpace(FileSystemPath) ? "" : (IsFolderBasedConsole ? new DirectoryInfo(FileSystemPath).Name : Path.GetFileName(FileSystemPath)),
+                LaunchTarget = string.IsNullOrWhiteSpace(FileSystemPath) ? "" : launchTarget,
                 LaunchType = IsFolderBasedConsole ? "folder" : "file",
                 Genres = SelectedGenres.ToList(),
                 ReleaseDateTime = ReleaseDate,
@@ -407,8 +428,20 @@ namespace Moodex.ViewModels
             File.WriteAllText(manifestPath, JsonSerializer.Serialize(manifest, new JsonSerializerOptions { WriteIndented = true }));
 
             // Return a GameInfo for UI
-            var launchTarget = manifest.LaunchTarget;
-            var filePath = string.IsNullOrWhiteSpace(launchTarget) ? gameRoot : Path.Combine(dataDir, launchTarget);
+            var savedLaunchTarget = manifest.LaunchTarget;
+            string filePath;
+            if (string.IsNullOrWhiteSpace(savedLaunchTarget))
+            {
+                filePath = gameRoot;
+            }
+            else if (Path.IsPathRooted(savedLaunchTarget))
+            {
+                filePath = savedLaunchTarget;
+            }
+            else
+            {
+                filePath = Path.Combine(dataDir, savedLaunchTarget);
+            }
             NewGame = new GameInfo
             {
                 Name = Name,
@@ -419,7 +452,7 @@ namespace Moodex.ViewModels
                 IsInArchive = false,
                 GameRootPath = gameRoot,
                 GameGuid = guid,
-                LaunchTarget = launchTarget
+                LaunchTarget = savedLaunchTarget
             };
 
             // Cleanup placeholder if present

@@ -1,0 +1,25 @@
+<UserControl x:Class="Moodex.Views.Help.GettingStarted.Step3View"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="10">
+            <TextBlock Text="3. Adding games" FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>
+            <TextBlock TextWrapping="Wrap" Margin="0,0,0,8">
+                After your emulators are set up, you can add games to your library.
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">Steps:</TextBlock>
+            <StackPanel Margin="12,4,0,0">
+                <TextBlock TextWrapping="Wrap" Margin="0,4,0,0">1) Open Games → Add</TextBlock>
+                <TextBlock TextWrapping="Wrap" Margin="0,4,0,0">2) Choose the console and select a game file or folder</TextBlock>
+                <TextBlock TextWrapping="Wrap" Margin="0,4,0,0">3) Review the launch target and game details, then click Save</TextBlock>
+            </StackPanel>
+            <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
+                Your games will now appear in the Moodex Game Library, ready to launch.
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap" Margin="0,12,0,0" Opacity="0.85">Next: Using the right-click menu</TextBlock>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
+
+

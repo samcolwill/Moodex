@@ -65,9 +65,35 @@ namespace Moodex.Services
                             if (man == null) continue;
 
                             var dataDir = Path.Combine(gameDir, "data");
-                            var launchPath = man.LaunchType.Equals("file", StringComparison.OrdinalIgnoreCase)
-                                ? Path.Combine(dataDir, man.LaunchTarget)
-                                : Path.Combine(dataDir, man.LaunchTarget);
+                            string launchPath;
+                            string? correctedRelative = null;
+                            // Support absolute or relative launch targets. If absolute, use as-is; otherwise, resolve under data/.
+                            if (!string.IsNullOrWhiteSpace(man.LaunchTarget) && Path.IsPathRooted(man.LaunchTarget))
+                            {
+                                launchPath = man.LaunchTarget;
+                            }
+                            else
+                            {
+                                launchPath = Path.Combine(dataDir, man.LaunchTarget);
+                                // If target doesn't exist and this is a file launch, search for the file deeper under data/
+                                if (man.LaunchType.Equals("file", StringComparison.OrdinalIgnoreCase) && !File.Exists(launchPath))
+                                {
+                                    try
+                                    {
+                                        var fileName = Path.GetFileName(man.LaunchTarget ?? "");
+                                        if (!string.IsNullOrWhiteSpace(fileName))
+                                        {
+                                            var found = Directory.GetFiles(dataDir, fileName, SearchOption.AllDirectories).FirstOrDefault();
+                                            if (!string.IsNullOrEmpty(found))
+                                            {
+                                                launchPath = found;
+                                                correctedRelative = Path.GetRelativePath(dataDir, found);
+                                            }
+                                        }
+                                    }
+                                    catch { }
+                                }
+                            }
 
                             var hasGenres = (man.Genres?.Count ?? 0) > 0;
                             var genre = hasGenres ? string.Join(", ", man.Genres!) : string.Empty;
@@ -84,7 +110,7 @@ namespace Moodex.Services
                             // extra runtime fields
                             gi.GameRootPath = gameDir;
                             gi.GameGuid = man.Guid;
-                            gi.LaunchTarget = man.LaunchTarget;
+                            gi.LaunchTarget = correctedRelative ?? man.LaunchTarget;
                             // completion flags
                             gi.CompletedAnyPercent = man.CompletionAnyPercent;
                             gi.CompletedMaxDifficulty = man.CompletionMaxDifficulty;
@@ -106,6 +132,18 @@ namespace Moodex.Services
                             gi.ControllerProfileConfigured = man.ControllerProfileConfigured;
 
                             games.Add(gi);
+
+                            // Persist migration if we discovered a better relative path
+                            if (!string.IsNullOrEmpty(correctedRelative))
+                            {
+                                try
+                                {
+                                    man.LaunchTarget = correctedRelative;
+                                    var updated = JsonSerializer.Serialize(man, new JsonSerializerOptions { WriteIndented = true });
+                                    File.WriteAllText(Path.Combine(gameDir, ".moodex_game"), updated);
+                                }
+                                catch { }
+                            }
                         }
                         catch { /* skip malformed */ }
                     }
