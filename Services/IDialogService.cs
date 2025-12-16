@@ -31,5 +31,8 @@ namespace Moodex.Services
         void ShowAchievements(GameInfo game);
         void ShowAddAchievement(GameInfo game);
         void ShowManageAchievements(GameInfo game);
+
+        // Emulator selection when multiple candidates exist for a console
+        EmulatorInfo? ChooseEmulatorForConsole(string consoleId, IReadOnlyList<EmulatorInfo> candidates);
     }
 }

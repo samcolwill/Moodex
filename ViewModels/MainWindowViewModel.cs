@@ -311,12 +311,13 @@ namespace Moodex.ViewModels
                 }
                 else
                 {
-                    // Otherwise, find the one emulator configured for that console
-                    var emulator = Emulators
-                        .FirstOrDefault(e => e.EmulatedConsoleIds != null
-                                          && e.EmulatedConsoleIds.Contains(game.ConsoleId, StringComparer.OrdinalIgnoreCase));
+                    // Otherwise, find emulators configured for that console
+                    var candidates = Emulators
+                        .Where(e => e.EmulatedConsoleIds != null
+                                 && e.EmulatedConsoleIds.Contains(game.ConsoleId, StringComparer.OrdinalIgnoreCase))
+                        .ToList();
 
-                    if (emulator == null)
+                    if (candidates.Count == 0)
                     {
                         MessageBox.Show(
                             $"No emulator configured for {game.ConsoleName}.",
@@ -324,6 +325,18 @@ namespace Moodex.ViewModels
                             MessageBoxButton.OK,
                             MessageBoxImage.Warning);
                         return;
+                    }
+
+                    EmulatorInfo? emulator;
+                    if (candidates.Count == 1)
+                    {
+                        emulator = candidates[0];
+                    }
+                    else
+                    {
+                        // Two or more: ask the user (for 3+ the service shows a list and returns null)
+                        emulator = _dialogs.ChooseEmulatorForConsole(game.ConsoleId ?? "", candidates);
+                        if (emulator == null) return;
                     }
 
                     // Pass the single FileSystemPath to the emulator, substituting any placeholder
