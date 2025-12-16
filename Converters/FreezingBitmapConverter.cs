@@ -16,7 +16,7 @@ namespace Moodex.Converters
         private static readonly ConcurrentDictionary<string, ImageSource> _cache
             = new();
         // Decode covers to this width (in device pixels) to reduce memory and improve quality
-        private const int DecodeWidthPx = 150;
+        private const int DecodeWidthPx = 300;
 
         public static void Invalidate(string path)
         {

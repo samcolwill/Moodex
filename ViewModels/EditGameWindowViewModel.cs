@@ -213,12 +213,34 @@ namespace Moodex.ViewModels
 
                     man.Name = Name;
                     man.ConsoleId = ConsoleId;
-                    man.LaunchTarget = Path.GetFileName(FileSystemPath);
+                    // Store relative path under data\ when possible; otherwise store absolute
+                    var dataDir = Path.Combine(root, "data");
+                    string launchTargetToSave = FileSystemPath;
+                    try
+                    {
+                        var dataDirTrim = dataDir.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                        if (!string.IsNullOrWhiteSpace(FileSystemPath)
+                            && FileSystemPath.StartsWith(dataDirTrim, StringComparison.OrdinalIgnoreCase))
+                        {
+                            launchTargetToSave = Path.GetRelativePath(dataDir, FileSystemPath);
+                        }
+                    }
+                    catch { /* fallback to absolute */ }
+                    man.LaunchTarget = launchTargetToSave;
                     man.LaunchType = IsFolderBasedConsole ? "folder" : "file";
                     man.Genres = SelectedGenres.ToList();
                     man.ReleaseDateTime = ReleaseDate;
 
                     File.WriteAllText(manifestPath, JsonSerializer.Serialize(man, new JsonSerializerOptions { WriteIndented = true }));
+
+                    // Update runtime copy based on what we saved
+                    _originalGame.LaunchTarget = man.LaunchTarget;
+                    if (!string.IsNullOrWhiteSpace(_originalGame.LaunchTarget))
+                    {
+                        _originalGame.FileSystemPath = Path.IsPathRooted(_originalGame.LaunchTarget)
+                            ? _originalGame.LaunchTarget
+                            : Path.Combine(dataDir, _originalGame.LaunchTarget);
+                    }
                 }
                 catch { /* ignore manifest write errors for now */ }
             }
