@@ -384,7 +384,7 @@
                 <MenuItem Header="Storage" Command="{Binding ShowSettingsCommand}" CommandParameter="Storage"/>
             </MenuItem>
             <MenuItem Header="Help">
-                <MenuItem Header="Getting started" Command="{Binding ShowGettingStartedCommand}"/>
+                <MenuItem Header="Getting Started" Command="{Binding ShowGettingStartedCommand}"/>
                 <MenuItem Header="About" Command="{Binding ShowAboutCommand}"/>
             </MenuItem>
         </Menu>

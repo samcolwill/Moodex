@@ -4,9 +4,9 @@
         xmlns:vmHelp="clr-namespace:Moodex.ViewModels.Help"
         xmlns:vmGS="clr-namespace:Moodex.ViewModels.Help.GettingStarted"
         xmlns:viewsGS="clr-namespace:Moodex.Views.Help.GettingStarted"
-        Title="Getting started"
+        Title="Getting Started"
         Icon="/Moodex;component/Assets/icon/icon.ico"
-        Height="450" Width="800"
+        Height="400" Width="800"
         WindowStartupLocation="CenterOwner"
         Background="White"
         Foreground="Black">

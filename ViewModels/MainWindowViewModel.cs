@@ -237,16 +237,37 @@ namespace Moodex.ViewModels
             if (game == null) return;
             try
             {
+                // If the game is archived, prompt to make it active instead of launching
+                if (game.IsInArchive)
+                {
+                    System.Media.SystemSounds.Exclamation.Play();
+                    var result = MessageBox.Show(
+                        "This game is archived and cannot be launched.\n\nWould you like to make it Active now?",
+                        "Game Archived",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Question);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        ActivateGameCommand.Execute(game);
+                    }
+                    return;
+                }
+
                 // Check if the game is archived as a zip file
                 var settings = _settings.Load();
                 var installRoot = GetInstallRoot(game, settings.ActiveLibraryPath, settings.ArchiveLibraryPath);
                 if (installRoot.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
                 {
-                    MessageBox.Show(
-                        "This game is archived and compressed. Please move it to Active storage before launching.",
+                    System.Media.SystemSounds.Exclamation.Play();
+                    var result = MessageBox.Show(
+                        "This game is archived and cannot be launched.\n\nWould you like to make it Active now?",
                         "Game Archived",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Information);
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Question);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        ActivateGameCommand.Execute(game);
+                    }
                     return;
                 }
 
