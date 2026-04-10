@@ -45,6 +45,9 @@ namespace Moodex.Configuration
         public bool IsAutoHotKeyInstalled { get; set; } = false;
         public bool CompressOnArchive { get; set; } = true;
         public string DefaultGroupBy { get; set; } = "Console";
+
+        public SteamSettings Steam { get; set; } = new();
+        public IgdbSettings Igdb { get; set; } = new();
     }
 }
 

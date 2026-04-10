@@ -22,10 +22,29 @@ namespace Moodex.Models
         public bool ControllerEnabled { get; set; }
         public bool ControllerProfileConfigured { get; set; }
 
+        // Source / platform
+        public GameSource Source { get; set; } = GameSource.Moodex;
+        public int? SteamAppId { get; set; }
+        public bool IsSteamGame => Source == GameSource.Steam;
+
+        private bool _isSteamInstalled;
+        public bool IsSteamInstalled
+        {
+            get => _isSteamInstalled;
+            set
+            {
+                if (_isSteamInstalled != value)
+                {
+                    _isSteamInstalled = value;
+                    OnPropertyChanged(nameof(IsSteamInstalled));
+                }
+            }
+        }
+
         // Runtime-only helpers
         public string? ConsoleName => Utilities.ConsoleRegistry.GetDisplayName(ConsoleId);
         public string? GameCoverUri => GameCoverLocator.FindGameCover(this);
-        public int ReleaseYear => ReleaseDate.Year;
+        public string ReleaseYear => ReleaseDate.Year <= 1 ? "No Release Date" : ReleaseDate.Year.ToString();
         public bool IsInArchive { get; set; }
 
         // Cover sizing derived from console aspect ratio

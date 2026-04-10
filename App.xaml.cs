@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Moodex.Models;
 using Moodex.Services;
+using Moodex.Services.Igdb;
+using Moodex.Services.Steam;
 using Moodex.Utilities;
 using Moodex.ViewModels;
 using Moodex.ViewModels.Settings;
@@ -30,6 +32,11 @@ namespace Moodex
             services.AddSingleton<IWindowPlacementService, WindowPlacementService>();
             // Removed FileMoveService - archive/restore handled by ArchiveService
             services.AddSingleton<IAutoHotKeyScriptService, AutoHotKeyScriptService>();
+            services.AddSingleton<ISteamDetectionService, SteamDetectionService>();
+            services.AddSingleton<ISteamImportService, SteamImportService>();
+            services.AddSingleton<ISteamLaunchService, SteamLaunchService>();
+            services.AddSingleton<ISteamWebApiService, SteamWebApiService>();
+            services.AddSingleton<IIgdbService, IgdbService>();
 
             // register your VM
             services.AddTransient<MainWindowViewModel>();
@@ -76,12 +83,35 @@ namespace Moodex
             // ── refresh the ConsoleRegistry so GameInfo.ConsoleName will work ─────────────
             ConsoleRegistry.Refresh(settingsService);
 
+            // ── Auto-scan Steam library on startup if configured ────────────
+            if (settings.Steam.Enabled && settings.Steam.AutoScanOnStartup
+                && !string.IsNullOrWhiteSpace(settings.Steam.SteamApiKey)
+                && !string.IsNullOrWhiteSpace(settings.Steam.SteamId64)
+                && settings.Steam.LibraryPaths.Count > 0)
+            {
+                try
+                {
+                    var steamDetection = _provider.GetRequiredService<ISteamDetectionService>();
+                    var steamImport = _provider.GetRequiredService<ISteamImportService>();
+                    var steamWebApi = _provider.GetRequiredService<ISteamWebApiService>();
+
+                    var ownedGames = Task.Run(() => steamWebApi.GetOwnedGamesAsync(
+                        settings.Steam.SteamApiKey, settings.Steam.SteamId64)).GetAwaiter().GetResult();
+
+                    if (ownedGames.Count > 0)
+                    {
+                        var allGames = steamDetection.ResolveInstallStatus(ownedGames, settings.Steam.LibraryPaths);
+                        var steamRoot = !string.IsNullOrEmpty(settings.Steam.SteamExePath) ? Path.GetDirectoryName(settings.Steam.SteamExePath) : null;
+                        steamImport.ImportSteamGames(settings.ActiveLibraryPath, allGames, steamRoot, settings.Steam.IgnoredGames);
+                    }
+                }
+                catch { }
+            }
+
             // set up the main window
             var mainWin = _provider.GetRequiredService<MainWindow>();
             mainWin.DataContext = _provider.GetRequiredService<MainWindowViewModel>();
             mainWin.Show();
-
-            // removed DS4Windows auto-launch; controlled per game
         }
         protected override void OnExit(ExitEventArgs e)
         {

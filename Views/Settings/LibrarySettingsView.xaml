@@ -26,6 +26,28 @@
             <Button Content="Edit"   Command="{Binding EditGenreCommand}"   Width="75" Margin="0,0,5,0"/>
             <Button Content="Remove" Command="{Binding RemoveGenreCommand}" Width="75"/>
         </StackPanel>
+
+        <!-- ── IGDB ── -->
+        <Separator Margin="0,14,0,10"/>
+        <TextBlock Text="IGDB" FontWeight="Bold" Margin="0,0,0,5"/>
+        <TextBlock Text="Fetch game metadata (genres, release date) and cover art from the Internet Game Database."
+                   Foreground="Gray" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,8" MaxWidth="500" HorizontalAlignment="Left"/>
+
+        <CheckBox Content="Enable IGDB game data"
+                  IsChecked="{Binding IgdbEnabled}"
+                  Margin="0,0,0,8"/>
+
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+            <Button Content="Scan Library for Missing Data"
+                    Command="{Binding ScanForMissingDataCommand}"
+                    Width="200"/>
+            <TextBlock Text="{Binding IgdbStatusMessage}"
+                       VerticalAlignment="Center"
+                       Margin="12,0,0,0"
+                       Foreground="Gray"
+                       TextWrapping="Wrap"
+                       MaxWidth="280"/>
+        </StackPanel>
     </StackPanel>
 </UserControl>
 

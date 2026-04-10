@@ -29,6 +29,12 @@ namespace Moodex.Models.Manifests
         // Per-game controller settings
         [JsonPropertyName("controllerEnabled")] public bool ControllerEnabled { get; set; } = false;
         [JsonPropertyName("controllerProfileConfigured")] public bool ControllerProfileConfigured { get; set; } = false;
+
+        // Source / platform
+        [JsonPropertyName("source")] public string Source { get; set; } = "moodex";
+        [JsonPropertyName("steamAppId")] public int? SteamAppId { get; set; }
+        [JsonPropertyName("steamInstallPath")] public string? SteamInstallPath { get; set; }
+        [JsonPropertyName("steamInstallState")] public string? SteamInstallState { get; set; }
     }
 
     public class InputScriptEntry

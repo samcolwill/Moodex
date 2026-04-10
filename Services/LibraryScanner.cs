@@ -131,6 +131,13 @@ namespace Moodex.Services
                             gi.ControllerEnabled = man.ControllerEnabled;
                             gi.ControllerProfileConfigured = man.ControllerProfileConfigured;
 
+                            // source / platform
+                            gi.Source = man.Source?.Equals("steam", StringComparison.OrdinalIgnoreCase) == true
+                                ? GameSource.Steam
+                                : GameSource.Moodex;
+                            gi.SteamAppId = man.SteamAppId;
+                            gi.IsSteamInstalled = man.SteamInstallState?.Equals("installed", StringComparison.OrdinalIgnoreCase) == true;
+
                             games.Add(gi);
 
                             // Persist migration if we discovered a better relative path

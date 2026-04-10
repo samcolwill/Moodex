@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Moodex.Models;
+using Moodex.Services.Igdb;
 using Moodex.ViewModels;
 using Moodex.ViewModels.Help;
 using Moodex.ViewModels.Settings;
@@ -22,9 +23,8 @@ namespace Moodex.Services
 
         public GameInfo? ShowAddGame()
         {
-            // Show AddGameWindow and pass in available emulators
-            var win = new AddGameWindow();
-            // Return the newly created game if OK, otherwise null
+            var igdb = _provider.GetRequiredService<IIgdbService>();
+            var win = new AddGameWindow(igdb);
             return win.ShowDialog() == true
                 ? win.NewGame
                 : null;
@@ -33,9 +33,8 @@ namespace Moodex.Services
         [SupportedOSPlatform("windows")]
         public GameInfo? ShowEditGame(GameInfo game)
         {
-            // Show EditGameWindow for the selected game
-            var win = new EditGameWindow(game);
-            // If saved, return the same GameBase (updated in place), else null
+            var igdb = _provider.GetRequiredService<IIgdbService>();
+            var win = new EditGameWindow(game, igdb);
             return win.ShowDialog() == true
                 ? game
                 : null;

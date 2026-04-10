@@ -41,6 +41,7 @@
 	  <Resource Include="Assets\\highland_cow.png" />
 	  <Resource Include="Assets\\demon_cow.png" />
 	  <Resource Include="Assets\\golden_cow.png" />
+	  <Resource Include="Assets\\steam_icon.png" />
 	</ItemGroup>
 
 	<PropertyGroup>

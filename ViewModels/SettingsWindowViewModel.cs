@@ -2,6 +2,8 @@
 using System.ComponentModel;
 using System.Linq;
 using Moodex.Services;
+using Moodex.Services.Igdb;
+using Moodex.Services.Steam;
 
 namespace Moodex.ViewModels.Settings
 {
@@ -23,16 +25,18 @@ namespace Moodex.ViewModels.Settings
             }
         }
 
-        // DI will inject your ISettingsService here
-        public SettingsWindowViewModel(ISettingsService settingsService, IDialogService dialogService)
+        public SettingsWindowViewModel(ISettingsService settingsService, IDialogService dialogService,
+            ISteamDetectionService steamDetection, ISteamImportService steamImport, ISteamWebApiService steamWebApi,
+            IIgdbService igdbService, MoodexState moodexState)
         {
             Sections = new ObservableCollection<SettingsSection>
             {
               new SettingsSection("General",   new GeneralSettingsViewModel(settingsService)),
               new SettingsSection("Input",  new InputSettingsViewModel(settingsService, dialogService)),
               new SettingsSection("Interface", new InterfaceSettingsViewModel(settingsService)),
-              new SettingsSection("Library",   new LibrarySettingsViewModel(settingsService)),
-              new SettingsSection("Storage",   new StorageSettingsViewModel(settingsService, dialogService))
+              new SettingsSection("Library",   new LibrarySettingsViewModel(settingsService, igdbService, moodexState)),
+              new SettingsSection("Storage",   new StorageSettingsViewModel(settingsService, dialogService)),
+              new SettingsSection("Launchers", new LaunchersSettingsViewModel(settingsService, steamDetection, steamImport, steamWebApi))
             };
 
             _selectedSection = Sections.First();

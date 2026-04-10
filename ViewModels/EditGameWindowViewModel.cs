@@ -7,6 +7,7 @@ using System.Windows;
 using CommunityToolkit.Mvvm.Input;
 using Moodex.Models;
 using Moodex.Services;
+using Moodex.Services.Igdb;
 using System.IO;
 using System.Text.Json;
 using Moodex.Models.Manifests;
@@ -16,6 +17,7 @@ namespace Moodex.ViewModels
     public class EditGameWindowViewModel : BaseViewModel
     {
         private readonly GameInfo _originalGame;
+        private readonly IIgdbService _igdbService;
 
         // ───────────── backing fields ─────────────
         private string _name = "";
@@ -92,14 +94,28 @@ namespace Moodex.ViewModels
         public IRelayCommand OpenGameFilesCommand { get; }
         public IRelayCommand AddGameCoverCommand { get; }
         public IRelayCommand ConfirmGameCoverCommand { get; }
+        public IAsyncRelayCommand FetchGameDataCommand { get; }
+        public IAsyncRelayCommand FetchGameCoverCommand { get; }
         private string? _pendingCoverPath;
+
+        // ───────────── IGDB state ─────────────
+        public bool IsIgdbEnabled => _igdbService.IsEnabled;
+
+        private string _igdbStatus = string.Empty;
+        public string IgdbStatus
+        {
+            get => _igdbStatus;
+            private set { _igdbStatus = value; RaisePropertyChanged(); }
+        }
 
         // ───────────── ctor ─────────────
         [SupportedOSPlatform("windows")]
         public EditGameWindowViewModel(GameInfo gameToEdit,
-                                       ISettingsService settingsService)
+                                       ISettingsService settingsService,
+                                       IIgdbService igdbService)
         {
             _originalGame = gameToEdit;
+            _igdbService = igdbService;
 
             var settings = settingsService.Load();
             Consoles = settings.Consoles;
@@ -112,6 +128,8 @@ namespace Moodex.ViewModels
             OpenGameFilesCommand = new RelayCommand(ExecuteOpenGameFiles);
             AddGameCoverCommand = new RelayCommand(ExecuteAddGameCover);
             ConfirmGameCoverCommand = new RelayCommand(ExecuteConfirmGameCover, () => !string.IsNullOrWhiteSpace(_pendingCoverPath));
+            FetchGameDataCommand = new AsyncRelayCommand(ExecuteFetchGameData, () => IsIgdbEnabled && !string.IsNullOrWhiteSpace(Name));
+            FetchGameCoverCommand = new AsyncRelayCommand(ExecuteFetchGameCover, () => IsIgdbEnabled && !string.IsNullOrWhiteSpace(Name));
 
             // seed the form
             Name = gameToEdit.Name;
@@ -181,7 +199,7 @@ namespace Moodex.ViewModels
 
         private bool CanSave()
             => !string.IsNullOrWhiteSpace(Name)
-            && !string.IsNullOrWhiteSpace(FileSystemPath)
+            && (!string.IsNullOrWhiteSpace(FileSystemPath) || _originalGame.IsSteamGame)
             && !string.IsNullOrWhiteSpace(ConsoleId);
 
         private void ExecuteSave(Window? owner)
@@ -317,6 +335,110 @@ namespace Moodex.ViewModels
                 System.IO.File.Copy(_pendingCoverPath, dest, overwrite: true);
             }
             catch { }
+        }
+
+        // ───────────── IGDB command bodies ─────────────
+        private async Task ExecuteFetchGameData()
+        {
+            if (string.IsNullOrWhiteSpace(Name)) return;
+
+            IgdbStatus = "Searching IGDB...";
+            try
+            {
+                var results = await _igdbService.SearchGameAsync(Name);
+                if (results.Count == 0)
+                {
+                    IgdbStatus = "No results found.";
+                    return;
+                }
+
+                var match = results.FirstOrDefault(r =>
+                    string.Equals(r.Name, Name, StringComparison.OrdinalIgnoreCase))
+                    ?? results[0];
+
+                var preview = new Views.Utilities.IgdbPreviewDataDialog(match);
+                if (preview.ShowDialog() != true)
+                {
+                    IgdbStatus = "Cancelled.";
+                    return;
+                }
+
+                if (match.Genres.Count > 0)
+                {
+                    SelectedGenres.Clear();
+                    foreach (var g in match.Genres)
+                        SelectedGenres.Add(g);
+                }
+
+                if (match.ReleaseDate.HasValue)
+                    ReleaseDate = match.ReleaseDate.Value;
+
+                IgdbStatus = $"Applied data from \"{match.Name}\".";
+            }
+            catch (Exception ex)
+            {
+                IgdbStatus = "Error (see popup)";
+                System.Windows.MessageBox.Show(ex.Message, "IGDB Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async Task ExecuteFetchGameCover()
+        {
+            if (string.IsNullOrWhiteSpace(Name)) return;
+
+            var root = _originalGame.GameRootPath;
+            if (string.IsNullOrEmpty(root))
+            {
+                IgdbStatus = "No game folder found.";
+                return;
+            }
+
+            IgdbStatus = "Fetching cover from IGDB...";
+            try
+            {
+                var results = await _igdbService.SearchGameAsync(Name);
+                var match = results.FirstOrDefault(r =>
+                    string.Equals(r.Name, Name, StringComparison.OrdinalIgnoreCase))
+                    ?? results.FirstOrDefault();
+
+                if (match?.CoverImageId == null)
+                {
+                    IgdbStatus = "No cover found on IGDB.";
+                    return;
+                }
+
+                var coverBytes = await _igdbService.DownloadCoverAsync(match.CoverImageId);
+                if (coverBytes == null || coverBytes.Length == 0)
+                {
+                    IgdbStatus = "Failed to download cover.";
+                    return;
+                }
+
+                var preview = new Views.Utilities.IgdbPreviewCoverDialog(coverBytes);
+                if (preview.ShowDialog() != true)
+                {
+                    IgdbStatus = "Cancelled.";
+                    return;
+                }
+
+                foreach (var ext in new[] { ".png", ".jpg", ".jpeg" })
+                {
+                    var old = Path.Combine(root, "cover" + ext);
+                    try { if (File.Exists(old)) File.Delete(old); } catch { }
+                }
+
+                var dest = Path.Combine(root, "cover.jpg");
+                File.WriteAllBytes(dest, coverBytes);
+                Moodex.Converters.FreezingBitmapConverter.Invalidate(dest);
+                _originalGame.NotifyCoverChanged();
+
+                IgdbStatus = "Cover updated.";
+            }
+            catch (Exception ex)
+            {
+                IgdbStatus = "Error (see popup)";
+                System.Windows.MessageBox.Show(ex.Message, "IGDB Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

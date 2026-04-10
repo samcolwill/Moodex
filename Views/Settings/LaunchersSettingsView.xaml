@@ -1,0 +1,74 @@
+<UserControl
+  x:Class="Moodex.Views.Settings.LaunchersSettingsView"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:vm="clr-namespace:Moodex.ViewModels.Settings">
+
+    <StackPanel Margin="10" VerticalAlignment="Top">
+        <TextBlock Text="Launchers" FontWeight="Bold" Margin="0,0,0,10"/>
+
+        <!-- ── Steam Configuration ── -->
+        <TextBlock Text="Steam" FontWeight="SemiBold" Margin="0,0,0,8"/>
+
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+            <TextBlock Text="API Key:" Width="100" VerticalAlignment="Center"/>
+            <PasswordBox Width="350" VerticalAlignment="Center"
+                         x:Name="ApiKeyBox"
+                         PasswordChanged="ApiKeyBox_PasswordChanged"/>
+        </StackPanel>
+        <TextBlock Text="Get a free API key from steamcommunity.com/dev/apikey. Profile game details must be Public."
+                   Foreground="Gray" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,8" MaxWidth="500" HorizontalAlignment="Left"/>
+
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+            <Button Content="Configure Steam"
+                    Command="{Binding ConfigureSteamCommand}"
+                    Width="140"/>
+            <TextBlock Text="{Binding StatusMessage}"
+                       VerticalAlignment="Center"
+                       Margin="12,0,0,0"
+                       Foreground="Gray"
+                       TextWrapping="Wrap"
+                       MaxWidth="340"/>
+        </StackPanel>
+
+        <!-- ── Steam Details ── -->
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+            <TextBlock Text="Steam Path:" Width="100" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding SteamPath, UpdateSourceTrigger=PropertyChanged}"
+                     Width="350"
+                     VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <TextBlock Text="Library Folders:" FontWeight="SemiBold" Margin="0,0,0,4"/>
+        <ListBox ItemsSource="{Binding SteamLibraryPaths}"
+                 SelectedItem="{Binding SelectedLibraryPath}"
+                 Height="80"
+                 Margin="0,0,0,4"/>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+            <Button Content="Remove" Command="{Binding RemoveLibraryPathCommand}" Width="75"/>
+        </StackPanel>
+
+        <!-- ── Scanning ── -->
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <Button Content="Scan Library"
+                    Command="{Binding ScanLibraryCommand}"
+                    Width="140"/>
+            <CheckBox Content="Auto-scan on startup"
+                      IsChecked="{Binding AutoScanOnStartup}"
+                      VerticalAlignment="Center"
+                      Margin="12,0,0,0"/>
+        </StackPanel>
+
+        <!-- ── Ignored Games ── -->
+        <TextBlock Text="Ignored Games" FontWeight="SemiBold" Margin="0,0,0,4"/>
+        <TextBlock Text="Right-click a Steam game and choose Ignore to add it here."
+                   Foreground="Gray" FontSize="11" Margin="0,0,0,4"/>
+        <ListBox ItemsSource="{Binding IgnoredGames}"
+                 SelectedItem="{Binding SelectedIgnoredGame}"
+                 Height="100"
+                 Margin="0,0,0,4"/>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+            <Button Content="Remove" Command="{Binding RemoveIgnoredGameCommand}" Width="75"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

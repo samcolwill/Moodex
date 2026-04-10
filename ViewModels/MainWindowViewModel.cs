@@ -2,6 +2,7 @@
 using Moodex.Converters;
 using Moodex.Models;
 using Moodex.Services;
+using Moodex.Services.Steam;
 using Moodex.Views.Utilities;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -31,6 +32,7 @@ namespace Moodex.ViewModels
         private readonly ISettingsService _settings;
         private readonly IArchiveService _archiver;
         private readonly IAutoHotKeyScriptService _scriptService;
+        private readonly ISteamLaunchService _steamLauncher;
         private readonly Dictionary<int, Process> _trackedGameProcesses = new();
 
         // ──── Exposed Collections & Views ──────────────────────────────────
@@ -84,14 +86,14 @@ namespace Moodex.ViewModels
             }
         }
 
-        private bool _showArchived = true;
-        public bool ShowArchived
+        private bool _onlyShowActive;
+        public bool OnlyShowActive
         {
-            get => _showArchived;
+            get => _onlyShowActive;
             set
             {
-                if (_showArchived == value) return;
-                _showArchived = value;
+                if (_onlyShowActive == value) return;
+                _onlyShowActive = value;
                 RaisePropertyChanged();
                 ApplyFilter();
             }
@@ -109,6 +111,10 @@ namespace Moodex.ViewModels
         public IRelayCommand ShowAboutCommand { get; }
         public IAsyncRelayCommand ArchiveGameCommand { get; }
         public IAsyncRelayCommand ActivateGameCommand { get; }
+        public IRelayCommand InstallViaSteamCommand { get; }
+        public IRelayCommand UninstallViaSteamCommand { get; }
+        public IRelayCommand RemoveSteamGameCommand { get; }
+        public IRelayCommand IgnoreSteamGameCommand { get; }
         public IRelayCommand ClearSearchCommand { get; }
 
         // AutoHotKey Script Commands
@@ -141,13 +147,14 @@ namespace Moodex.ViewModels
 
 
         // ──── Constructor ──────────────────────────────────────────────────
-        public MainWindowViewModel(IDialogService dialogs, IWindowPlacementService placer, ISettingsService settings, IAutoHotKeyScriptService scriptService, IArchiveService archiver, MoodexState moodexState)
+        public MainWindowViewModel(IDialogService dialogs, IWindowPlacementService placer, ISettingsService settings, IAutoHotKeyScriptService scriptService, IArchiveService archiver, ISteamLaunchService steamLauncher, MoodexState moodexState)
         {
             _dialogs = dialogs;
             _placer = placer;
             _settings = settings;
             _scriptService = scriptService;
             _archiver = archiver;
+            _steamLauncher = steamLauncher;
             _dataFolder = Path.Combine(_basePath, "Data");
             _gamesFile = Path.Combine(_dataFolder, "games.json");
             _emuFile = Path.Combine(_dataFolder, "emulators.json");
@@ -210,6 +217,10 @@ namespace Moodex.ViewModels
             ShowAboutCommand = new RelayCommand(ExecuteShowAbout);
             ArchiveGameCommand = new AsyncRelayCommand<GameInfo>(g => MoveGameAsync(g, toArchive: true), CanArchiveGame);
             ActivateGameCommand = new AsyncRelayCommand<GameInfo>(g => MoveGameAsync(g, toArchive: false), CanActivateGame);
+            InstallViaSteamCommand = new RelayCommand<GameInfo>(ExecuteInstallViaSteam, g => g is { IsSteamGame: true, IsSteamInstalled: false });
+            UninstallViaSteamCommand = new RelayCommand<GameInfo>(ExecuteUninstallViaSteam, g => g is { IsSteamGame: true, IsSteamInstalled: true });
+            RemoveSteamGameCommand = new RelayCommand<GameInfo>(ExecuteRemoveSteamGame, g => g is { IsSteamGame: true });
+            IgnoreSteamGameCommand = new RelayCommand<GameInfo>(ExecuteIgnoreSteamGame, g => g is { IsSteamGame: true });
             ClearSearchCommand = new RelayCommand(() => { SearchText = ""; });
 
             // AutoHotKey Script Commands
@@ -239,6 +250,24 @@ namespace Moodex.ViewModels
             if (game == null) return;
             try
             {
+                if (game.IsSteamGame)
+                {
+                    if (!game.IsSteamInstalled)
+                    {
+                        var result = MessageBox.Show(
+                            "This Steam game is not installed.\n\nWould you like to install it via Steam?",
+                            "Game Not Installed",
+                            MessageBoxButton.YesNo,
+                            MessageBoxImage.Question);
+                        if (result == MessageBoxResult.Yes && game.SteamAppId.HasValue)
+                            _steamLauncher.InstallSteamGame(game.SteamAppId.Value);
+                        return;
+                    }
+
+                    _steamLauncher.LaunchSteamGame(game);
+                    return;
+                }
+
                 // If the game is archived, prompt to make it active instead of launching
                 if (game.IsInArchive)
                 {
@@ -590,11 +619,12 @@ namespace Moodex.ViewModels
             {
                 if (o is GameInfo g)
                 {
-                    // if “ShowArchived” is false, hide archived games
-                    if (!ShowArchived && g.IsInArchive)
-                        return false;
+                    if (OnlyShowActive)
+                    {
+                        if (g.IsInArchive) return false;
+                        if (g.IsSteamGame && !g.IsSteamInstalled) return false;
+                    }
 
-                    // then your existing search‐text filter
                     if (!string.IsNullOrWhiteSpace(SearchText)
                      && !g.Name.Contains(SearchText,
                                           StringComparison.OrdinalIgnoreCase))
@@ -616,7 +646,11 @@ namespace Moodex.ViewModels
                 if (o is GenreGameItem gi)
                 {
                     var g = gi.Game;
-                    if (!ShowArchived && g.IsInArchive) return false;
+                    if (OnlyShowActive)
+                    {
+                        if (g.IsInArchive) return false;
+                        if (g.IsSteamGame && !g.IsSteamInstalled) return false;
+                    }
                     if (!string.IsNullOrWhiteSpace(SearchText)
                         && !g.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) return false;
                 }
@@ -664,8 +698,18 @@ namespace Moodex.ViewModels
                 lv.GroupDescriptions.Clear();
                 lv.SortDescriptions.Clear();
                 lv.GroupDescriptions.Add(new PropertyGroupDescription(nameof(GenreGameItem.Genre)));
-                lv.SortDescriptions.Add(new SortDescription(nameof(GenreGameItem.Genre), ListSortDirection.Ascending));
-                lv.SortDescriptions.Add(new SortDescription($"{nameof(GenreGameItem.Game)}.{nameof(GameInfo.Name)}", ListSortDirection.Ascending));
+                lv.CustomSort = Comparer<object>.Create((a, b) =>
+                {
+                    var ga = (a as GenreGameItem)?.Genre ?? "";
+                    var gb = (b as GenreGameItem)?.Genre ?? "";
+                    bool aNo = ga == "No Genre", bNo = gb == "No Genre";
+                    if (aNo != bNo) return aNo ? 1 : -1;
+                    int cmp = string.Compare(ga, gb, StringComparison.OrdinalIgnoreCase);
+                    if (cmp != 0) return cmp;
+                    var na = (a as GenreGameItem)?.Game?.Name ?? "";
+                    var nb = (b as GenreGameItem)?.Game?.Name ?? "";
+                    return string.Compare(na, nb, StringComparison.OrdinalIgnoreCase);
+                });
                 DisplayView = lv;
                 RaisePropertyChanged(nameof(DisplayView));
                 ApplyDisplayFilter();
@@ -718,12 +762,18 @@ namespace Moodex.ViewModels
 
         private static IEnumerable<string> SplitGenres(string? csv)
         {
-            if (string.IsNullOrWhiteSpace(csv)) yield break;
+            if (string.IsNullOrWhiteSpace(csv))
+            {
+                yield return "No Genre";
+                yield break;
+            }
+            bool any = false;
             foreach (var s in csv.Split(',', StringSplitOptions.RemoveEmptyEntries))
             {
                 var t = s.Trim();
-                if (!string.IsNullOrEmpty(t)) yield return t;
+                if (!string.IsNullOrEmpty(t)) { yield return t; any = true; }
             }
+            if (!any) yield return "No Genre";
         }
 
         public static string GetInstallRoot(GameInfo game,
@@ -961,6 +1011,65 @@ namespace Moodex.ViewModels
         {
             // Avoid touching archive storage on menu open; validate on click instead
             return game != null && game.IsInArchive && !string.IsNullOrEmpty(game.GameGuid);
+        }
+
+        private void ExecuteInstallViaSteam(GameInfo? game)
+        {
+            if (game?.SteamAppId == null) return;
+            _steamLauncher.InstallSteamGame(game.SteamAppId.Value);
+        }
+
+        private void ExecuteUninstallViaSteam(GameInfo? game)
+        {
+            if (game?.SteamAppId == null) return;
+            var result = MessageBox.Show(
+                $"Uninstall \"{game.Name}\" via Steam?",
+                "Uninstall Steam Game",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+                _steamLauncher.UninstallSteamGame(game.SteamAppId.Value);
+        }
+
+        private void ExecuteRemoveSteamGame(GameInfo? game)
+        {
+            if (game == null) return;
+            var result = MessageBox.Show(
+                $"Remove \"{game.Name}\" from your Moodex library?\n\nThis will not uninstall the game from Steam.",
+                "Remove Steam Game",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+            if (result != MessageBoxResult.Yes) return;
+
+            if (!string.IsNullOrEmpty(game.GameRootPath) && Directory.Exists(game.GameRootPath))
+            {
+                try { Directory.Delete(game.GameRootPath, recursive: true); } catch { }
+            }
+            Games.Remove(game);
+        }
+
+        private void ExecuteIgnoreSteamGame(GameInfo? game)
+        {
+            if (game == null || string.IsNullOrEmpty(game.Name)) return;
+            var result = MessageBox.Show(
+                $"Ignore \"{game.Name}\"?\n\nIt will be removed from Moodex and excluded from future Steam scans. You can un-ignore it in Settings > Launchers.",
+                "Ignore Steam Game",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+            if (result != MessageBoxResult.Yes) return;
+
+            var cfg = _settings.Load();
+            if (!cfg.Steam.IgnoredGames.Contains(game.Name, StringComparer.OrdinalIgnoreCase))
+            {
+                cfg.Steam.IgnoredGames.Add(game.Name);
+                _settings.Save(cfg);
+            }
+
+            if (!string.IsNullOrEmpty(game.GameRootPath) && Directory.Exists(game.GameRootPath))
+            {
+                try { Directory.Delete(game.GameRootPath, recursive: true); } catch { }
+            }
+            Games.Remove(game);
         }
 
         // Console-level AHK enablement removed; AHK applies to all consoles when installed

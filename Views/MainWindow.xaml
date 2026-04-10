@@ -142,6 +142,13 @@
                                             <DataTrigger Binding="{Binding IsInArchive}" Value="True">
                                                 <Setter Property="Opacity" Value="0.25"/>
                                             </DataTrigger>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding IsSteamGame}" Value="True"/>
+                                                    <Condition Binding="{Binding IsSteamInstalled}" Value="False"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Opacity" Value="0.25"/>
+                                            </MultiDataTrigger>
                                             <DataTrigger Binding="{Binding IsProcessing}" Value="True">
                                                 <Setter Property="Opacity" Value="0.4"/>
                                                 <DataTrigger.EnterActions>
@@ -164,6 +171,14 @@
                                     </Style>
                                 </Image.Style>
                             </Image>
+                            <!-- Steam badge -->
+                            <Border Width="24" Height="24"
+                                    HorizontalAlignment="Right" VerticalAlignment="Top" Margin="4"
+                                    CornerRadius="12" Background="#171a21"
+                                    Visibility="{Binding IsSteamGame, Converter={StaticResource BoolToVis}}">
+                                <Image Source="/Moodex;component/Assets/steam_icon.png"
+                                       Stretch="Uniform" Margin="2"/>
+                            </Border>
                             <!-- Completion badges -->
                             <Image Source="/Moodex;component/Assets/highland_cow.png"
                                    Width="28" Height="28"
@@ -213,7 +228,10 @@
                                 </Style>
                             </MenuItem.Style>
                         </MenuItem>
-                        <MenuItem Header="Edit" Command="{Binding DataContext.EditGameCommand, Source={x:Reference RootWindow}}" CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                        <MenuItem Header="Edit" Command="{Binding DataContext.EditGameCommand, Source={x:Reference RootWindow}}" CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Delete" Command="{Binding DataContext.DeleteGameCommand, Source={x:Reference RootWindow}}" CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                  Visibility="{Binding PlacementTarget.DataContext.IsSteamGame, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource BoolToVis}, ConverterParameter=Invert}"/>
+                        <MenuItem Header="Send to Archive" Command="{Binding DataContext.ArchiveGameCommand, Source={x:Reference RootWindow}}" CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                             <MenuItem.Style>
                                 <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                                     <Setter Property="Visibility" Value="Visible"/>
@@ -221,14 +239,69 @@
                                         <DataTrigger Binding="{Binding PlacementTarget.DataContext.IsInArchive, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True">
                                             <Setter Property="Visibility" Value="Collapsed"/>
                                         </DataTrigger>
+                                        <DataTrigger Binding="{Binding PlacementTarget.DataContext.IsSteamGame, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </MenuItem.Style>
                         </MenuItem>
-                        <MenuItem Header="Delete" Command="{Binding DataContext.DeleteGameCommand, Source={x:Reference RootWindow}}" CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                        <MenuItem Header="Send to Archive" Visibility="{Binding PlacementTarget.DataContext.IsInArchive, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource BoolToVis}, ConverterParameter=Invert}" Command="{Binding DataContext.ArchiveGameCommand, Source={x:Reference RootWindow}}" CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                        <MenuItem Header="Open File Location" Command="{Binding DataContext.OpenGameFolderCommand, Source={x:Reference RootWindow}}" CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                        <MenuItem Header="Make Active" Visibility="{Binding PlacementTarget.DataContext.IsInArchive, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource BoolToVis}}" Command="{Binding DataContext.ActivateGameCommand, Source={x:Reference RootWindow}}" CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Open File Location" Command="{Binding DataContext.OpenGameFolderCommand, Source={x:Reference RootWindow}}" CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                  Visibility="{Binding PlacementTarget.DataContext.IsSteamGame, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource BoolToVis}, ConverterParameter=Invert}"/>
+                        <MenuItem Header="Make Active" Command="{Binding DataContext.ActivateGameCommand, Source={x:Reference RootWindow}}" CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                            <MenuItem.Style>
+                                <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding PlacementTarget.DataContext.IsInArchive, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True"/>
+                                                <Condition Binding="{Binding PlacementTarget.DataContext.IsSteamGame, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="False"/>
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </MultiDataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </MenuItem.Style>
+                        </MenuItem>
+                        <Separator Visibility="{Binding PlacementTarget.DataContext.IsSteamGame, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource BoolToVis}}"/>
+                        <!-- Steam-only items (hidden for Moodex games) -->
+                        <MenuItem Header="Install via Steam" Command="{Binding DataContext.InstallViaSteamCommand, Source={x:Reference RootWindow}}" CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                            <MenuItem.Style>
+                                <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding PlacementTarget.DataContext.IsSteamGame, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True"/>
+                                                <Condition Binding="{Binding PlacementTarget.DataContext.IsSteamInstalled, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="False"/>
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </MultiDataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </MenuItem.Style>
+                        </MenuItem>
+                        <MenuItem Header="Uninstall via Steam" Command="{Binding DataContext.UninstallViaSteamCommand, Source={x:Reference RootWindow}}" CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                            <MenuItem.Style>
+                                <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding PlacementTarget.DataContext.IsSteamGame, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True"/>
+                                                <Condition Binding="{Binding PlacementTarget.DataContext.IsSteamInstalled, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True"/>
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </MultiDataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </MenuItem.Style>
+                        </MenuItem>
+                        <MenuItem Header="Remove from Library" Command="{Binding DataContext.RemoveSteamGameCommand, Source={x:Reference RootWindow}}" CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                  Visibility="{Binding PlacementTarget.DataContext.IsSteamGame, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource BoolToVis}}"/>
+                        <MenuItem Header="Ignore" Command="{Binding DataContext.IgnoreSteamGameCommand, Source={x:Reference RootWindow}}" CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                  Visibility="{Binding PlacementTarget.DataContext.IsSteamGame, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource BoolToVis}}"/>
                         <MenuItem Header="Scripts">
                             <MenuItem.Style>
                                 <Style TargetType="MenuItem" BasedOn="{StaticResource ContextMenuItemStyle}">
@@ -386,6 +459,7 @@
                 <MenuItem Header="Interface" Command="{Binding ShowSettingsCommand}" CommandParameter="Interface"/>
                 <MenuItem Header="Library" Command="{Binding ShowSettingsCommand}" CommandParameter="Library"/>
                 <MenuItem Header="Storage" Command="{Binding ShowSettingsCommand}" CommandParameter="Storage"/>
+                <MenuItem Header="Launchers" Command="{Binding ShowSettingsCommand}" CommandParameter="Launchers"/>
             </MenuItem>
             <MenuItem Header="Help">
                 <MenuItem Header="Getting Started" Command="{Binding ShowGettingStartedCommand}"/>
@@ -438,10 +512,10 @@
                     </ComboBox>
                 </StackPanel>
 
-                <!-- Show Archived toggle and banner -->
+                <!-- Only Show Active toggle and banner -->
                 <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="Show Archived:" Foreground="#838383" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <ToggleButton IsChecked="{Binding ShowArchived, Mode=TwoWay}" Width="28" Height="28">
+                    <TextBlock Text="Only Show Active:" Foreground="#838383" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <ToggleButton IsChecked="{Binding OnlyShowActive, Mode=TwoWay}" Width="28" Height="28">
                         <ToggleButton.Template>
                             <ControlTemplate TargetType="ToggleButton">
                                 <Border Background="#2a2a2a" BorderBrush="#555" BorderThickness="1" CornerRadius="3">
